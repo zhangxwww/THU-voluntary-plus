@@ -1,0 +1,4 @@
+install: true
+
+script:
+  - echo "THU voluntary plus"
