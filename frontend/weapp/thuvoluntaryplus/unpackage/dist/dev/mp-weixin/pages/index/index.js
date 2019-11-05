@@ -131,25 +131,33 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! ../../components/navbar.vue */ 31));};var _default =
+
+
+
+
+
 {
+  components: {
+    "NavBar": NavBar },
+
   data: function data() {
     return {
-      title: 'Hello' };
+      title: 'Hello',
+      currentUser: {
+        name: '汪大头' },
+
+      curpage: 'index' };
 
   },
+  computed: {},
+
+
+
   onLoad: function onLoad() {
 
   },
+
   methods: {} };exports.default = _default;
 
 /***/ }),

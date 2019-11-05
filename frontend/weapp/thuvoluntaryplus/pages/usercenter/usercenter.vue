@@ -6,7 +6,7 @@
 	import NavBar from '../../components/navbar.vue'
 	export default {
 		components: {
-			"NavBar": NavBar
+			NavBar
 		},
 		data() {
 			return {
@@ -14,17 +14,14 @@
 				currentUser: {
 					name: '汪大头'
 				},
-				curpage: 'index'
+				curpage: 'userCenter'
 			}
 		},
 		computed: {
-			
 		},
-		
 		onLoad() {
 
 		},
-		
 		methods: {
 
 		}
