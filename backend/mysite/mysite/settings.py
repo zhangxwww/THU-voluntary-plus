@@ -26,7 +26,7 @@ SECRET_KEY = '19!-+#%0jld%4#ygya5%t@aqaak0-^j@cz_1sh9*5=1k%dn=tp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['thuvplus.iterator-traits.com','62.234.31.126','localhost']
 
 
 # Application definition
@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'werkzeug_debugger_runserver',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -118,18 +120,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
+
+
 APPID = "A13"
-m = hashlib.md5()
-m.update(APPID.encode('utf-8'))
-APPID = m.hexdigest()
-SEQ = '0'
-
-REDIRECT_PREFIX = 'https://alumni-test.iterator-traits.com/fake-id-tsinghua/'
-REDIRECT_LOGIN_MID = 'do/off/ui/auth/login/form/'
-REDIRECT_LOGIN_SUFFIX = '{}/{}?/api/login'.format(APPID, SEQ)
-REDIRECT_TO_LOGIN = REDIRECT_PREFIX + REDIRECT_LOGIN_MID + REDIRECT_LOGIN_SUFFIX
-
-REDIRECT_TICKET_AUTHENTICATION_MID = 'thuser/authapi/checkticket/{}/'.format(APPID)
-REDIRECT_TO_TICKET_AUTHENTICATION = REDIRECT_PREFIX + REDIRECT_TICKET_AUTHENTICATION_MID
+TICKET_AUTHENTICATION_PREFIX = 'https://alumni-test.iterator-traits.com/fake-id-tsinghua/'
+TICKET_AUTHENTICATION_MID = 'thuser/authapi/checkticket/{}/'.format(APPID)
+TICKET_AUTHENTICATION = TICKET_AUTHENTICATION_PREFIX + TICKET_AUTHENTICATION_MID
