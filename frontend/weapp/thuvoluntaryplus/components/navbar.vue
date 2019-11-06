@@ -1,7 +1,7 @@
 <template>
 	<view class = "footer">
 		<view class="cu-bar tabbar shadow bg-white foot">
-			<view :class="{action: true, 'text-purple': isIndex, 'text-gray': !isIndex}" @click="navTo('index', '/pages/index/index')">
+			<view :class="{action: true, 'text-purple': isIndex, 'text-gray': !isIndex}" @click="redirectTo('index', '/pages/index/index')">
 				<view class="cuIcon-homefill"></view> 志愿广场
 			</view>
 			<view class="action text-gray add-action">
@@ -9,7 +9,7 @@
 				{{currentUser.name}}
 			</view>
 			<view :class="{action: true, 'text-purple': isUserCenter, 'text-gray': !isUserCenter}">
-				<view class="cuIcon-my" @click="navTo('usercenter', '/pages/usercenter/usercenter')">
+				<view class="cuIcon-my" @click="redirectTo('usercenter', '/pages/usercenter/usercenter')">
 					<view class="cu-tag badge"></view>
 				</view>
 				个人中心
@@ -46,9 +46,9 @@
 			}
 		},
 		methods: {
-			navTo: function(curpage, url) {
+			redirectTo: function(curpage, url) {
 				console.log('navTo called at ' + url)
-				uni.navigateTo({url})
+				uni.redirectTo({url})
 			}
 		},
 		onLoad() {

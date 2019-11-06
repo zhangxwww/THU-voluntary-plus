@@ -12,6 +12,19 @@
 			}
 		}
 	],
+    /*
+    "tabBar": {
+        "list": [
+            {
+                "pagePath":"pages/index/index",
+                "text": "志愿广场"
+            }, {
+                "pagePath":"pages/usercenter/usercenter",
+                "text":"个人中心"
+            }
+        ]
+    },
+    */
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
