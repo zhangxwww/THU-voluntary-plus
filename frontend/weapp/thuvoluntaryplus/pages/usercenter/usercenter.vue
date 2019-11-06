@@ -20,12 +20,39 @@
 		computed: {
 		},
 		onLoad() {
-
+            // bindToken()
 		},
 		methods: {
 
 		}
 	}
+    
+    function bindToken() {
+        uni.navigateToMiniProgram({
+            appId: "wx1ebe3b2266f4afe0",
+            path: "pages/index/index",
+            envVersion: "trial",
+            extraData: {
+                "origin": "miniapp",
+                "type": "id.tsinghua"
+            },
+            success: (res) => {
+                console.log(res)
+                let token = res.token
+                let userInfo = uni.getUserInfo({
+                    provider:"weixin",
+                    success: (res) => {
+                        let openId = res.userInfo.openid
+                        console.log("openid: ", openId)
+                        // TODO POST {token, openId}
+                    }
+                })
+            }, 
+            fail: (res) => {
+                console.log("navi to mini failed", res)
+            }
+        }) 
+    }
 </script>
 
 <style>

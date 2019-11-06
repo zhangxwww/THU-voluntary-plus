@@ -122,7 +122,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! ../../components/navbar.vue */ 31));};var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! ../../components/navbar.vue */ 31));};var _default =
 
 
 
@@ -144,9 +144,40 @@ Object.defineProperty(exports, "__esModule", { value: true });exports.default = 
   computed: {},
 
   onLoad: function onLoad() {
-
+    // bindToken()
   },
   methods: {} };exports.default = _default;
+
+
+
+
+function bindToken() {
+  uni.navigateToMiniProgram({
+    appId: "wx1ebe3b2266f4afe0",
+    path: "pages/index/index",
+    envVersion: "trial",
+    extraData: {
+      "origin": "miniapp",
+      "type": "id.tsinghua" },
+
+    success: function success(res) {
+      console.log(res);
+      var token = res.token;
+      var userInfo = uni.getUserInfo({
+        provider: "weixin",
+        success: function success(res) {
+          var openId = res.userInfo.openid;
+          console.log("openid: ", openId);
+          // TODO POST {token, openId}
+        } });
+
+    },
+    fail: function fail(res) {
+      console.log("navi to mini failed", res);
+    } });
+
+}
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 
