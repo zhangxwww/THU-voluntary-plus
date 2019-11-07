@@ -1,36 +1,24 @@
 <template>
 	<view>
-		<view>
-			<view class="cu-card case">
-				<view class="cu-item shadow">
-					<UserCenterCard v-for="functionCard in functionCardList" 
-					:key="functionCard.id" :icon="functionCard.icon" :description="functionCard.description">
-					</UserCenterCard>
-				</view>
+		<view class="cu-card case">
+			<view class="cu-item shadow">
+				<UserCenterCard v-for="functionCard in functionCardList" 
+				:key="functionCard.id" :icon="functionCard.icon" :description="functionCard.description">
+				</UserCenterCard>
 			</view>
 		</view>
-		<NavBar :curpage="curpage"></NavBar>
-	</view>
+	</view>	
 </template>
 
 <script>
-	import NavBar from '@/components/navbar.vue'
 	import UserCenterCard from '@/components/usercentercard.vue'
-	import Header from '@/components/header.vue'
 	export default {
+		Name: "UserCenter",
 		components: {
-			NavBar,
 			UserCenterCard,
-			Header
 		},
 		data() {
 			return {
-				title: '个人中心',
-				needSearch: true,
-				currentUser: {
-					name: '汪大头'
-				},
-				curpage: 'userCenter',
 				functionCardList: [ {
 						id: 0,
 						description: '消息中心',
@@ -58,9 +46,6 @@
 		computed: {
 		},
 		onLoad() {
-            uni.setNavigationBarTitle({
-            	title: this.title
-            })
 		},
 		methods: {
 

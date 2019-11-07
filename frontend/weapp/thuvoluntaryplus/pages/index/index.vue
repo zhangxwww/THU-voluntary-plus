@@ -1,30 +1,39 @@
 <template>
 <view>
-	<Header :needSearch="needSearch" :title="title"></Header>
-	<NavBar :curpage="curpage"></NavBar>
+	<app-header :needSearch="needSearch" :title="title"></app-header>
+	<user-center v-if="title==='个人中心'"></user-center>
+	<nav-bar></nav-bar>
 </view>
 </template>
 
 <script>
 	import NavBar from '@/components/navbar.vue'
-	import Header from '@/components/header.vue'
+	import AppHeader from '@/components/appheader.vue'
+	import UserCenter from '@/pages/usercenter/usercenter.vue'
+	import {
+	    mapState,  
+	    mapMutations  
+	} from 'vuex'
+	
 	export default {
 		components: {
-			NavBar,
-			Header
+			'nav-bar': NavBar,
+			'app-header': AppHeader,
+			'user-center': UserCenter
 		},
 		data() {
 			return {
-				title: '志愿广场',
-				needSearch: true,
 				currentUser: {
 					name: '汪大头'
 				},
-				curpage: 'index',
 			}
 		},
 		computed: {
-			
+			...mapState(['curpage', 'title']),
+			needSearch: function() {
+				//console.log(this.curpage === 'index')
+				return (this.curpage === 'index')
+			},
 		},
 		
 		onLoad() {
