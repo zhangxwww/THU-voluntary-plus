@@ -1,5 +1,8 @@
 <template>
-<NavBar :curpage="curpage"></NavBar>
+<cu-list>
+	<NavBar :curpage="curpage"></NavBar>
+</cu-list>
+
 </template>
 
 <script>

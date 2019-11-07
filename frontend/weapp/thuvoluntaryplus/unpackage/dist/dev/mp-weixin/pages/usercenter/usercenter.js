@@ -132,6 +132,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+
 {
   components: {
     NavBar: NavBar,
@@ -139,11 +145,28 @@ __webpack_require__.r(__webpack_exports__);
 
   data: function data() {
     return {
-      title: 'Hello',
+      title: '个人中心',
       currentUser: {
         name: '汪大头' },
 
-      curpage: 'userCenter' };
+      curpage: 'userCenter',
+      functionCardList: [{
+        description: '消息中心',
+        icon: 'cuIcon-messagefill' },
+      {
+        description: '个人信息',
+        icon: 'cuIcon-infofill' },
+      {
+        description: '工时统计',
+        icon: 'cuIcon-timefill' },
+      {
+        description: '志愿历史',
+        icon: 'cuIcon-selectionfill' },
+      {
+        description: '志愿排行',
+        icon: 'cuIcon-sort' }] };
+
+
 
   },
   computed: {},
