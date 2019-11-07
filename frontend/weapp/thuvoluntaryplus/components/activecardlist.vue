@@ -1,93 +1,83 @@
 <template>
     <view>
-        <view v-for="(item, index) in activeListData" :key="index">
-            <view class="cu-list menu card-menu margin-top">
-                <view class="cu-item noneBottom" @tap="showDetail" :id="'active' + index">
-                    <view class="content grid justify-around">
-                        <view class="basis-xs">
-                            <view class='cu-tag bg-mauve round'>
-                                <text class="text-white cuIcon-locationfill"></text>
-                                <text class="text-white">{{ item.location }}</text>
-                            </view>
-                        </view>
-                        <text class="basis-lg text-gray text-lg">{{ item.name }} </text>
-                        <text class="basis-xs text-grey text-right">({{ item.curnum }}/{{ item.totalnum }})</text> 
-                    </view>
-                </view>
-                <view class="cu-item noneBottom">
-                    <view class="content grid justify-around">
-                        <view class="basis-xs"></view>
-                        <view class="basis-xl">
-                            <text class="lg text-gray cuIcon-time"></text>
-                            <text class="text-grey text-df">{{ item.startTime }} 至 {{ item.endTime }}</text>
-                        </view>
-                    </view>
-                </view>
-                <view class="cu-item noneBottom">
-                    <view class="content grid justify-around">
-                        <view class="basis-xs">
-                            <text class="lg text-gray cuIcon-peoplefill"></text>
-                            <text class="text-grey">{{ item.leader }}</text>
-                        </view>
-                        <view class="basis-df text-left">    
-                            <text class="lg text-gray cuIcon-tagfill"></text>
-                            <text class="text-grey">{{ item.type }}</text>
-                        </view>
-                        <view class="basis-xs text-right" @tap="like" :id="'like' + index">    
-                            <text class="lg text-mauve" :class="'cuIcon-like' + (item.liked?'fill':'')"></text>
-                            <text class="text-grey">{{ item.likes }}</text>
-                        </view>
-                    </view>
-                </view>
-            </view>
+        <view v-for="item in activelist" :key="item.id">
+            <active-card :item="item"></active-card>
         </view>
     </view>
 </template>
 
 <script>
+	import ActiveCard from '@/components/activecard.vue'
 	export default {
         name: "ActiveCardList",
-        
+        components: {
+			'active-card': ActiveCard
+		},
         props: {
-            activeList: {
-                type: Array,
-                required: true
-            }
         },
         
 		data() {
 			return {
-				activeListData: this.activeList
+				activelist: [{
+				        id: 0,
+				        location: "北京",
+				        name: "十一期间参观志愿者",
+				        leader: "汪元标",
+				        startTime: "2019.10.1",
+				        endTime: "2019.10.1",
+				        curnum: 5,
+				        totalnum: 10,
+				        type: "校内志愿活动",
+				        likes: 3,
+				        liked: true
+				    }, {
+				        id: 1,
+				        location: "河北",
+				        name: "廊坊志愿小学支教",
+				        leader: "金昕琪",
+				        startTime: "2019.10.1",
+				        endTime: "2019.10.1",
+				        curnum: 5,
+				        totalnum: 10,
+				        type: "支教",
+				        likes: 5,
+				        liked: false
+				    }, {
+				        id: 3,
+				        location: "河北",
+				        name: "廊坊志愿小学支教",
+				        leader: "金昕琪",
+				        startTime: "2019.10.1",
+				        endTime: "2019.10.1",
+				        curnum: 5,
+				        totalnum: 10,
+				        type: "支教",
+				        likes: 5,
+				        liked: false
+				    }, {
+				        id: 4,
+				        location: "河北",
+				        name: "廊坊志愿小学支教",
+				        leader: "金昕琪",
+				        startTime: "2019.10.1",
+				        endTime: "2019.10.1",
+				        curnum: 5,
+				        totalnum: 10,
+				        type: "支教",
+				        likes: 5,
+				        liked: false
+				    }
+				]
 			};
 		},
         
         computed: {
-            activeListComputed() {
-                console.log('compute')
-                return this.activeList
-            }
         },
         
         methods: {
-            showDetail(e) {
-                let activeId = parseInt(e.currentTarget.id.substring(6))
-                // TODO POST
-                console.log(activeId)
-            },
-            like(e) {
-                let activeId = parseInt(e.currentTarget.id.substring(4))
-                // TODO POST
-                console.log(activeId)
-                if (this.activeList[activeId].liked) {
-                    let likes = this.activeList[activeId].likes
-                    this.$set(this.activeList[activeId], "liked", false)
-                    this.$set(this.activeList[activeId], "likes", likes - 1)
-                } else {
-                    let likes = this.activeList[activeId].likes
-                    this.$set(this.activeList[activeId], "liked", true)
-                    this.$set(this.activeList[activeId], "likes", likes + 1)
-                }
-            }
+        },
+        
+        methods: {
         }
 	}
 </script>

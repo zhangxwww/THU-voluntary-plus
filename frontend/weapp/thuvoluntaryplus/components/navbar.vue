@@ -1,5 +1,5 @@
 <template>
-	<view class = "footer">
+	<view class = "footer cu-bar">
 		<view class="cu-bar tabbar shadow bg-white foot">
 			<view :class="{action: true, 'text-mauve': isIndex, 'text-gray': !isIndex}" @click="naviTo('index')">
 				<view class="cuIcon-homefill"></view> 志愿广场

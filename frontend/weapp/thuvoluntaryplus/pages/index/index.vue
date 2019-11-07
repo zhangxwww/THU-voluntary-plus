@@ -2,6 +2,7 @@
     <view>
         <app-header :needSearch="needSearch" :title="title"></app-header>
         <user-center v-if="title==='个人中心'"></user-center>
+		    <active-card-list v-if="title==='志愿广场'"></active-card-list>
         <nav-bar></nav-bar>
     </view>
 </template>
@@ -10,6 +11,7 @@
 	import NavBar from '@/components/navbar.vue'
 	import AppHeader from '@/components/appheader.vue'
 	import UserCenter from '@/pages/usercenter/usercenter.vue'
+	import ActiveCardList from '@/components/activecardlist.vue'
 	import {
 	    mapState,  
 	    mapMutations  
@@ -18,7 +20,8 @@
 		components: {
 			'nav-bar': NavBar,
 			'app-header': AppHeader,
-			'user-center': UserCenter
+			'user-center': UserCenter,
+			'active-card-list': ActiveCardList
 		},
 		data() {
 			return {
