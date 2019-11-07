@@ -1,0 +1,95 @@
+import json
+import math
+
+from django.shortcuts import render, redirect
+from django.utils import timezone
+from django.shortcuts import HttpResponse
+
+import showactivity.models as showactivity_models
+import mysite.models as mysite_models
+
+# Create your views here.
+
+#显示活动列表
+def catalog_grid(request):
+    is_login = request.session.get('is_login', None)
+    if is_login:
+        user = User.objects.get(pk=request.session.get('studentID'))
+    if not request.session.get('studentID'):
+        request.session.flush()
+        return redirect('/login/')
+    type = request.GET.get('type')
+    if type is None:
+        rtn_list = showactivity_models.Activity.objects.all()
+    else:
+        rtn_list = showactivity_models.Activity.objects.filter(Category=type)
+    rtn_pic = []
+    rtn_listt = []
+    page_str = request.GET.get('page')
+    if page_str is None:
+        page = 1
+    else:
+        page = int(page_str)
+    for i in range((page - 1) * 9, min(len(rtn_list), (page - 1) * 9 + 9)):
+        ActivityID = rtn_list[i].ActivityNumber
+        pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
+        rtn_pic.append(pic_tmp[0])
+        rtn_listt.append(rtn_list[i])
+    rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
+    return render(request, "showactivity/catalog_grid.html", locals())
+
+# 查看活动详细信息
+def activity_detail(request):
+    is_login = request.session.get('is_login', None)
+    if is_login:
+        user = User.objects.get(pk=request.session.get('studentID'))
+    Activity_Number = request.GET.get('Number')
+    class Recommend:
+        def __init__(self, activity, pic):
+            self.activity = activity
+            self.pic = pic
+    Activity_recommend = showactivity_models.Activity.objects.filter(IsOverDeadline=0)
+    Number_set = set()
+    for gr in Activity_recommend:
+        Number_set.add(gr.ActivityNumber)
+    Activity_recommend_rtn = []
+    for num in Number_set:
+            ojb = showactivity_models.Activity.objects.get(ActivityNumber=num)
+            pic = showactivity_models.ActivityPic.objects.filter(ActivityNumber=num)[0]
+            Activity_recommend_rtn.append(Recommend(ojb, pic))
+    Activity = showactivity_models.Activity.objects.get(ActivityNumber=Activity_Number)
+    Activity_pic_list = showactivity_models.ActivityPic.objects.filter(ActivityNumber=Activity_Number)
+    studentID = request.session['studentID']
+    user = User.objects.get(studentID=studentID)
+    request.session['number'] = Activity.ActivityNumber
+    return render(request, "showactivity/activity_detail_page.html", locals())
+
+def search(request):
+    is_login = request.session.get('is_login', None)
+    if is_login:
+        user = User.objects.get(pk=request.session.get('studentID'))
+    keyword = request.GET.get('search')
+    rtn_set = set()
+    rtn_list = []
+    name_key = showactivity_models.Activity.objects.filter(ActivityName__contains=keyword)
+    content_key = showactivity_models.Activity.objects.filter(ActivityIntro__contains=keyword)
+    organizer_key = showactivity_models.Activity.objects.filter(ActivityOrganizer__contains=keyword)
+    num_key = showactivity_models.Activity.objects.filter(ActivityNumber__contains=keyword)
+
+    class Activity:
+        def __init__(self, activity, pic, date):
+            self.date = date
+            self.pic = pic
+            self.date = date
+
+    for name in name_key:
+        rtn_set.add(name)
+    for content in content_key:
+        rtn_set.add(content)
+    for organizer in organizer_key:
+        rtn_set.add(author)
+    for num in num_key:
+        rtn_set.add(num)
+    for rtn_activity in rtn_set:
+        rtn_list.append(Activity(rtn_activity, showactivity_models.ActivityPic.objects.filter(ActivityNumber=rtn_activity.ActivityNumber)[0], rtn_activity.ActivityTime))
+    return render(request, "showactivity/search.html", locals())
