@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "uni-app",
-  "usingComponents": {
-    "user-center-card": "/components/usercentercard"
-  }
-}
