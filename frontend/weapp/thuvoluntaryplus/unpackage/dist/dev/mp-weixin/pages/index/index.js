@@ -144,8 +144,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var _usercenter = _interopRequireDefault(__webpack_require__(/*! @/pages/usercenter/usercenter.vue */ 23));
-var _vuex = __webpack_require__(/*! vuex */ 16);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};var ownKeys = Object.keys(source);if (typeof Object.getOwnPropertySymbols === 'function') {ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {return Object.getOwnPropertyDescriptor(source, sym).enumerable;}));}ownKeys.forEach(function (key) {_defineProperty(target, key, source[key]);});}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! @/components/navbar.vue */ 38));};var AppHeader = function AppHeader() {return __webpack_require__.e(/*! import() | components/appheader */ "components/appheader").then(__webpack_require__.bind(null, /*! @/components/appheader.vue */ 45));};var _default =
+
+var _vuex = __webpack_require__(/*! vuex */ 16);function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _objectSpread(target) {for (var i = 1; i < arguments.length; i++) {var source = arguments[i] != null ? arguments[i] : {};var ownKeys = Object.keys(source);if (typeof Object.getOwnPropertySymbols === 'function') {ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {return Object.getOwnPropertyDescriptor(source, sym).enumerable;}));}ownKeys.forEach(function (key) {_defineProperty(target, key, source[key]);});}return target;}function _defineProperty(obj, key, value) {if (key in obj) {Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true });} else {obj[key] = value;}return obj;}var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! @/components/navbar.vue */ 38));};var AppHeader = function AppHeader() {return __webpack_require__.e(/*! import() | components/appheader */ "components/appheader").then(__webpack_require__.bind(null, /*! @/components/appheader.vue */ 45));};var ActiveCardList = function ActiveCardList() {return __webpack_require__.e(/*! import() | components/activecardlist */ "components/activecardlist").then(__webpack_require__.bind(null, /*! @/components/activecardlist.vue */ 59));};var _default =
 
 
 
@@ -154,7 +156,8 @@ var _vuex = __webpack_require__(/*! vuex */ 16);function _interopRequireDefault(
   components: {
     'nav-bar': NavBar,
     'app-header': AppHeader,
-    'user-center': _usercenter.default },
+    'user-center': _usercenter.default,
+    'active-card-list': ActiveCardList },
 
   data: function data() {
     return {
@@ -325,7 +328,7 @@ __webpack_require__.r(__webpack_exports__);
 {
   Name: "UserCenter",
   components: {
-    UserCenterCard: UserCenterCard },
+    'user-center-card': UserCenterCard },
 
   data: function data() {
     return {

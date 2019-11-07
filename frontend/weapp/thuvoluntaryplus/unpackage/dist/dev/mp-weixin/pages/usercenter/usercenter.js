@@ -122,7 +122,7 @@ __webpack_require__.r(__webpack_exports__);
 {
   Name: "UserCenter",
   components: {
-    UserCenterCard: UserCenterCard },
+    'user-center-card': UserCenterCard },
 
   data: function data() {
     return {

@@ -2,9 +2,9 @@
 	<view>
 		<view class="cu-card case">
 			<view class="cu-item shadow">
-				<UserCenterCard v-for="functionCard in functionCardList" 
+				<user-center-card v-for="functionCard in functionCardList" 
 				:key="functionCard.id" :icon="functionCard.icon" :description="functionCard.description">
-				</UserCenterCard>
+				</user-center-card>
 			</view>
 		</view>
 	</view>	
@@ -15,7 +15,7 @@
 	export default {
 		Name: "UserCenter",
 		components: {
-			UserCenterCard,
+			'user-center-card' :UserCenterCard,
 		},
 		data() {
 			return {

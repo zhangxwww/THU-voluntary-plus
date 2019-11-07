@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class = "cu-bar">
 		<view v-if="needSearch" class="cu-bar bg-mauve search fixed" :style="[{top:CustomBar + 'px'}]">
 			<view class="search-form round">
 				<text class="cuIcon-search"></text>

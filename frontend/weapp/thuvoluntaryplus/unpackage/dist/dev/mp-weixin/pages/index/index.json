@@ -3,6 +3,7 @@
   "usingComponents": {
     "nav-bar": "/components/navbar",
     "app-header": "/components/appheader",
-    "user-center": "/pages/usercenter/usercenter"
+    "user-center": "/pages/usercenter/usercenter",
+    "active-card-list": "/components/activecardlist"
   }
 }
