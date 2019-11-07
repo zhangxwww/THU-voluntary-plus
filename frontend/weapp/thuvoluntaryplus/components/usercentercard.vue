@@ -1,6 +1,6 @@
 <template>
 	<cu-list menu-avatar>
-		<view class="cu-bar bg-white solid-bottom">
+		<view class="cu-bar bg-white solid-top solid-bottom">
 			<view class="action">
 				<text :class="[textColor, icon]"></text> {{ description }}
 			</view>

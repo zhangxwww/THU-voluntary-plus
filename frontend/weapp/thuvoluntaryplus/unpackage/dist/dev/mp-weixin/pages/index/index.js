@@ -131,7 +131,8 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! @/components/navbar.vue */ 31));};var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! @/components/navbar.vue */ 31));};var Header = function Header() {return __webpack_require__.e(/*! import() | components/header */ "components/header").then(__webpack_require__.bind(null, /*! @/components/header.vue */ 47));};var _default =
+
 
 
 
@@ -142,11 +143,13 @@ __webpack_require__.r(__webpack_exports__);
 
 {
   components: {
-    NavBar: NavBar },
+    NavBar: NavBar,
+    Header: Header },
 
   data: function data() {
     return {
-      title: 'Hello',
+      title: '志愿广场',
+      needSearch: true,
       currentUser: {
         name: '汪大头' },
 
@@ -158,6 +161,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
   onLoad: function onLoad() {
+    uni.setNavigationBarTitle({
+      title: this.title });
+
     login();
   },
 

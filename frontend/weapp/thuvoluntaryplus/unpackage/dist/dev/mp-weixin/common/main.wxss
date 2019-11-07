@@ -29,7 +29,7 @@ image {
 	        box-sizing: border-box;
 }
 .round {
-	border-radius: 5000rpx;
+	border-radius: 2000rpx;
 }
 .radius {
 	border-radius: 6rpx;
@@ -607,7 +607,8 @@ radio.white.checked .uni-radio-input {
 	-webkit-box-sizing: border-box;
 	        box-sizing: border-box;
 	padding: 0 30rpx;
-	font-size: 28rpx;
+	padding-left: 20rpx;
+	font-size: 30rpx;
 	height: 64rpx;
 	line-height: 1;
 	text-align: center;
@@ -2414,9 +2415,11 @@ to {
 	-webkit-flex: 1;
 	    -ms-flex: 1;
 	        flex: 1;
+	border: 2rpx solid #CCCCCC; 
+	border-radius: 5rpx;
 	font-size: 30rpx;
-	color: #555;
-	padding-right: 20rpx;
+	color: #FFFFFF;
+	padding-right: 30rpx;
 }
 .cu-form-group>text[class*="cuIcon-"] {
 	font-size: 36rpx;

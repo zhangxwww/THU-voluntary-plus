@@ -1,1 +1,1 @@
-<cu-list vue-id="1" bind:__l="__l" vue-slots="{{['default']}}"><nav-bar vue-id="{{('2')+','+('1')}}" curpage="{{curpage}}" bind:__l="__l"></nav-bar></cu-list>
+<view><header vue-id="1" needSearch="{{needSearch}}" title="{{title}}" bind:__l="__l"></header><nav-bar vue-id="2" curpage="{{curpage}}" bind:__l="__l"></nav-bar></view>
