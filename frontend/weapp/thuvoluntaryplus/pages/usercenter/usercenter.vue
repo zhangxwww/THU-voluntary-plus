@@ -1,31 +1,51 @@
 <template>
 	<view>
-		<UserCenterCard></UserCenterCard>
-		<NavBar :curpage="curpage"></NavBar>
-	</view>
+		<view class="cu-card case">
+			<view class="cu-item shadow">
+				<UserCenterCard v-for="functionCard in functionCardList" 
+				:key="functionCard.id" :icon="functionCard.icon" :description="functionCard.description">
+				</UserCenterCard>
+			</view>
+		</view>
+	</view>	
 </template>
 
 <script>
-	import NavBar from '@/components/navbar.vue'
 	import UserCenterCard from '@/components/usercentercard.vue'
 	export default {
+		Name: "UserCenter",
 		components: {
-			NavBar,
-			UserCenterCard
+			UserCenterCard,
 		},
 		data() {
 			return {
-				title: 'Hello',
-				currentUser: {
-					name: '汪大头'
-				},
-				curpage: 'userCenter'
+				functionCardList: [ {
+						id: 0,
+						description: '消息中心',
+						icon: 'cuIcon-messagefill'
+					}, {
+						id: 1,
+						description: '个人信息',
+						icon: 'cuIcon-infofill'
+					}, {
+						id: 2,
+						description: '工时统计',
+						icon: 'cuIcon-timefill'
+					}, {
+						id: 3,
+						description: '志愿历史',
+						icon: 'cuIcon-selectionfill'
+					}, {
+						id: 4,
+						description: '志愿排行',
+						icon: 'cuIcon-sort'
+					}
+				]
 			}
 		},
 		computed: {
 		},
 		onLoad() {
-            // bindToken()
 		},
 		methods: {
 

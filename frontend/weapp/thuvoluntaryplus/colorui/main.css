@@ -30,7 +30,7 @@ image {
 }
 
 .round {
-	border-radius: 5000upx;
+	border-radius: 2000upx;
 }
 
 .radius {
@@ -628,7 +628,8 @@ radio.white.checked .uni-radio-input {
 	justify-content: center;
 	box-sizing: border-box;
 	padding: 0 30upx;
-	font-size: 28upx;
+	padding-left: 20upx;
+	font-size: 30upx;
 	height: 64upx;
 	line-height: 1;
 	text-align: center;
@@ -2354,9 +2355,11 @@ button.cuIcon.lg {
 
 .cu-form-group input {
 	flex: 1;
+	border: 2upx solid #CCCCCC; 
+	border-radius: 5upx;
 	font-size: 30upx;
-	color: #555;
-	padding-right: 20upx;
+	color: #FFFFFF;
+	padding-right: 30upx;
 }
 
 .cu-form-group>text[class*="cuIcon-"] {

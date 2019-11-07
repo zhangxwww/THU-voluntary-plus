@@ -1,21 +1,27 @@
 <template>
     <view>
-        <ActiveCardList :activeList="activeList"></ActiveCardList>
-        <NavBar :curpage="curpage"></NavBar>
+        <app-header :needSearch="needSearch" :title="title"></app-header>
+        <user-center v-if="title==='个人中心'"></user-center>
+        <nav-bar></nav-bar>
     </view>
 </template>
 
 <script>
 	import NavBar from '@/components/navbar.vue'
-    import ActiveCardList from "@/components/activecardlist.vue"
+	import AppHeader from '@/components/appheader.vue'
+	import UserCenter from '@/pages/usercenter/usercenter.vue'
+	import {
+	    mapState,  
+	    mapMutations  
+	} from 'vuex'
 	export default {
 		components: {
-			NavBar,
-            ActiveCardList
+			'nav-bar': NavBar,
+			'app-header': AppHeader,
+			'user-center': UserCenter
 		},
 		data() {
 			return {
-				title: 'Hello',
 				currentUser: {
 					name: '汪大头'
 				},
@@ -49,10 +55,17 @@
 			}
 		},
 		computed: {
-			
+			...mapState(['curpage', 'title']),
+			needSearch: function() {
+				//console.log(this.curpage === 'index')
+				return (this.curpage === 'index')
+			},
 		},
 		
 		onLoad() {
+			uni.setNavigationBarTitle({
+				title: this.title
+			})
             login()
 		},
 		
