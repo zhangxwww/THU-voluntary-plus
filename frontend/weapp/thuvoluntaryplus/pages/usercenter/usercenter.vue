@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<personal-info-card></personal-info-card>
 		<view class="cu-card case">
 			<view class="cu-item shadow">
 				<user-center-card v-for="functionCard in functionCardList" 
@@ -12,10 +13,12 @@
 
 <script>
 	import UserCenterCard from '@/components/usercentercard.vue'
+	import PersonalInfoCard from '@/components/personalinfocard.vue'
 	export default {
 		Name: "UserCenter",
 		components: {
-			'user-center-card' :UserCenterCard,
+			'user-center-card': UserCenterCard,
+			'personal-info-card': PersonalInfoCard
 		},
 		data() {
 			return {

@@ -6,7 +6,7 @@
 			</view>
 			<view class="action text-gray add-action">
 				<view class="cu-avatar round shadow add" :style="{'background-image': avatarUrl}"></view>
-				{{currentUser.name}}
+				{{personalinfo.name}}
 			</view>
 			<view :class="{action: true, 'text-mauve': isUserCenter, 'text-gray': !isUserCenter}">
 				<view class="cuIcon-my" @click="naviTo('userCenter')">
@@ -33,12 +33,10 @@
 		data() {
 			return {
 				title: 'Hello',
-				currentUser: {
-					name: '汪大头'
-				}, 
 			}
 		},
 		computed: {
+			...mapState(['curpage', 'personalinfo']),
 			isIndex: function() {
 				return (this.curpage === 'index')
 			},
@@ -46,9 +44,8 @@
 				return (this.curpage === 'userCenter')
 			},
 			avatarUrl: function() {
-				return 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+				return 'url('+ this.personalinfo.avatarurl + ')'
 			},
-			...mapState(['curpage'])
 		},
 		onLoad() {
 

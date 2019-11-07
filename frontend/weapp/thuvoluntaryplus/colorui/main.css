@@ -2303,12 +2303,14 @@ button.cuIcon.lg {
 
 .cu-card.article>.cu-item .content {
 	display: flex;
-	padding: 0 30upx;
+	padding-left: 15px;
+	padding-top: 15px;
+	padding-bottom: 0;
 }
 
 .cu-card.article>.cu-item .content>image {
-	width: 240upx;
-	height: 6.4em;
+	width: 150upx;
+	height: 150upx;
 	margin-right: 20upx;
 	border-radius: 6upx;
 }
@@ -2321,9 +2323,9 @@ button.cuIcon.lg {
 }
 
 .cu-card.article>.cu-item .content .text-content {
-	font-size: 28upx;
-	color: #888;
-	height: 4.8em;
+	font-size: 35upx;
+	font-weight: 1000;
+	color: #333;
 	overflow: hidden;
 }
 
