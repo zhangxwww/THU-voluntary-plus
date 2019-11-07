@@ -1,12 +1,17 @@
 <template>
-<NavBar :curpage="curpage"></NavBar>
+	<view>
+		<UserCenterCard></UserCenterCard>
+		<NavBar :curpage="curpage"></NavBar>
+	</view>
 </template>
 
 <script>
-	import NavBar from '../../components/navbar.vue'
+	import NavBar from '@/components/navbar.vue'
+	import UserCenterCard from '@/components/usercentercard.vue'
 	export default {
 		components: {
-			NavBar
+			NavBar,
+			UserCenterCard
 		},
 		data() {
 			return {

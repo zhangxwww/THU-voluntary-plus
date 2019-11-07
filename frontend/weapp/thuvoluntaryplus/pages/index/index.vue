@@ -3,10 +3,10 @@
 </template>
 
 <script>
-	import NavBar from '../../components/navbar.vue'
+	import NavBar from '@/components/navbar.vue'
 	export default {
 		components: {
-			"NavBar": NavBar
+			NavBar
 		},
 		data() {
 			return {

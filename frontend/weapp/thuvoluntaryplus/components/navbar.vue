@@ -1,14 +1,14 @@
 <template>
 	<view class = "footer">
 		<view class="cu-bar tabbar shadow bg-white foot">
-			<view :class="{action: true, 'text-purple': isIndex, 'text-gray': !isIndex}" @click="redirectTo('index', '/pages/index/index')">
+			<view :class="{action: true, 'text-mauve': isIndex, 'text-gray': !isIndex}" @click="redirectTo('index', '/pages/index/index')">
 				<view class="cuIcon-homefill"></view> 志愿广场
 			</view>
 			<view class="action text-gray add-action">
 				<view class="cu-avatar round shadow add" style="background-image: url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)"></view>
 				{{currentUser.name}}
 			</view>
-			<view :class="{action: true, 'text-purple': isUserCenter, 'text-gray': !isUserCenter}">
+			<view :class="{action: true, 'text-mauve': isUserCenter, 'text-gray': !isUserCenter}">
 				<view class="cuIcon-my" @click="redirectTo('usercenter', '/pages/usercenter/usercenter')">
 					<view class="cu-tag badge"></view>
 				</view>
