@@ -1,1 +1,0 @@
-<view><user-center-card vue-id="1" bind:__l="__l"></user-center-card><nav-bar vue-id="2" curpage="{{curpage}}" bind:__l="__l"></nav-bar></view>

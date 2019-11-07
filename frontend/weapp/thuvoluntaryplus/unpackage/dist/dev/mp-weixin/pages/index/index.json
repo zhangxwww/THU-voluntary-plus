@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "uni-app",
-  "usingComponents": {
-    "nav-bar": "/components/navbar",
-    "active-card-list": "/components/activecardlist"
-  }
-}
