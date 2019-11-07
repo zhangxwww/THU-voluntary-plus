@@ -1,1 +1,1 @@
-<nav-bar vue-id="1" curpage="{{curpage}}" bind:__l="__l"></nav-bar>
+<view><active-card-list vue-id="1" activeList="{{activeList}}" bind:__l="__l"></active-card-list><nav-bar vue-id="2" curpage="{{curpage}}" bind:__l="__l"></nav-bar></view>

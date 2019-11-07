@@ -1,12 +1,17 @@
 <template>
-<NavBar :curpage="curpage"></NavBar>
+    <view>
+        <ActiveCardList :activeList="activeList"></ActiveCardList>
+        <NavBar :curpage="curpage"></NavBar>
+    </view>
 </template>
 
 <script>
 	import NavBar from '@/components/navbar.vue'
+    import ActiveCardList from "@/components/activecardlist.vue"
 	export default {
 		components: {
-			NavBar
+			NavBar,
+            ActiveCardList
 		},
 		data() {
 			return {
@@ -14,7 +19,21 @@
 				currentUser: {
 					name: '汪大头'
 				},
-				curpage: 'index'
+				curpage: 'index',
+                activeList: [{
+                        id: 0,
+                        name: "wyb",
+                        shortDiscription: "short",
+                        longDiscription: "long",
+                        startTime: "2019.10.1"
+                    }, {
+                        id: 1,
+                        name: "jxq",
+                        shortDiscription: "shorthahha",
+                        longDiscription: "longhhaha",
+                        startTime: "2019.10.2"
+                    }
+                ]
 			}
 		},
 		computed: {
