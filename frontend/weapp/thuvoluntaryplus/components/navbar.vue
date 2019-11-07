@@ -5,7 +5,7 @@
 				<view class="cuIcon-homefill"></view> 志愿广场
 			</view>
 			<view class="action text-gray add-action">
-				<view class="cu-avatar round shadow add" style="background-image: url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)"></view>
+				<view class="cu-avatar round shadow add" :style="{'background-image': avatarUrl}"></view>
 				{{currentUser.name}}
 			</view>
 			<view :class="{action: true, 'text-mauve': isUserCenter, 'text-gray': !isUserCenter}">
@@ -20,8 +20,7 @@
 
 <script>
 	export default {
-		name: 'NavBar',
-		
+		name: 'NavBar',	
 		props: {
 			curpage: {
 				type: String,
@@ -43,16 +42,19 @@
 			},
 			isUserCenter: function() {
 				return (this.curpage === 'userCenter')
+			},
+			avatarUrl: function() {
+				return 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
 			}
+		},
+		onLoad() {
+
 		},
 		methods: {
 			redirectTo: function(curpage, url) {
 				console.log('navTo called at ' + url)
 				uni.redirectTo({url})
 			}
-		},
-		onLoad() {
-
 		}
 	}
 </script>

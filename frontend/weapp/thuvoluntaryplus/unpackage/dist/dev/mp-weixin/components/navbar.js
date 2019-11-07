@@ -128,7 +128,6 @@ __webpack_require__.r(__webpack_exports__);
 var _default =
 {
   name: 'NavBar',
-
   props: {
     curpage: {
       type: String,
@@ -150,17 +149,19 @@ var _default =
     },
     isUserCenter: function isUserCenter() {
       return this.curpage === 'userCenter';
-    } },
-
-  methods: {
-    redirectTo: function redirectTo(curpage, url) {
-      console.log('navTo called at ' + url);
-      uni.redirectTo({ url: url });
+    },
+    avatarUrl: function avatarUrl() {
+      return 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)';
     } },
 
   onLoad: function onLoad() {
 
-  } };exports.default = _default;
+  },
+  methods: {
+    redirectTo: function redirectTo(curpage, url) {
+      console.log('navTo called at ' + url);
+      uni.redirectTo({ url: url });
+    } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),

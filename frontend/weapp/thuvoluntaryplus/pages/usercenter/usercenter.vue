@@ -1,12 +1,14 @@
 <template>
 	<view>
-		<cu-list>
+		<view>
 			<view class="cu-card case">
 				<view class="cu-item shadow">
-					<UserCenterCard v-for="functionCard in functionCardList" :icon="functionCard.icon" :description="functionCard.description"></UserCenterCard>
+					<UserCenterCard v-for="functionCard in functionCardList" 
+					:key="functionCard.id" :icon="functionCard.icon" :description="functionCard.description">
+					</UserCenterCard>
 				</view>
 			</view>
-		</cu-list>
+		</view>
 		<NavBar :curpage="curpage"></NavBar>
 	</view>
 </template>
@@ -14,31 +16,39 @@
 <script>
 	import NavBar from '@/components/navbar.vue'
 	import UserCenterCard from '@/components/usercentercard.vue'
+	import Header from '@/components/header.vue'
 	export default {
 		components: {
 			NavBar,
-			UserCenterCard
+			UserCenterCard,
+			Header
 		},
 		data() {
 			return {
 				title: '个人中心',
+				needSearch: true,
 				currentUser: {
 					name: '汪大头'
 				},
 				curpage: 'userCenter',
 				functionCardList: [ {
+						id: 0,
 						description: '消息中心',
 						icon: 'cuIcon-messagefill'
 					}, {
+						id: 1,
 						description: '个人信息',
 						icon: 'cuIcon-infofill'
 					}, {
+						id: 2,
 						description: '工时统计',
 						icon: 'cuIcon-timefill'
 					}, {
+						id: 3,
 						description: '志愿历史',
 						icon: 'cuIcon-selectionfill'
 					}, {
+						id: 4,
 						description: '志愿排行',
 						icon: 'cuIcon-sort'
 					}
@@ -48,7 +58,9 @@
 		computed: {
 		},
 		onLoad() {
-            // bindToken()
+            uni.setNavigationBarTitle({
+            	title: this.title
+            })
 		},
 		methods: {
 

@@ -1,23 +1,26 @@
 <template>
-<cu-list>
+<view>
+	<Header :needSearch="needSearch" :title="title"></Header>
 	<NavBar :curpage="curpage"></NavBar>
-</cu-list>
-
+</view>
 </template>
 
 <script>
 	import NavBar from '@/components/navbar.vue'
+	import Header from '@/components/header.vue'
 	export default {
 		components: {
-			NavBar
+			NavBar,
+			Header
 		},
 		data() {
 			return {
-				title: 'Hello',
+				title: '志愿广场',
+				needSearch: true,
 				currentUser: {
 					name: '汪大头'
 				},
-				curpage: 'index'
+				curpage: 'index',
 			}
 		},
 		computed: {
@@ -25,6 +28,9 @@
 		},
 		
 		onLoad() {
+			uni.setNavigationBarTitle({
+				title: this.title
+			})
             login()
 		},
 		

@@ -122,7 +122,10 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! @/components/navbar.vue */ 31));};var UserCenterCard = function UserCenterCard() {return __webpack_require__.e(/*! import() | components/usercentercard */ "components/usercentercard").then(__webpack_require__.bind(null, /*! @/components/usercentercard.vue */ 38));};var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var NavBar = function NavBar() {return __webpack_require__.e(/*! import() | components/navbar */ "components/navbar").then(__webpack_require__.bind(null, /*! @/components/navbar.vue */ 31));};var UserCenterCard = function UserCenterCard() {return __webpack_require__.e(/*! import() | components/usercentercard */ "components/usercentercard").then(__webpack_require__.bind(null, /*! @/components/usercentercard.vue */ 38));};var Header = function Header() {return __webpack_require__.e(/*! import() | components/header */ "components/header").then(__webpack_require__.bind(null, /*! @/components/header.vue */ 47));};var _default =
+
+
+
 
 
 
@@ -141,28 +144,35 @@ __webpack_require__.r(__webpack_exports__);
 {
   components: {
     NavBar: NavBar,
-    UserCenterCard: UserCenterCard },
+    UserCenterCard: UserCenterCard,
+    Header: Header },
 
   data: function data() {
     return {
       title: '个人中心',
+      needSearch: true,
       currentUser: {
         name: '汪大头' },
 
       curpage: 'userCenter',
       functionCardList: [{
+        id: 0,
         description: '消息中心',
         icon: 'cuIcon-messagefill' },
       {
+        id: 1,
         description: '个人信息',
         icon: 'cuIcon-infofill' },
       {
+        id: 2,
         description: '工时统计',
         icon: 'cuIcon-timefill' },
       {
+        id: 3,
         description: '志愿历史',
         icon: 'cuIcon-selectionfill' },
       {
+        id: 4,
         description: '志愿排行',
         icon: 'cuIcon-sort' }] };
 
@@ -172,7 +182,9 @@ __webpack_require__.r(__webpack_exports__);
   computed: {},
 
   onLoad: function onLoad() {
-    // bindToken()
+    uni.setNavigationBarTitle({
+      title: this.title });
+
   },
   methods: {} };exports.default = _default;
 
