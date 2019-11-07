@@ -22,16 +22,28 @@
 				curpage: 'index',
                 activeList: [{
                         id: 0,
-                        name: "wyb",
-                        shortDiscription: "short",
-                        longDiscription: "long",
-                        startTime: "2019.10.1"
+                        location: "北京",
+                        name: "十一期间参观志愿者",
+                        leader: "汪元标",
+                        startTime: "2019.10.1",
+                        endTime: "2019.10.1",
+                        curnum: 5,
+                        totalnum: 10,
+                        type: "校内志愿活动",
+                        likes: 3,
+                        liked: true
                     }, {
                         id: 1,
-                        name: "jxq",
-                        shortDiscription: "shorthahha",
-                        longDiscription: "longhhaha",
-                        startTime: "2019.10.2"
+                        location: "河北",
+                        name: "廊坊志愿小学支教",
+                        leader: "金昕琪",
+                        startTime: "2019.10.1",
+                        endTime: "2019.10.1",
+                        curnum: 5,
+                        totalnum: 10,
+                        type: "支教",
+                        likes: 5,
+                        liked: false
                     }
                 ]
 			}

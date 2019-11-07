@@ -1,32 +1,47 @@
 <template>
-    <view class="cu-list menu-avatar comment solids-top">
-        <template v-for="(item, index) in activeList">
-            <view class="cu-item">
-                <view class="content">
-                    <view class="flex  p-xs margin-bottom-sm mb-sm">
-                        <view class="text-gray flex-sub">location {{ item.location }}</view>
-                        <view class="text-grey flex-fifth">{{ item.name }}</view>
+    <view>
+        <view v-for="(item, index) in activeListData" :key="index">
+            <view class="cu-list menu card-menu margin-top">
+                <view class="cu-item noneBottom" @tap="showDetail" :id="'active' + index">
+                    <view class="content grid justify-around">
+                        <view class="basis-xs">
+                            <view class="bg-mauve round">
+                                <text class="text-white cuIcon-locationfill"></text>
+                                <text class="text-white">{{ item.location }}</text>
+                            </view>
+                        </view>
+                        <text class="basis-lg text-gray text-lg">{{ item.name }} </text>
+                        <text class="basis-xs text-grey text-right">({{ item.curnum }}/{{ item.totalnum }})</text> 
                     </view>
-                    <view class="text-grey">{{ item.name }}</view>
-                    <view class="text-gray text-content text-df">
-                        {{ item.startTime }} 至 {{ item.endTime }}
-                    </view>
-                    <view class="bg-grey padding-sm radius margin-top-sm  text-sm">
-                        <view class="flex">
-                            <view class="flex-sub">{{ item.longDiscription }}</view>
+                </view>
+                <view class="cu-item noneBottom">
+                    <view class="content grid justify-around">
+                        <view class="basis-xs"></view>
+                        <view class="basis-xl">
+                            <text class="lg text-gray cuIcon-time"></text>
+                            <text class="text-grey text-df">{{ item.startTime }} 至 {{ item.endTime }}</text>
                         </view>
                     </view>
-                    <view class="margin-top-sm flex justify-between">
-                        <view class="text-gray text-df">{{ item.startTime }}</view>
-                        <view>
-                            <text class="cuIcon-appreciate text-gray"></text>
-                            <text class="cuIcon-messagefill text-gray margin-left-sm"></text>
+                </view>
+                <view class="cu-item noneBottom">
+                    <view class="content grid justify-around">
+                        <view class="basis-xs">
+                            <text class="lg text-gray cuIcon-peoplefill"></text>
+                            <text class="text-grey">{{ item.leader }}</text>
+                        </view>
+                        <view class="basis-df text-left">    
+                            <text class="lg text-gray cuIcon-tagfill"></text>
+                            <text class="text-grey">{{ item.type }}</text>
+                        </view>
+                        <view class="basis-xs text-right" @tap="like" :id="'like' + index">    
+                            <text class="lg text-mauve" :class="'cuIcon-like' + (item.liked?'fill':'')"></text>
+                            <text class="text-grey">{{ item.likes }}</text>
                         </view>
                     </view>
                 </view>
             </view>
-        </template>
-	</view>
+        </view>
+    </view>
 </template>
 
 <script>
@@ -40,13 +55,40 @@
             }
         },
         
-        components: {
-        },
 		data() {
 			return {
-				
+				activeListData: this.activeList
 			};
-		}
+		},
+        
+        computed: {
+            activeListComputed() {
+                console.log('compute')
+                return this.activeList
+            }
+        },
+        
+        methods: {
+            showDetail(e) {
+                let activeId = parseInt(e.currentTarget.id.substring(6))
+                // TODO POST
+                console.log(activeId)
+            },
+            like(e) {
+                let activeId = parseInt(e.currentTarget.id.substring(4))
+                // TODO POST
+                console.log(activeId)
+                if (this.activeList[activeId].liked) {
+                    let likes = this.activeList[activeId].likes
+                    this.$set(this.activeList[activeId], "liked", false)
+                    this.$set(this.activeList[activeId], "likes", likes - 1)
+                } else {
+                    let likes = this.activeList[activeId].likes
+                    this.$set(this.activeList[activeId], "liked", true)
+                    this.$set(this.activeList[activeId], "likes", likes + 1)
+                }
+            }
+        }
 	}
 </script>
 
