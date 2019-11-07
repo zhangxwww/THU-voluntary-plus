@@ -55,10 +55,6 @@
 			};
 		},
 		computed: {
-			getItem: function() {
-				console.log(this.item)
-				return this.item
-			}
 		},
 		methods: {
 			showDetail(e) {
