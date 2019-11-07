@@ -5,7 +5,7 @@
                 <view class="cu-item noneBottom" @tap="showDetail" :id="'active' + index">
                     <view class="content grid justify-around">
                         <view class="basis-xs">
-                            <view class="bg-mauve round">
+                            <view class='cu-tag bg-mauve round'>
                                 <text class="text-white cuIcon-locationfill"></text>
                                 <text class="text-white">{{ item.location }}</text>
                             </view>
