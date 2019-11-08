@@ -39,3 +39,7 @@ class ActivitysPic(models.Model):
     class Meta:
         verbose_name = "活动图像"
         verbose_name_plural = verbose_name
+
+class WX_OPENID_TO_THUID(models.Model) :
+    OPENID = models.TextField(primary_key=True)
+    THUID = models.TextField(unique=True)

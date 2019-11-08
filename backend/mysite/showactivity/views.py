@@ -9,15 +9,36 @@ import showactivity.models as showactivity_models
 import mysite.models as mysite_models
 
 # Create your views here.
+#检查登录
+def check_login(request):
+    is_login = request.session.get('is_login', None)
+    if is_login :
+        client_type = request.session.get('MicroMessenger')
+        if client_type == '':
+            #id = request.session.get('sessionid')
+            user = WX_OPENID_TO_THUID.objects.get(pk=request.session.get('THUID'))
+            if not request.session.get('THUID'):
+                request.session.flush()
+                return redirect('/login/')
+        else :
+            #TODO
+            user = WX_OPENID_TO_THUID.objects.get(pk=request.session.get('OPENID'))
+            if not request.session.get('OPENID'):
+                request.session.flush()
+                return redirect('/login/')
+    return user
+    
 
 #显示活动列表
 def catalog_grid(request):
-    is_login = request.session.get('is_login', None)
-    if is_login:
-        user = User.objects.get(pk=request.session.get('studentID'))
-    if not request.session.get('studentID'):
-        request.session.flush()
-        return redirect('/login/')
+    #is_login = request.session.get('is_login', None)
+    #if is_login:
+    #    user = WX_OPENID_TO_THUID.objects.get(pk=request.session.get('THUID'))
+    #if not request.session.get('studentID'):
+    #    request.session.flush()
+    #   return redirect('/login/')
+    user = check_login(request)
+        
     type = request.GET.get('type')
     if type is None:
         rtn_list = showactivity_models.Activity.objects.all()
@@ -36,13 +57,15 @@ def catalog_grid(request):
         rtn_pic.append(pic_tmp[0])
         rtn_listt.append(rtn_list[i])
     rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
-    return render(request, "showactivity/catalog_grid.html", locals())
+    #return render(request, "showactivity/catalog_grid.html", locals())
+    return JsonResponse({"activity_list":rtn_list})
 
 # 查看活动详细信息
 def activity_detail(request):
-    is_login = request.session.get('is_login', None)
-    if is_login:
-        user = User.objects.get(pk=request.session.get('studentID'))
+    #is_login = request.session.get('is_login', None)
+    #if is_login:
+    #    user = User.objects.get(pk=request.session.get('studentID'))
+    user = check_login(request)
     Activity_Number = request.GET.get('Number')
     class Recommend:
         def __init__(self, activity, pic):
@@ -62,12 +85,14 @@ def activity_detail(request):
     studentID = request.session['studentID']
     user = User.objects.get(studentID=studentID)
     request.session['number'] = Activity.ActivityNumber
-    return render(request, "showactivity/activity_detail_page.html", locals())
+    #return render(request, "showactivity/activity_detail_page.html", locals())
+    return JsonResponse({"activity_detail":Activity_recommend_rtn})
 
 def search(request):
-    is_login = request.session.get('is_login', None)
-    if is_login:
-        user = User.objects.get(pk=request.session.get('studentID'))
+    #is_login = request.session.get('is_login', None)
+    #if is_login:
+    #    user = User.objects.get(pk=request.session.get('studentID'))
+    user = check_login(request)
     keyword = request.GET.get('search')
     rtn_set = set()
     rtn_list = []
@@ -92,4 +117,5 @@ def search(request):
         rtn_set.add(num)
     for rtn_activity in rtn_set:
         rtn_list.append(Activity(rtn_activity, showactivity_models.ActivityPic.objects.filter(ActivityNumber=rtn_activity.ActivityNumber)[0], rtn_activity.ActivityTime))
-    return render(request, "showactivity/search.html", locals())
+    #return render(request, "showactivity/search.html", locals())
+    return JsonResponse({"search_result":rtn_list})
