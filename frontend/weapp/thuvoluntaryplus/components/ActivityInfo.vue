@@ -4,39 +4,39 @@
 		<view class="cu-card case">
 			<view class="cu-item shadow">
 				<!--location and title-->
-				<view class="cu-bar bg-white solid-top solid-bottom">
-					<view class="action">
-						<text :class="[textColor, titleIcon]" min-width=30% max-width=30% display="block">{{city}}</text>
-							{{title}}
+				<view class="cu-bar bg-white solid-top solid-bottom mygrid">
+					<view class="action mygridcol1">
+						<text :class="[textColor, titleIcon]">{{city}}</text>
 					</view>
+					<text class="mygridcol2">{{title}}</text>
 				</view>
 				<!--time-->
-				<view class="cu-bar bg-white solid-top solid-bottom">
-					<view class="action">
+				<view class="cu-bar bg-white solid-top solid-bottom mygrid">
+					<view class="action mygridcol1">
 						<text :class="[textColor, timeIcon]">时间</text>
-						    {{time}}	
 					</view>
+					<text class="mygridcol2">{{time}}</text>
 				</view>
 				<!--发起人-->
-				<view class="cu-bar bg-white solid-top solid-bottom">
-					<view class="action">
-						<text :class="[textColor, peopleIcon]">发起人</text>
-						   {{organizer}}	
+				<view class="cu-bar bg-white mygrid">
+					<view class="action mygridcol1">
+						<text :class="[textColor, peopleIcon]" class="mygridcol1">发起人</text>
 					</view>
+					<text class="mygridcol2">{{organizer}}</text>
 				</view>
 				<!--标签-->
-				<view class="cu-bar bg-white solid-top solid-bottom">
-					<view class="action">
-						<text :class="[textColor, tagIcon]">标签</text>
-						<text>{{tag}}</text>
+				<view class="cu-bar bg-white mygrid">
+					<view class="action mygridcol1">
+						<text :class="[textColor, tagIcon]" class="mygridcol1">标签</text>
 					</view>
+					<text class="mygridcol2">{{tag}}</text>
 				</view>
 				<!--地点-->
-				<view class="cu-bar bg-white solid-top solid-bottom">
-					<view class="action">
-						<text :class="[textColor, locationIcon]">地点</text>
-						    {{location}}	
+				<view class="cu-bar bg-white solid-top solid-bottom mygrid">
+					<view class="action mygridcol1">
+						<text :class="[textColor, locationIcon]" class="mygridcol1">地点</text>
 					</view>
+					<text class="mygridcol2">{{location}}</text>
 				</view>
 			</view>
 		</view>
@@ -67,7 +67,7 @@
 				<view class="cu-bar bg-white solid-top ">
 					<view class="action">
 						<ul id="example-1">
-						  <li v-for="item in participantList">
+						  <li v-for="item in participantList" :key=item.studentID>
 						    {{ item["username"] }}
 						  </li>
 						</ul>
@@ -129,4 +129,18 @@
 </script>
 
 <style>
+	.mygrid{
+		display: grid; 
+		grid-auto-flow: row; 
+		grid-template-columns: 30% 70%;
+		grid-template-rows: 100%;
+		grid-template-areas: "col1 col2";
+		width: 100%
+	}
+	.mygridcol1{
+		grid-area: col1;
+	}
+	.mygridcol2{
+		grid-area: col2;
+	}
 </style>
