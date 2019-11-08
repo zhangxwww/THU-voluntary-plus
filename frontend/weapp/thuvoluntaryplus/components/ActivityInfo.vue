@@ -1,6 +1,6 @@
 <!--活动详情组件-->
 <template>
-	<div>
+	<scroll-view>
 		<view class="cu-card case">
 			<view class="cu-item shadow">
 				<!--location and title-->
@@ -75,7 +75,7 @@
 				</view>
 			</view>
 		</view>
-	</div>
+	</scroll-view>
 </template>
 
 <script>
