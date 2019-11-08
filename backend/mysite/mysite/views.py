@@ -1,8 +1,14 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER
+from .models import WX_OPENID_TO_THUID
 import requests
 import json
+
+THUID_CONST="THUID"
+TOKEN_CONST="TOKEN"
+OPENID_CONST="OPENID"
+SUCCESS_CONST="SUCCESS"
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -20,26 +26,45 @@ def parseUserInfoFromTHUAuthentication(text):
         parsed[prop] = value
     return parsed
 
+def getOpenID(request):
+    raise NotImplementedError
+
+def validateToken(token, openid):
+    raise NotImplementedError
+    return {SUCCESS_CONST:True, THUID_CONST:"2016110011"}
+
 def loginApi(request):
     '''
     登陆接口
     '''
-    if WX_OPENID_HEADER in request.META.keys(): # Case1: 微信端，POST请求，需要维护token和openid的对应关系、openid和学号的对应关系
-        TOKEN = request.POST[WX_TOKEN_HEADER]
-        OPENID = request.POST[WX_OPENID_HEADER]
+    if WX_OPENID_HEADER in request.META.keys(): # Case1: 微信端，POST请求，需要维护token和openid的对应关系、openid和学号的对应关系    
         '''
         检查是否数据库中存了相应OPENID到学号的映射。
-
-        若存了相应OPENID，说明已经绑定（不过要不要考虑openid被黑客拿走这种问题。。）；
-
-        若未存相应OPENID到学号的映射，说明未绑定，检查是否request header里有token：
-        有的话就和助教服务器后端通讯，若确认token有效就保存openid和学号的关系；
-        若token无效或者header里没token，返回错误信息提示用户重新绑定
-
-        注意openid对同一用户使用同一小程序是不变的，不会过期
+        注意openid对同一用户使用同一小程序是不变的，不会过期。
         '''
-        raise NotImplementedError
-    else: # Case1: PC端，GET请求
+        try:
+            OPENID = request.POST[WX_OPENID_HEADER]
+        except:
+            return HttpResponse("OPENID not found erro", status=401)
+        try:
+            record = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
+            # 若存了相应OPENID，说明已经绑定（不过要不要考虑openid被黑客拿走这种问题。。）
+            return JsonResponse(json.dumps({THUID_CONST:record.THUID}), safe=False)
+        except:
+            #若未存相应OPENID到学号的映射，说明未绑定，检查是否request header里有token：
+            try:
+                TOKEN = request.POST[WX_TOKEN_HEADER]
+                # 若token有的话就和助教服务器后端通讯，若确认token有效就保存openid和学号的关系：
+                r = validateToken(TOKEN, OPENID)
+                if r[SUCCESS_CONST]:
+                    record = WX_OPENID_TO_THUID(OPENID=OPENID, THUID=r[THUID_CONST])
+                    record.save()
+                    return JsonResponse(json.dumps({"THUID":record.THUID_CONST}), safe=False)
+                else:
+                    return HttpResponse("TOKEN invalid", status=401)
+            except:
+                return HttpResponse("TOKEN invalid", status=401)
+    else: # Case2: PC端，GET请求
         if request.user.is_authenticated: # 防止同一客户端未注销后再次发出登录请求
             return HttpResponse("You've already logged in!")
         ip = get_client_ip(request).replace('.','_')
