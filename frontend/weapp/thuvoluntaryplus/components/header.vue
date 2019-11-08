@@ -1,5 +1,5 @@
 <template>
-	<view>
+	<view class="header">
 		<view class="cu-bar bg-mauve search fixed" :style="[{top:CustomBar + 'px'}]">
 			<view class="search-form round">
 				<text class="cuIcon-search"></text>
@@ -34,5 +34,7 @@
 </script>
 
 <style>
-
+	.header{
+		padding-top: ;
+	}
 </style>

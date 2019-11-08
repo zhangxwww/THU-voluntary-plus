@@ -67,4 +67,8 @@
 	.box view.cu-bar {
 		margin-top: 20upx;
 	}
+	
+	.footer{
+		padding-bottom: calc(100upx + env(safe-area-inset-bottom) / 2);
+	}
 </style>

@@ -1,6 +1,5 @@
 <template>
 	<view>
-		<!--
 		<view>
 			<view class="cu-card case">
 				<view class="cu-item shadow">
@@ -10,11 +9,6 @@
 				</view>
 			</view>
 		</view>
-		-->
-		<ActivityInfo :location="ActivityPropList.location" :title="ActivityPropList.title" 
-		:time="ActivityPropList.time" :organizer="ActivityPropList.organizer" :tag="ActivityPropList.tag"
-		:city="ActivityPropList.city" :detail="ActivityPropList.detail"
-		v-bind:participantList="ActivityPropList.participantList"></ActivityInfo>
 		<NavBar :curpage="curpage"></NavBar>
 	</view>
 </template>
@@ -37,24 +31,6 @@
 				needSearch: true,
 				currentUser: {
 					name: '汪大头'
-				},
-				ActivityPropList:{
-					location: 'Beijing',
-					title: 'eee',
-					time: '2019.10.1-2019.10.4',
-					organizer: "zxw",
-					tag: "coding",
-					city:"北京",
-					detail:"大家一起来桃李敲代码。。。",
-					participantList:[
-						{
-							username:"wyb",
-							studentID:"2016010022"
-						},{
-							username:'zxw',
-							studentID:"2016010023"
-						}
-					]
 				},
 				curpage: 'userCenter',
 				functionCardList: [ {

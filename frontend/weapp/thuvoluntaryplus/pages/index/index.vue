@@ -1,6 +1,10 @@
 <template>
 <view>
 	<Header :needSearch="needSearch" :title="title"></Header>
+	<ActivityInfo :location="ActivityPropList.location" :title="ActivityPropList.title"
+	:time="ActivityPropList.time" :organizer="ActivityPropList.organizer" :tag="ActivityPropList.tag"
+	:city="ActivityPropList.city" :detail="ActivityPropList.detail"
+	v-bind:participantList="ActivityPropList.participantList"></ActivityInfo>
 	<NavBar :curpage="curpage"></NavBar>
 </view>
 </template>
@@ -8,10 +12,12 @@
 <script>
 	import NavBar from '@/components/navbar.vue'
 	import Header from '@/components/header.vue'
+	import ActivityInfo from '@/components/ActivityInfo.vue'
 	export default {
 		components: {
 			NavBar,
-			Header
+			Header,
+			ActivityInfo
 		},
 		data() {
 			return {
@@ -21,6 +27,42 @@
 					name: '汪大头'
 				},
 				curpage: 'index',
+				ActivityPropList:{
+					location: 'Beijing',
+					title: 'eee',
+					time: '2019.10.1-2019.10.4',
+					organizer: "zxw",
+					tag: "coding",
+					city:"北京",
+					detail:"大家一起来桃李敲代码。。。",
+					participantList:[
+						{
+							username:"wyb",
+							studentID:"2016010022",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						},{
+							username:'zxw',
+							studentID:"2016010023",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						},{
+							username:'sjz',
+							studentID:"2016010023",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						},{
+							username:'jxq',
+							studentID:"2016010023",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						},{
+							username:'..',
+							studentID:"2016010023",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						},{
+							username:'.,,.',
+							studentID:"2016010023",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						}
+					]
+				},
 			}
 		},
 		computed: {
