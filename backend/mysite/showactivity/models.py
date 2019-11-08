@@ -27,7 +27,7 @@ class Activity(models.Model):
 
 
 #
-class ActivitysPic(models.Model):
+class ActivityPic(models.Model):
     """活动所有的描述图片"""
     PicId = models.AutoField(primary_key=True, verbose_name='图片ID')
     ActivityNumber = models.ForeignKey(Activitys, to_field='ActivityNumber', verbose_name='活动编号')

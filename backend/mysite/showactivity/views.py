@@ -102,8 +102,8 @@ def search(request):
     num_key = showactivity_models.Activity.objects.filter(ActivityNumber__contains=keyword)
 
     class Activity:
-        def __init__(self, activity, pic, date):
-            self.date = date
+        def __init__(self, activity, pic):
+            self.activity = activity
             self.pic = pic
             self.date = date
 
