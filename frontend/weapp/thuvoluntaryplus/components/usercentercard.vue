@@ -1,6 +1,6 @@
 <template>
 	<cu-list menu-avatar>
-		<view class="cu-bar bg-white solid-top solid-bottom">
+		<view class="cu-bar bg-white solid-top solid-bottom" :class="menuarrow?'arrow':''" @click="redirectToPage">
 			<view class="action">
 				<text :class="[textColor, icon]"></text> {{ description }}
 			</view>
@@ -19,6 +19,10 @@
 			description: {
 				type: String,
 				required: true
+			},
+			menuarrow: {
+				type: Boolean,
+				required: true
 			}
 		},
 		
@@ -26,8 +30,17 @@
 			return {
 				textColor: 'text-mauve',
 			};
+		},
+		methods: {
+			redirectToPage: function() {
+				if (this.description === '个人信息') {
+					uni.navigateTo({
+						url: '/pages/usercenter/account/account'
+					})
+				}
+			}
 		}
-	}
+	} 
 </script>
 
 <style>

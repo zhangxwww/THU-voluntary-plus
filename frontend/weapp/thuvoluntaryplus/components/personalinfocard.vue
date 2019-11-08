@@ -7,7 +7,7 @@
 				<view class="desc">
 					<view class="text-content lg text-gray"> {{personalinfo.name}}</view>
 					<view>
-						<view class="cu-tag bg-red light sm round">{{personalinfo.subject}}</view>
+						<view class="cu-tag bg-red light round">{{personalinfo.subject}}</view>
 					</view>
 				</view>
 			</view>

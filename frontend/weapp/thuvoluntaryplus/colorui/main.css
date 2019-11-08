@@ -520,23 +520,23 @@ radio.white.checked .uni-radio-input {
 }
 
 .solids::after {
-	border: 8upx solid #eee;
+	border: 4upx solid #eee;
 }
 
 .solids-top::after {
-	border-top: 8upx solid #eee;
+	border-top: 4upx solid #eee;
 }
 
 .solids-right::after {
-	border-right: 8upx solid #eee;
+	border-right: 4upx solid #eee;
 }
 
 .solids-bottom::after {
-	border-bottom: 8upx solid #eee;
+	border-bottom: 4upx solid #eee;
 }
 
 .solids-left::after {
-	border-left: 8upx solid #eee;
+	border-left: 4upx solid #eee;
 }
 
 /* -- 虚线 -- */

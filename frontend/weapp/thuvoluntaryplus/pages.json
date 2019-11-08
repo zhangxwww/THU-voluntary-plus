@@ -11,7 +11,11 @@
 				"navigationBarTitleText": "uni-app"
 			}
 		}
-	],
+	    ,{
+            "path" : "pages/usercenter/account/account",
+            "style" : {}
+        }
+    ],
     /*
     "tabBar": {
         "list": [
