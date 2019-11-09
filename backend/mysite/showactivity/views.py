@@ -46,47 +46,56 @@ def catalog_grid(request):
         rtn_list = showactivity_models.Activity.objects.filter(Category=type)
     rtn_pic = []
     rtn_listt = []
-    page_str = request.GET.get('page')
-    if page_str is None:
-        page = 1
-    else:
-        page = int(page_str)
-    for i in range((page - 1) * 9, min(len(rtn_list), (page - 1) * 9 + 9)):
+    #page_str = request.GET.get('page')
+    #if page_str is None:
+    #    page = 1
+    #else:
+    #    page = int(page_str)
+    for i in range(len(rtn_list)):
+        rtn = {}
         ActivityID = rtn_list[i].ActivityNumber
+        rtn["id"] = ActivityID
+        rtn["name"] = rtn_list[i].ActivityName
+        rtn["date"] = rtn_list[i].ActivityTime
         pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
-        rtn_pic.append(pic_tmp[0])
-        rtn_listt.append(rtn_list[i])
-    rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
+        #rtn_pic.append(pic_tmp[0])
+        rtn["pic"] = pic_tmp[0]
+        rtn_listt.append(rtn)
+    #rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
     #return render(request, "showactivity/catalog_grid.html", locals())
-    return JsonResponse({"activity_list":rtn_list})
+    return JsonResponse({"activity_list":rtn_listt})
 
 # 查看活动详细信息
-def activity_detail(request):
+def activity_detail(request,activity_id):
     #is_login = request.session.get('is_login', None)
     #if is_login:
     #    user = User.objects.get(pk=request.session.get('studentID'))
     user = check_login(request)
-    Activity_Number = request.GET.get('Number')
+    #Activity_Number = request.GET.get('Number')
+    activity = showactivity_models.Activity.objects.get(ActivityNumber=activity_id)
+    pic = showactivity_models.ActivityPic.objects.filter(ActivityNumber=activity_id)
     class Recommend:
         def __init__(self, activity, pic):
             self.activity = activity
             self.pic = pic
-    Activity_recommend = showactivity_models.Activity.objects.filter(IsOverDeadline=0)
-    Number_set = set()
-    for gr in Activity_recommend:
-        Number_set.add(gr.ActivityNumber)
-    Activity_recommend_rtn = []
-    for num in Number_set:
-            ojb = showactivity_models.Activity.objects.get(ActivityNumber=num)
-            pic = showactivity_models.ActivityPic.objects.filter(ActivityNumber=num)[0]
-            Activity_recommend_rtn.append(Recommend(ojb, pic))
-    Activity = showactivity_models.Activity.objects.get(ActivityNumber=Activity_Number)
-    Activity_pic_list = showactivity_models.ActivityPic.objects.filter(ActivityNumber=Activity_Number)
-    studentID = request.session['studentID']
-    user = User.objects.get(studentID=studentID)
-    request.session['number'] = Activity.ActivityNumber
+    activity_rtn = Recommend(activity,pic)
+
+    #Activity_recommend = showactivity_models.Activity.objects.filter(IsOverDeadline=0)
+    #Number_set = set()
+    #for gr in Activity_recommend:
+    #    Number_set.add(gr.ActivityNumber)
+    #Activity_recommend_rtn = []
+    #for num in Number_set:
+    #        ojb = showactivity_models.Activity.objects.get(ActivityNumber=num)
+    #        pic = showactivity_models.ActivityPic.objects.filter(ActivityNumber=num)[0]
+    #        Activity_recommend_rtn.append(Recommend(ojb, pic))
+    #Activity = showactivity_models.Activity.objects.get(ActivityNumber=Activity_Number)
+    #Activity_pic_list = showactivity_models.ActivityPic.objects.filter(ActivityNumber=Activity_Number)
+    #studentID = request.session['studentID']
+    #user = User.objects.get(studentID=studentID)
+    #request.session['number'] = Activity.ActivityNumber
     #return render(request, "showactivity/activity_detail_page.html", locals())
-    return JsonResponse({"activity_detail":Activity_recommend_rtn})
+    return JsonResponse({"activity_detail":activity_rtn})
 
 def search(request):
     #is_login = request.session.get('is_login', None)
@@ -101,21 +110,30 @@ def search(request):
     organizer_key = showactivity_models.Activity.objects.filter(ActivityOrganizer__contains=keyword)
     num_key = showactivity_models.Activity.objects.filter(ActivityNumber__contains=keyword)
 
-    class Activity:
-        def __init__(self, activity, pic):
-            self.activity = activity
-            self.pic = pic
-            self.date = date
+    #class Activity:
+    #    def __init__(self, id,name,date, pic):
+    #        self.id = id
+    #        self.pic = pic
 
     for name in name_key:
         rtn_set.add(name)
     for content in content_key:
         rtn_set.add(content)
     for organizer in organizer_key:
-        rtn_set.add(author)
+        rtn_set.add(organizer)
     for num in num_key:
         rtn_set.add(num)
+    rtn_listt = []
     for rtn_activity in rtn_set:
-        rtn_list.append(Activity(rtn_activity, showactivity_models.ActivityPic.objects.filter(ActivityNumber=rtn_activity.ActivityNumber)[0], rtn_activity.ActivityTime))
+        rtn = {}
+        ActivityID = rtn_activity.ActivityNumber
+        rtn["id"] = ActivityID
+        rtn["name"] = rtn_activity.ActivityName
+        rtn["date"] = rtn_activity.ActivityTime
+        pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
+        #rtn_pic.append(pic_tmp[0])
+        rtn["pic"] = pic_tmp[0]
+        rtn_listt.append(rtn)
+        #rtn_list.append(Activity(rtn_activity, showactivity_models.ActivityPic.objects.filter(ActivityNumber=rtn_activity.ActivityNumber)[0], rtn_activity.ActivityTime))
     #return render(request, "showactivity/search.html", locals())
-    return JsonResponse({"search_result":rtn_list})
+    return JsonResponse({"search_result":rtn_listt})
