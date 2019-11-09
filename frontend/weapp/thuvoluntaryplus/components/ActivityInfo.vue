@@ -141,14 +141,12 @@
 		computed:{
 			participantDisplayList(){
 				var newlist = []
-				console.log(Math.floor(this.participantList.length/2))
 				for(let i =0;i<Math.floor(this.participantList.length/2);i++){
 					newlist.push([this.participantList[2*i],this.participantList[2*i+1]]);
 				}
 				if(this.participantList.length%2!==0){
 					newlist.push([this.participantList[this.participantList.length-1]]);
 				}
-				console.log(newlist)
 				return newlist;
 			}
 		},
