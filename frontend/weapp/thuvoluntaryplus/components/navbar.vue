@@ -1,7 +1,7 @@
 <template>
-	<view class = "footer">
+	<view class = "cu-bar">
 		<view class="cu-bar tabbar shadow bg-white foot">
-			<view :class="{action: true, 'text-mauve': isIndex, 'text-gray': !isIndex}" @click="redirectTo('index', '/pages/index/index')">
+			<view :class="{action: true, 'text-mauve': isIndex, 'text-gray': !isIndex}" @click="naviTo('index')">
 				<view class="cuIcon-homefill"></view> 志愿广场
 			</view>
 			<view class="action text-gray add-action">
@@ -9,7 +9,7 @@
 				{{currentUser.name}}
 			</view>
 			<view :class="{action: true, 'text-mauve': isUserCenter, 'text-gray': !isUserCenter}">
-				<view class="cuIcon-my" @click="redirectTo('usercenter', '/pages/usercenter/usercenter')">
+				<view class="cuIcon-my" @click="naviTo('userCenter')">
 					<view class="cu-tag badge"></view>
 				</view>
 				个人中心
@@ -19,13 +19,15 @@
 </template>
 
 <script>
+	import {  
+	    mapState,  
+	    mapMutations  
+	} from 'vuex'
+	
 	export default {
 		name: 'NavBar',	
 		props: {
-			curpage: {
-				type: String,
-				required: true
-			}
+			
 		},
 		
 		data() {
@@ -33,7 +35,7 @@
 				title: 'Hello',
 				currentUser: {
 					name: '汪大头'
-				},
+				}, 
 			}
 		},
 		computed: {
@@ -45,15 +47,22 @@
 			},
 			avatarUrl: function() {
 				return 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-			}
+			},
+			...mapState(['curpage'])
 		},
 		onLoad() {
 
 		},
 		methods: {
-			redirectTo: function(curpage, url) {
-				console.log('navTo called at ' + url)
-				uni.redirectTo({url})
+			...mapMutations(['changePageTo', 'setTitle']),
+			naviTo: function(page) {
+				this.changePageTo(page)
+				if (page === 'index') {
+					this.setTitle('志愿广场')
+				}
+				if (page === 'userCenter') {
+					this.setTitle('个人中心')
+				}
 			}
 		}
 	}
@@ -66,9 +75,5 @@
 	
 	.box view.cu-bar {
 		margin-top: 20upx;
-	}
-	
-	.footer{
-		padding-bottom: calc(100upx + env(safe-area-inset-bottom) / 2);
 	}
 </style>

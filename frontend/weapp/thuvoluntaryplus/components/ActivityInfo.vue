@@ -1,6 +1,6 @@
 <!--活动详情组件-->
 <template>
-	<scroll-view>
+	<scroll-view class = "cu-bar">
 		<view class="cu-card case font40">
 			<view class="cu-item shadow" style="border: 0.5upx solid black">
 				<!--location and title-->

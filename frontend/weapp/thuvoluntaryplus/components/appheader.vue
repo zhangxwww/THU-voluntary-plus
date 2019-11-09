@@ -1,6 +1,6 @@
 <template>
-	<view class="header">
-		<view class="cu-bar bg-mauve search fixed" :style="[{top:CustomBar + 'px'}]">
+	<view class = "cu-bar">
+		<view v-if="needSearch" class="cu-bar bg-mauve search fixed" :style="[{top:CustomBar + 'px'}]">
 			<view class="search-form round">
 				<text class="cuIcon-search"></text>
 				<input type="text" placeholder="输入搜索的关键词" confirm-type="search"></input>
@@ -14,7 +14,7 @@
 
 <script>
 	export default {
-		Name: 'Header',
+		Name: 'AppHeader',
 		props: {
 			needSearch: {
 				type: Boolean,
@@ -29,12 +29,9 @@
 			return {
 				
 			};
-		},
+		}
 	}
 </script>
 
 <style>
-	.header{
-		padding-top: ;
-	}
 </style>

@@ -1,1 +1,0 @@
-<view><header vue-id="1" needSearch="{{needSearch}}" title="{{title}}" bind:__l="__l"></header><nav-bar vue-id="2" curpage="{{curpage}}" bind:__l="__l"></nav-bar></view>
