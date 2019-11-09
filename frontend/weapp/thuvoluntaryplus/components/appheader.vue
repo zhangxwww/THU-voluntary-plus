@@ -6,7 +6,7 @@
 				<input type="text" placeholder="输入搜索的关键词" confirm-type="search"></input>
 			</view>
 			<view class="action">
-				<button class="cu-btn lines-white shadow-blur round">搜索</button>
+				<button class="cu-btn lines-white shadow-blur round-sm">搜索</button>
 			</view>
 		</view>
 	</view>

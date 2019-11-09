@@ -11,19 +11,18 @@
 	import NavBar from '@/components/navbar.vue'
 	import AppHeader from '@/components/appheader.vue'
 	import ActiveCardList from '@/components/activecardlist.vue'
-	import ActivityInfo from '@/components/activityinfo.vue'
 	import UserCenter from '@/pages/usercenter/usercenter.vue'
 	import {
 	    mapState,  
 	    mapMutations
 	} from 'vuex'
+	
 	export default {
 		components: {
 			'nav-bar': NavBar,
 			'app-header': AppHeader,
 			'user-center': UserCenter,
 			'active-card-list': ActiveCardList,
-			'activity-info': ActivityInfo
 		},
 		data() {
 			return {

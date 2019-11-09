@@ -86,30 +86,54 @@
 				</view>
 			</view>
 		</view>
+		<!--按钮-->
+		<view class="cu-list menu shadow-lg card-menu margin-top solid-bottom margin-bottom">
+			<view class="cu-item sm">
+				<view class="content">
+					<text class="cuIcon-roundcheck" :class="hasJoin?'text-green':'text-gray'"></text>
+					<text class="text-grey text-sm">{{ joinInstructionText }}</text>
+				</view>
+				<view class="action">
+					<button v-if="hasJoin" class="cu-btn sm shadow bg-blue margin-right">
+						<text class="cuIcon-location"></text>定位打卡</button>
+					<button class="cu-btn sm shadow" :class="hasJoin?'bg-gray':'bg-green'">
+						<text class="cuIcon-write"></text>{{ joinButtonText }}</button>
+				</view>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
 	export default {
-		Name: 'ActivityInfo',
+		Name: 'ActiveInfo',
 		props: {
 			itemprop: {
 				type: Object,
 				required: true
 			}
 		},
-		computed:{
-		},
 		data() {
 			return {
-				textColor: 'text-mauve',
-				locationIcon: 'cuIcon-locationfill',
-				timeIcon: 'cuIcon-timefill',
-				peopleIcon: 'cuIcon-peoplefill',
-				tagIcon: 'cuIcon-tagfill',
-				titleIcon: 'cuIcon-formfill',
-				created: false
-			};
+				created: false,
+				hasJoin: true
+			}
+		},
+		computed:{
+			joinInstructionText: function() {
+				if (this.hasJoin) {
+					return '您已报名参加此活动'
+				} else {
+					return '您尚未报名此活动，点击按钮报名'
+				}
+			},
+			joinButtonText: function() {
+				if (this.hasJoin) {
+					return '取消'
+				} else {
+					return '加入'
+				}
+			}
 		},
 	}
 </script>

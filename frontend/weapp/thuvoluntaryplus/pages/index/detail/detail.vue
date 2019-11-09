@@ -1,18 +1,19 @@
 <template>
 	<view>
-		<activity-info :itemprop="activitydata"></activity-info>
+		<active-info :itemprop="activitydata"></active-info>
 	</view>
 </template>
 
 <script>
-	import ActivityInfo from '@/components/activityinfo.vue'
+	import ActiveInfo from '@/components/activeinfo.vue'
 	import {
 		mapState,
 		mapMutations
 	} from 'vuex'
+	
 	export default {
 		components: {
-			'activity-info': ActivityInfo
+			'active-info': ActiveInfo
 		},
 		data() {
 			return {
