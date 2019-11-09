@@ -674,7 +674,7 @@ radio.white.checked .uni-radio-input {
 }
 
 .cu-btn[class*="lines"]::after {
-	border: 6upx solid currentColor;
+	border: 4upx solid currentColor;
 }
 
 .cu-btn[class*="bg-"]::after {
