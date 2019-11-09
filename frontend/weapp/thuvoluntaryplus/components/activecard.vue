@@ -66,6 +66,7 @@
 			    let activeId = parseInt(e.currentTarget.id.substring(4))
 			    // TODO POST
 			    console.log(activeId)
+                /*
 			    if (this.activeList[activeId].liked) {
 			        let likes = this.activeList[activeId].likes
 			        this.$set(this.activeList[activeId], "liked", false)
@@ -75,6 +76,7 @@
 			        this.$set(this.activeList[activeId], "liked", true)
 			        this.$set(this.activeList[activeId], "likes", likes + 1)
 			    }
+                */
 			}
 		}
 	}

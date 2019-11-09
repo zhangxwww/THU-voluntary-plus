@@ -10,7 +10,7 @@ const store = new Vuex.Store({
 			name: '张大头',
 			subject: '黑魔法防御术',
 			avatarurl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg'
-		}
+		},
 	},
 	mutations: {
 		changePageTo(state, page) {
