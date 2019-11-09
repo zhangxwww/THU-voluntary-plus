@@ -15,6 +15,11 @@
 <script>
 	import UserCenterCard from '@/components/usercentercard.vue'
 	import PersonalInfoCard from '@/components/personalinfocard.vue'
+	import {
+		mapState,
+		mapMutations
+	} from 'vuex'
+	
 	export default {
 		Name: "UserCenter",
 		components: {
@@ -55,9 +60,12 @@
 		computed: {
 		},
 		onLoad() {
+			uni.setNavigationBarTitle({
+				title: '个人信息'
+			})
 		},
 		methods: {
-
+			...mapMutations(['setTitle'])
 		}
 	}
 </script>

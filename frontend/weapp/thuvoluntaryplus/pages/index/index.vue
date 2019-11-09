@@ -3,10 +3,6 @@
         <app-header :needSearch="needSearch" :title="title"></app-header>
         <user-center v-if="title==='个人中心'"></user-center>
 		<active-card-list v-if="title==='志愿广场'"></active-card-list>
-		<ActivityInfo v-if="title==='活动详情'" :location="ActivityPropList.location" :title="ActivityPropList.title"
-		:time="ActivityPropList.time" :organizer="ActivityPropList.organizer" :tag="ActivityPropList.tag"
-		:city="ActivityPropList.city" :detail="ActivityPropList.detail"
-		v-bind:participantList="ActivityPropList.participantList"></ActivityInfo>
         <nav-bar></nav-bar>
     </view>
 </template>
@@ -15,7 +11,7 @@
 	import NavBar from '@/components/navbar.vue'
 	import AppHeader from '@/components/appheader.vue'
 	import ActiveCardList from '@/components/activecardlist.vue'
-	import ActivityInfo from '@/components/ActivityInfo.vue'
+	import ActivityInfo from '@/components/activityinfo.vue'
 	import UserCenter from '@/pages/usercenter/usercenter.vue'
 	import {
 	    mapState,  
@@ -27,15 +23,14 @@
 			'app-header': AppHeader,
 			'user-center': UserCenter,
 			'active-card-list': ActiveCardList,
-			'ActivityInfo': ActivityInfo
+			'activity-info': ActivityInfo
 		},
 		data() {
 			return {
 				currentUser: {
 					name: '汪大头'
 				},
-				curpage: 'index',
-				ActivityPropList: null,
+				activitydetail: null,
                 activeList: [{
                         id: 0,
                         location: "北京",
@@ -80,45 +75,41 @@
 		},
 		
 		methods: {
-			...mapMutations(['setTitle']),
+			...mapMutations(['setTitle', 'setActivityData']),
             indexShowActivityInfo(id){
-				console.log(id+1);
-				this.getActivityInfo(id);
-				this.setTitle('活动详情');
+				this.getActivityInfo(id)
+				this.setActivityData(this.activitydetail)
+				uni.navigateTo({
+					url: '/pages/index/detail/detail'
+				})
 			},
 			getActivityInfo(id){
 				//TODO: download activity info data from backend server
-				this.$data.ActivityPropList={
-					location: 'Beijing',
-					title: 'eee'+id,
+				this.activitydetail={
+					location: '北京紫荆餐厅地下',
+					title: '集体编程开发活动',
 					time: '2019.10.1-2019.10.4',
-					organizer: "zxw",
-					tag: "coding",
+					organizer: "张大头",
+					tag: "集体开发",
 					city:"北京",
-					detail:"大家一起来桃李敲代码。。。",
+					detail:"周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。",
 					participantList:[
 						{
-							username:"wyb",
+							id: 0,
+							username:"汪元标",
+							gender: 'male',
 							studentID:"2016010022",
 							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
 						},{
-							username:'zxw',
+							id: 1,
+							gender: 'male',
+							username:'张欣炜',
 							studentID:"2016010023",
 							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
 						},{
-							username:'sjz',
-							studentID:"2016010023",
-							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-						},{
-							username:'jxq',
-							studentID:"2016010023",
-							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-						},{
-							username:'..',
-							studentID:"2016010023",
-							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-						},{
-							username:'.,,.',
+							id: 2,
+							gender: 'female',
+							username:'邵璟之',
 							studentID:"2016010023",
 							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
 						}
