@@ -1,154 +1,104 @@
 <!--活动详情组件-->
 <template>
-	<scroll-view class = "cu-bar">
-		<view class="cu-card case font40">
-			<view class="cu-item shadow" style="border: 0.5upx solid black">
-				<!--location and title-->
-				<view class="cu-bar bg-white mygrid">
-					<view class="action mygridcol1">
-						<text :class="[textColor, titleIcon]">{{city}}</text>
-					</view>
-					<text class="mygridcol2" style="font-size: 43upx;font-weight:bold;">{{title}}</text>
+	<view>
+		<!--活动信息-->
+		<view class="cu-list menu shadow-lg card-menu margin-top">
+			<view class="cu-item shadow solids-bottom">
+				<!--城市和标题-->
+				<view class="cu-tag bg-mauve round">
+					<text class="cuIcon-locationfill text-white"></text>
+					<text class="text-white">{{ itemprop.city }}</text>
 				</view>
-				<!--time-->
-				<view class="cu-bar bg-white mygrid">
-					<view class="action mygridcol1">
-						<text :class="[textColor, timeIcon]">时间</text>
-					</view>
-					<text class="mygridcol2">{{time}}</text>
+				<view class="content">
+					<text class="text-black text-lg text-bold margin-left">{{ itemprop.title }}</text>
 				</view>
+			</view>
+			<view class="cu-item shadow">
+				<!--时间-->
+				<view class="content">
+					<text class="cuIcon-timefill text-gray"></text>
+					<text class="text-gray">时间</text>
+					<text class="text-black margin-left">{{ itemprop.time }}</text>
+				</view>
+			</view>
+			<view class="cu-item shadow">
 				<!--发起人-->
-				<view class="cu-bar bg-white mygrid">
-					<view class="action mygridcol1">
-						<text :class="[textColor, peopleIcon]" class="mygridcol1">发起人</text>
-					</view>
-					<text class="mygridcol2">{{organizer}}</text>
+				<view class="content">
+					<text class="cuIcon-peoplefill text-gray"></text>
+					<text class="text-gray">发起人</text>
+					<text class="text-black margin-left">{{ itemprop.organizer}}</text>
 				</view>
+			</view>
+			<view class="cu-item shadow">
 				<!--标签-->
-				<view class="cu-bar bg-white mygrid">
-					<view class="action mygridcol1">
-						<text :class="[textColor, tagIcon]" class="mygridcol1">标签</text>
-					</view>
-					<text class="mygridcol2">{{tag}}</text>
+				<view class="content">
+					<text class="cuIcon-tagfill text-gray"></text>
+					<text class="text-gray">标签</text>
+					<text class="text-black margin-left">{{ itemprop.tag }}</text>
 				</view>
+			</view>
+			<view class="cu-item shadow">
 				<!--地点-->
-				<view class="cu-bar bg-white mygrid">
-					<view class="action mygridcol1">
-						<text :class="[textColor, locationIcon]" class="mygridcol1">地点</text>
-					</view>
-					<text class="mygridcol2">{{location}}</text>
+				<view class="content">
+					<text class="cuIcon-locationfill text-gray"></text>
+					<text class="text-gray">地点</text>
+					<text class="text-black margin-left">{{ itemprop.location }}</text>
 				</view>
 			</view>
 		</view>
 		
-		<view class="cu-card case font40">
-			<view class="cu-item shadow" style="margin-top: 0upx;border: 0.5upx solid black">
-				<!--详情-->
-				<view class="cu-bar bg-white ">
-					<view class="action">
-						<text :class="[textColor, titleIcon]">详情</text>
-					</view>
+		<!--详情-->
+		<view class="cu-list menu shadow-lg card-menu margin-top">
+			<view class="cu-item shadow solids-bottom">
+				<!--标题栏-->
+				<view class="cu-tag bg-mauve round">
+					<text class="cuIcon-formfill text-white"></text>
+					<text class="text-white">详情</text>
 				</view>
-				<view class="cu-bar bg-white ">
-					<view class="action" style="font-size: 40upx;">
-						{{detail}}
-					</view>
-				</view>
+				<view class="content"></view>
 			</view>
-		</view>
-		
-		<view class="cu-card case">
-			<view class="cu-item shadow" style="margin-top: 0upx; margin-bottom: 0upx; border: 0.5upx solid black">
-				<!--参会人员-->
-				<view class="cu-bar bg-white">
-					<view class="action">
-						<text :class="[textColor, titleIcon]">参与人员</text>
-					</view>
-				</view>
-				<view v-for="item in participantDisplayList" :key=item.studentID>
-					<view class="cu-bar bg-white">
-						<view class="action text-gray add-action" style="width: 100%">
-							<view style="width: 50%;">
-								<view style="flex-wrap: nowrap; display: flex;align-items: center;">
-									<view class="cu-avatar shadow add" :style="{'background-image': item[0].avatarUrl}"></view>
-									<view style="width:20%"></view>
-									<view class="font40">{{item[0].username}}</view>
-								</view>
-							</view>
-							<view style="width: 50%;" v-if="item.length>1">
-								<view style="flex-wrap: nowrap; display: flex;align-items: center;">
-									<view class="cu-avatar shadow add" :style="{'background-image': item[1].avatarUrl}"></view>
-									<view style="width:20%"></view>
-									<view class="font40">{{item[1].username}}</view>
-								</view>
-							</view>
-						</view>
-					</view>
+			<view class="cu-list cu-item shadow">
+				<view class="content">
+					<text class="text-gray text-sm">{{ itemprop.detail }}</text>
 				</view>
 			</view>
 		</view>
 		
-		<view class="cu-bar btngrid" >
-			<view class="mybtncol1"></view>
-			<view class="action">
-				<button class="cu-btn bg-white mybtncol2" style="border: 0.5upx solid black">加入</button>
+		<!--参与人员-->
+		<view class="cu-list menu shadow-lg card-menu margin-top">
+			<view class="cu-item shadow solids-bottom">
+				<!--标题栏-->
+				<view class="cu-tag bg-mauve round">
+					<text class="cuIcon-peoplefill text-white"></text>
+					<text class="text-white">参与人员</text>
+				</view>
+				<view class="content"></view>
 			</view>
-			<view class="action">
-				<button class="cu-btn bg-white mybtncol3" style="border: 0.5upx solid black">签到</button>
+			<!--头像列表-->
+			<view v-for="person in itemprop.participantList" :key="person.id" class="cu-item arrow">
+				<view class="content">
+					<text v-if="person.gender==='male'" class="cuIcon-peoplefill text-sm text-blue"></text>
+					<text v-if="person.gender==='female'" class="cuIcon-peoplefill text-sm text-pink"></text>
+					<text v-if="person.gender==='unknown'" class="cuIcon-peoplefill text-sm text-gray"></text>
+					<text class="text-grey text-sm">{{ person.username }}</text>
+				</view>
+				<view class="action cu-avatar round sm" :style="{'background-image' : person.avatarUrl}">
+				</view>
 			</view>
 		</view>
-		<view class="infoComponentFooter" style="height: 50upx;"></view>
-	</scroll-view>
+	</view>
 </template>
 
 <script>
 	export default {
 		Name: 'ActivityInfo',
 		props: {
-			city:{
-				type: String,
-				required: true
-			},
-			location:{
-				type: String,
-				required: true
-			},
-			title: {
-				type: String,
-				required: true
-			},
-			time: {
-				type: String,
-				required: true
-			},
-			organizer:{
-				type: String,
-				required: true
-			},
-			tag:{
-				type: String,
-				required: true
-			},
-			detail:{
-				type: String,
-				required: true
-			},
-			participantList:{
-				type: Array,
+			itemprop: {
+				type: Object,
 				required: true
 			}
 		},
 		computed:{
-			participantDisplayList(){
-				var newlist = []
-				for(let i =0;i<Math.floor(this.participantList.length/2);i++){
-					newlist.push([this.participantList[2*i],this.participantList[2*i+1]]);
-				}
-				if(this.participantList.length%2!==0){
-					newlist.push([this.participantList[this.participantList.length-1]]);
-				}
-				return newlist;
-			}
 		},
 		data() {
 			return {
@@ -165,52 +115,5 @@
 </script>
 
 <style>
-	.mygrid{
-		display: grid; 
-		grid-auto-flow: row; 
-		grid-template-columns: 30% 70%;
-		grid-template-rows: 100%;
-		grid-template-areas: "col1 col2";
-		width: 100%
-	}
-	.mygridcol1{
-		grid-area: col1;
-	}
-	.mygridcol2{
-		grid-area: col2;
-	}
-	.peoplegrid{
-		display: grid; 
-		grid-auto-flow: row; 
-		grid-template-columns: 50% 50%;
-		grid-template-rows: 100%;
-		grid-template-areas: "peoplegridcol1 peoplegridcol2";
-		width: 100%
-	}
-	.peoplegridcol1{
-		grid-area: peoplegridcol1;
-	}
-	.peoplegridcol2{
-		grid-area: peoplegridcol2;
-	}
-	.btngrid{
-		display: grid; 
-		grid-auto-flow: row; 
-		grid-template-columns: 60% 20% 20%;
-		grid-template-rows: 100%;
-		grid-template-areas: "btncol1 btncol2 btncol3";
-		width: 100%
-	}
-	.mybtncol1{
-		grid-area: btncol1;
-	}
-	.mybtncol2{
-		grid-area: btncol2;
-	}
-	.mybtncol3{
-		grid-area: btncol3;
-	}
-	.font40{
-		font-size: 40upx;
-	}
+
 </style>

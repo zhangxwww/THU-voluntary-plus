@@ -11,6 +11,7 @@ const store = new Vuex.Store({
 			subject: '黑魔法防御术',
 			avatarurl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg'
 		},
+		activitydata: null
 	},
 	mutations: {
 		changePageTo(state, page) {
@@ -24,6 +25,9 @@ const store = new Vuex.Store({
 		},
 		setPersonalInfo(state, info) {
 			state.personalinfo = info
+		},
+		setActivityData(state, data) {
+			state.activitydata = data
 		}
 	}
 })
