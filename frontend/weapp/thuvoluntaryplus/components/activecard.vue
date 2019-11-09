@@ -63,7 +63,7 @@
 		methods: {
 			showDetail(e) {
 			    let activeId = parseInt(e.currentTarget.id.substring(6))
-			    // TODO POST
+				this.$parent.$parent.indexShowActivityInfo(activeId)
 			    console.log(activeId)
 			},
 			like(e) {
