@@ -1,4 +1,6 @@
-install: true
+install: 
+  - cd frontend/webadmin/web
+  - npm install
 
 script:
-  - echo "THU voluntary plus"
+  - npm run dev
