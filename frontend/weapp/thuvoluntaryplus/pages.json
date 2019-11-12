@@ -16,6 +16,10 @@
             "style" : {}
         }
         ,{
+            "path" : "pages/usercenter/ranklist/ranklist",
+            "style" : {}
+        }
+        ,{
             "path" : "pages/index/detail/detail",
             "style" : {}
         }

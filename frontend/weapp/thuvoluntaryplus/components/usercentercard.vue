@@ -37,7 +37,11 @@
 					uni.navigateTo({
 						url: '/pages/usercenter/account/account'
 					})
-				}
+				} else if (this.description === '志愿排行') {
+                    uni.navigateTo({
+                        url: '/pages/usercenter/ranklist/ranklist'
+                    })
+                }
 			}
 		}
 	} 
