@@ -145,7 +145,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname('__file__')))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 
-
+WX_APPID = "wx993c16f900513f44"
+WX_SECRET = "fa62f60d29b4760f7a1b08a505cf9f1d"
 
 APPID = "A13"
 TICKET_AUTHENTICATION_PREFIX = 'https://alumni-test.iterator-traits.com/fake-id-tsinghua/'
@@ -154,3 +155,7 @@ TICKET_AUTHENTICATION = TICKET_AUTHENTICATION_PREFIX + TICKET_AUTHENTICATION_MID
 
 WX_TOKEN_HEADER = "wx_token"
 WX_OPENID_HEADER = "OPENID"
+WC_CODE_HEADER = "wx_code"
+WX_HTTP_API = "https://api.weixin.qq.com/sns/jscode2session"
+
+SESSION_ID_COL = "ID"

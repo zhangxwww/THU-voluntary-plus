@@ -1,6 +1,7 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
-from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER
+from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
+    WX_APPID, WX_SECRET, SESSION_ID_COL
 from .models import WX_OPENID_TO_THUID
 import requests
 import json
@@ -37,33 +38,23 @@ def loginApi(request):
     '''
     登陆接口
     '''
-    if WX_OPENID_HEADER in request.META.keys(): # Case1: 微信端，POST请求，需要维护token和openid的对应关系、openid和学号的对应关系    
-        '''
-        检查是否数据库中存了相应OPENID到学号的映射。
-        注意openid对同一用户使用同一小程序是不变的，不会过期。
-        '''
-        try:
-            OPENID = request.POST[WX_OPENID_HEADER]
-        except:
-            return HttpResponse("OPENID not found erro", status=401)
-        try:
-            record = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
-            # 若存了相应OPENID，说明已经绑定（不过要不要考虑openid被黑客拿走这种问题。。）
-            return JsonResponse(json.dumps({THUID_CONST:record.THUID}), safe=False)
-        except:
-            # 若未存相应OPENID到学号的映射，说明未绑定，检查是否request header里有token：
-            try:
-                TOKEN = request.POST[WX_TOKEN_HEADER]
-                # 若token有的话就和助教服务器后端通讯，若确认token有效就保存openid和学号的关系：
-                r = validateToken(TOKEN, OPENID)
-                if r[SUCCESS_CONST]:
-                    record = WX_OPENID_TO_THUID(OPENID=OPENID, THUID=r[THUID_CONST])
-                    record.save()
-                    return JsonResponse(json.dumps({"THUID":record.THUID_CONST}), safe=False)
-                else:
-                    return HttpResponse("TOKEN invalid", status=401)
-            except:
-                return HttpResponse("TOKEN invalid", status=401)
+    client_type = request.session.get('MicroMessenger')
+    if client_type == '': # Case 1: 微信端，POST请求
+        if WX_CODE_HEADER in request.META.keys(): # 处理code
+            code = request.POST[WX_CODE_HEADER]
+            r = requests.post(WX_HTTP_API,data={"appid":WX_APPID, "secret":WX_SECRET, "js_code":code, "grant_type":"authorization_code"})
+            res = json.loads(r.text)
+            if res["errcode"] == 0:
+                request.session[SESSION_ID_COL]=res["openid"]
+                # 检查有没有绑定
+                try:
+                    record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
+                    THUID = record.THUID
+                    return JsonResponse({"THUID":THUID})
+                except:
+                    return JsonResponse({"THUID":"Not binded"})
+            else:
+                return HttpResponse(status_code=404)
     else: # Case2: PC端，GET请求
         if request.user.is_authenticated: # 防止同一客户端未注销后再次发出登录请求
             return HttpResponse("You've already logged in!")
