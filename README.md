@@ -1,35 +1,85 @@
 # THU-voluntary-plus
-### 接口文档
 
+## API文档
 
+### 1.活动
 
-#### 显示活动列表
+#### 1.1 显示活动列表
 
-* 函数名：catalog_grid
+- 函数名：catalog_grid
 
-* 参数：request
+- GET /api/activities/list
 
-* 返回数据：{"activity_list":rtn_list}
+- 参数：无
 
-  rtn_list是Activity类的对象列表
+- 返回值：
 
-#### 显示活动详情
+  ```json
+  {
+  	"activity_list":{
+          {
+              "id":id(char)
+              "name":name(char)
+              "date":date(char)
+              "pic":ActivityPic对象
+          },
+  		{
+              "id":id(char)
+              "name":name(char)
+              "date":date(char)
+              "pic":ActivityPic对象
+          },
+  		...
+      }
+  }
+  ```
 
-* 函数名：activity_detail
+#### 1.2 显示活动详情
 
-* 参数：request
+- 函数名：activity_detail
 
-* 返回数据：{"activity_detail":Activity_recommend_rtn}
+- GET /api/activities/detail
 
-  Activity_recommend_rtn是一个包括Activity类的对象和ActivityPic类的对象的类的对象的列表，包括页面上所有没过期的活动的详细信息，可以通过ActivityNumber属性从返回值中筛选活动
+- 参数：activity_id(char)
+
+- 返回值：
+
+  ```json
+  {
+      "activity_detail":Recommend(activity,pic)
+  }
+  ```
+
+  activity是Activity类的对象，pic是ActivityPic类的对象
 
 #### 根据关键词搜索活动
 
-* 函数名：search
+- 函数名：search
 
-* 参数：request
+- GET /api/activities/search
 
-* 返货数据：{"search_result":rtn_list}
+- 参数：无
 
-  rtn_list是一堆结果的列表，每个结果包含一个Acticity类的对象，一个ActivityPic类的对象，一个表示活动日期的字符串
+- 返回值：
 
+  ```json
+  {
+  	"search_result":{
+          {
+              "id":id(char)
+              "name":name(char)
+              "date":date(char)
+              "pic":ActivityPic对象
+          },
+  		{
+              "id":id(char)
+              "name":name(char)
+              "date":date(char)
+              "pic":ActivityPic对象
+          },
+  		...
+      }
+  }
+  ```
+
+  
