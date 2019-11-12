@@ -23,7 +23,7 @@
               "date":date(char)
               "pic":ActivityPic对象
           },
-  		{
+  		    {
               "id":id(char)
               "name":name(char)
               "date":date(char)
@@ -71,7 +71,7 @@
               "date":date(char)
               "pic":ActivityPic对象
           },
-  		{
+  		    {
               "id":id(char)
               "name":name(char)
               "date":date(char)
