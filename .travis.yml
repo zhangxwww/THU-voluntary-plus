@@ -1,6 +1,9 @@
+language: node_js
+
 install: 
   - cd frontend/webadmin/web
   - npm install
 
 script:
+  - cd frontend/webadmin/web
   - npm run dev
