@@ -51,7 +51,7 @@ def loginApi(request):
             # 若存了相应OPENID，说明已经绑定（不过要不要考虑openid被黑客拿走这种问题。。）
             return JsonResponse(json.dumps({THUID_CONST:record.THUID}), safe=False)
         except:
-            #若未存相应OPENID到学号的映射，说明未绑定，检查是否request header里有token：
+            # 若未存相应OPENID到学号的映射，说明未绑定，检查是否request header里有token：
             try:
                 TOKEN = request.POST[WX_TOKEN_HEADER]
                 # 若token有的话就和助教服务器后端通讯，若确认token有效就保存openid和学号的关系：
