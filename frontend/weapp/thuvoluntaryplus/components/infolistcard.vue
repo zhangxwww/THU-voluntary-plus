@@ -5,7 +5,7 @@
 			<view class="content">
 				<text class="text-black">{{ itemprop.infokey}}</text>
 			</view>
-			<view class="action" @tap="bindToken">
+			<view class="action">
 				<text class="text-gray sm text">{{ itemprop.infovalue }}</text>
 			</view>
 		</view>
@@ -30,26 +30,7 @@
         computed: {
         },
         methods: {
-            bindToken: () => {
-                console.log('navigate to mini')
-                uni.navigateToMiniProgram({
-                    appId: "wx1ebe3b2266f4afe0",
-                    path: "pages/index/index",
-                    envVersion: "trial",
-                    extraData: {
-                        "origin": "miniapp",
-                        "type": "id.tsinghua"
-                    },
-                    success: (res) => {
-                        console.log(res)
-                        let token = res.token
-                        // TODO POST token
-                    }, 
-                    fail: (res) => {
-                        console.log("navi to mini failed", res)
-                    }
-                }) 
-            }
+            
         }
 	}
 </script>

@@ -59,7 +59,7 @@
 			}
 		},
 		computed: {
-			...mapState(['curpage', 'title']),
+			...mapState(['curpage', 'title', 'sessionid']),
 			needSearch: function() {
 				//console.log(this.curpage === 'index')
 				return (this.curpage === 'index')
@@ -70,36 +70,33 @@
 			uni.setNavigationBarTitle({
 				title: this.title
 			})
-            login()
+            this.login()
 		},
 		
 		methods: {
-			...mapMutations(['setTitle', 'setActivityData']),
+			...mapMutations(['setTitle', 'setActivityData', 'setSessionId']),
+            login: function() {
+                uni.login({
+                    provider:"weixin",
+                    success: (res) => {
+                        console.log("login", res)
+                        uni.request({
+                            url: "/api/login",
+                            data: {
+                                code: res.code
+                            },
+                            method: "POST",
+                            success: function(res) {
+                                let sessionid = res.header.sessionid
+                                console.log(sessionid)
+                                this.setSessionId(sessionid)
+                            }
+                        })
+                    }
+                })
+            }
 		}
 	}
-    
-    function login() {
-        uni.checkSession({
-            success: (res) => {
-                console.log("check", res)
-                // TODO
-                /*
-                if (!res) {
-                    uni.login({
-                        provider:"weixin",
-                        success: (res) => {
-                            console.log("login", res)
-                        }
-                    })
-                }
-                */
-            },
-            fail: (res) => {
-                console.log("check fail", res)
-            }
-        })
-    }
-    
 </script>
 
 <style>
