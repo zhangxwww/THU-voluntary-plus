@@ -24,7 +24,8 @@ favicon_view = RedirectView.as_view(url='static/favicon.ico', permanent=True)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'api/redirectToTHUAuthentication', views.redirectToTHUAuthentication, name="THUAuthentication"),
-    path(r'api/login/<str:ticket>', views.loginApi, name="login"),
+    path(r'api/login', views.loginApi),
+    path(r'api/bind', views.bindApi),
     path(r'^api/activities/list', showactivity_views.catalog_grid),
     path(r'^api/acrivities/detail',showactivity_views.activity_detail),
     path(r'^api/activities/search', showactivity_views.search),
