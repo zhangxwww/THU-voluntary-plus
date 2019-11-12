@@ -73,7 +73,22 @@ def loginApi(request):
         login(request, r["zjh"])
         return JsonResponse(json.dumps(r), safe=False)
 
-    
-    
+def bindApi(request):
+    #id = request.session.get('sessionid')
+    client_type = request.session.get('MicroMessenger')
+    if client_type != '':
+        OPENID = request.session.get('OPENID')
+        wxuser = mysite_models.WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
+        TOKEN = request.POST[WX_TOKEN_HEADER]
+        url = https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token 
+        data = {"token": TOKEN}
+        r = requests.POST(url, data)
+        js = json.loads(r.text)
+        thuuser = js["user"]
+        THUID = thuuser["card"]
+        wxuser.update(THUID = THUID)
+        wxuser.save()
+    else:
+        return HttpResponse("Unable to bind", status=401)
 
     
