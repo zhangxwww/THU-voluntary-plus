@@ -54,7 +54,7 @@ def loginApi(request):
                 except:
                     return JsonResponse({"THUID":"Not binded"})
             else:
-                return HttpResponse(status_code=404)
+                return HttpResponse(status=404)
     else: # Case2: PC端，GET请求
         if request.user.is_authenticated: # 防止同一客户端未注销后再次发出登录请求
             return HttpResponse("You've already logged in!")
@@ -69,9 +69,9 @@ def bindApi(request):
     client_type = request.session.get('MicroMessenger')
     if client_type != '':
         OPENID = request.session.get('OPENID')
-        wxuser = mysite_models.WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
+        wxuser = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
         TOKEN = request.POST[WX_TOKEN_HEADER]
-        url = https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token 
+        url = "https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token"
         data = {"token": TOKEN}
         r = requests.POST(url, data)
         js = json.loads(r.text)
@@ -79,6 +79,7 @@ def bindApi(request):
         THUID = thuuser["card"]
         wxuser.update(THUID = THUID)
         wxuser.save()
+        return HttpResponse('',status=200)
     else:
         return HttpResponse("Unable to bind", status=401)
 
