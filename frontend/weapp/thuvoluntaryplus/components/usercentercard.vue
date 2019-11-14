@@ -41,6 +41,10 @@
                     uni.navigateTo({
                         url: '/pages/usercenter/ranklist/ranklist'
                     })
+                } else if (this.description === '志愿历史') {
+                    uni.navigateTo({
+                        url: '/pages/usercenter/history/history'
+                    })
                 }
 			}
 		}

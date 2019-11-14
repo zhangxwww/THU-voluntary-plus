@@ -8,7 +8,7 @@
 	                    <text class="text-white">{{ item.location }}</text>
 	                </view>
 	            </view>
-	            <text class="basis-lg text-gray text-lg">{{ item.name }} </text>
+	            <text class="basis-lg text-black text-lg">{{ item.name }} </text>
 	            <text class="basis-xs text-grey text-right">({{ item.curnum }}/{{ item.totalnum }})</text> 
 	        </view>
 	    </view>

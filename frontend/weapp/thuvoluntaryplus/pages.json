@@ -20,6 +20,10 @@
             "style" : {}
         }
         ,{
+            "path" : "pages/usercenter/history/history",
+            "style" : {}
+        }
+        ,{
             "path" : "pages/index/detail/detail",
             "style" : {}
         }
