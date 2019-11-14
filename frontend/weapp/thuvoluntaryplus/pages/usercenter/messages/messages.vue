@@ -1,8 +1,8 @@
 <template>
 	<view class="cu-list menu-avatar sm-border card-menu margin-top">
-		<view v-for="msg in messagelist" :key="msg.id" class="cu-item cur" @tap='viewmessage(msg.id)'>
+		<view v-for="msg in messagelist" :key="msg.id" class="cu-item cur" @tap='viewmessage(msg)'>
 			<view class="cu-avatar radius lg" :style="{'background-image':'url('+msg.avatar+')'}">
-				<view class="cu-tag badge"></view>
+				<view v-if="!msg.read" class="cu-tag badge"></view>
 			</view>
 			<view class="content">
 				<view>
@@ -22,6 +22,11 @@
 </template>
 
 <script>
+	import {
+		mapState,
+		mapMutations
+	} from 'vuex'
+	
 	export default {
 		data() {
 			return {
@@ -29,6 +34,7 @@
 			}
 		},
 		computed: {
+			...mapState(['curmsg']),
 			messagelist: function() {
 				return [
 					{
@@ -76,8 +82,13 @@
 			})
 		},
 		methods: {
-			viewmessage: function(id) {
-				
+			...mapMutations(['setCurmsg']),
+			viewmessage: function(msg) {
+				this.setCurmsg(msg)
+				uni.navigateTo({
+					url: '/pages/usercenter/messages/messagedetail/messagedetail'
+				})
+				/* todo: 向服务器请求更改此消息位已读 */
 			}
 		}
 	}
