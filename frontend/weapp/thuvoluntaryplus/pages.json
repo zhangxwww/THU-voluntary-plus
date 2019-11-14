@@ -27,6 +27,14 @@
             "path" : "pages/index/detail/detail",
             "style" : {}
         }
+        ,{
+            "path" : "pages/usercenter/messages/messages",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/usercenter/messages/messagedetail/messagedetail",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

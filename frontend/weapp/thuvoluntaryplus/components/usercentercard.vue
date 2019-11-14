@@ -45,7 +45,11 @@
                     uni.navigateTo({
                         url: '/pages/usercenter/history/history'
                     })
-                }
+                } else if (this.description === '消息中心') {
+					uni.navigateTo({
+						url: '/pages/usercenter/messages/messages'
+					})
+				}
 			}
 		}
 	} 
