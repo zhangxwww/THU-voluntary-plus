@@ -3,7 +3,6 @@
 		<view class="cu-list menu shadow-lg card-menu margin-top">
 			<view class="cu-item shadow solids-bottom">
 				<view class="cu-tag round" :class="color">
-					<text class="cuIcon-formfill text-white"></text>
 					<text class="text-white">{{label}}</text>
 				</view>
 				<view class="content">

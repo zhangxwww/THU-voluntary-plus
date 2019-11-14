@@ -1,6 +1,11 @@
 <template>
 	<view class="cu-list menu-avatar sm-border card-menu margin-top">
-		<view v-for="msg in messagelist" :key="msg.id" class="cu-item cur" @tap='viewmessage(msg)'>
+		<view v-for="(msg, index) in messagelist" :key="msg.id" :index="index"
+		class="cu-item cur"
+		:class="modalName=='move-box-'+ index?'move-cur':''"
+		@touchstart="ListTouchStart" @touchmove="ListTouchMove" @touchend="ListTouchEnd"
+		:data-target="'move-box-' + index"
+		@tap="ViewMessage(msg, $event)">
 			<view class="cu-avatar radius lg" :style="{'background-image':'url('+msg.avatar+')'}">
 				<view v-if="!msg.read" class="cu-tag badge"></view>
 			</view>
@@ -17,6 +22,9 @@
 				<view v-if="!msg.read" class="cu-tag round bg-red sm">未读</view>
 				<view v-if="msg.read" class="cu-tag round bg-green sm">已读</view>
 			</view>
+			<view class="move" @tap.native.stop="DeleteMessage(msg.id)">
+				<view class="bg-red">删除</view>
+			</view>
 		</view>
 	</view>
 </template>
@@ -30,11 +38,13 @@
 	export default {
 		data() {
 			return {
-				
+				listTouchStart: 0,
+				listTouchDirection: null,
+				modalName: null,
 			}
 		},
 		computed: {
-			...mapState(['curmsg']),
+			...mapState(['curmsg']),	
 			messagelist: function() {
 				return [
 					{
@@ -83,12 +93,35 @@
 		},
 		methods: {
 			...mapMutations(['setCurmsg']),
-			viewmessage: function(msg) {
+			ViewMessage: function(msg, e) {
 				this.setCurmsg(msg)
 				uni.navigateTo({
 					url: '/pages/usercenter/messages/messagedetail/messagedetail'
 				})
-				/* todo: 向服务器请求更改此消息位已读 */
+				/* todo: 向服务器请求更改此消息为已读 */		
+			},
+			DeleteMessage: function(id) {
+				console.log(id)
+				/* todo: 向服务器请求删除此消息 */
+			},
+			// ListTouch触摸开始
+			ListTouchStart: function(e) {
+				this.listTouchStart = e.touches[0].pageX
+			},
+			
+			// ListTouch计算方向
+			ListTouchMove: function(e) {
+				this.listTouchDirection = e.touches[0].pageX - this.listTouchStart > 0 ? 'right' : 'left'
+			},
+			
+			// ListTouch计算滚动
+			ListTouchEnd: function(e) {
+				if (this.listTouchDirection == 'left') {
+					this.modalName = e.currentTarget.dataset.target
+				} else {
+					this.modalName = null
+				}
+				this.listTouchDirection = null
 			}
 		}
 	}
