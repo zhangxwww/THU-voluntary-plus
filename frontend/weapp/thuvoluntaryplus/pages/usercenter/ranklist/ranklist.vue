@@ -1,17 +1,27 @@
 <template>
-    <view>
-        <template v-for="item in ranklist">
-            <rank-list-card :rankitem="item" :key="item.id"></rank-list-card>
-        </template>
+    <view class="cu-list menu card-menu margin-top line-mauve">
+        <view class="cu-item noneBottom" :key="item.id" v-for="item in ranklist">
+            <view class="content grid justify-around">
+                <view class="margin-right">
+                    <rank-list-medal :rank="item.rank"></rank-list-medal>
+                </view>
+                <view class="content">   
+                    <text class="basis-lg text-black">{{ item.name}} </text>
+                </view>
+                <view class="action">
+                    <text class="basis-lg text-grey text-sm">{{ item.totalTime}}h </text>
+                </view>
+            </view>
+        </view>
     </view>
 </template>
 
 <script>
-    import RankListCard from '@/components/ranklistcard.vue'
+    import RankListMedal from '@/components/ranklistmedal.vue'
     export default {
         name: "RankList",
         components: {
-            'rank-list-card': RankListCard
+            'rank-list-medal': RankListMedal
         },
         data() {
             return {
