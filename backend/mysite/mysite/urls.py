@@ -26,7 +26,7 @@ urlpatterns = [
     path(r'api/redirectToTHUAuthentication', views.redirectToTHUAuthentication, name="THUAuthentication"),
     path(r'api/login', views.loginApi),
     path(r'api/bind', views.bindApi),
-    path(r'^api/activities/list', showactivity_views.catalog_grid),
-    path(r'^api/acrivities/detail',showactivity_views.activity_detail),
-    path(r'^api/activities/search', showactivity_views.search),
+    #path(r'^api/activities/list', showactivity_views.catalog_grid),
+    #path(r'^api/acrivities/detail',showactivity_views.activity_detail),
+    #path(r'^api/activities/search', showactivity_views.search),
 ]

@@ -12,10 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import hashlib
-import pymysql
-
-pymysql.install_as_MySQLdb()
-
+import MySQLdb
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -42,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'werkzeug_debugger_runserver',
-    'django_extensions'
+    'django_extensions',
+    'mysite'
 ]
 
 MIDDLEWARE = [
@@ -138,9 +136,9 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+#STATICFILES_DIRS = [
+ #   os.path.join(BASE_DIR, "static"),
+#]
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname('__file__')))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
@@ -155,7 +153,7 @@ TICKET_AUTHENTICATION = TICKET_AUTHENTICATION_PREFIX + TICKET_AUTHENTICATION_MID
 
 WX_TOKEN_HEADER = "wx_token"
 WX_OPENID_HEADER = "OPENID"
-WC_CODE_HEADER = "wx_code"
+WX_CODE_HEADER = "wx_code"
 WX_HTTP_API = "https://api.weixin.qq.com/sns/jscode2session"
 
 SESSION_ID_COL = "ID"

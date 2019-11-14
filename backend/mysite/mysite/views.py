@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
     WX_APPID, WX_SECRET, SESSION_ID_COL
-from .models import WX_OPENID_TO_THUID
+from mysite.models import WX_OPENID_TO_THUID
 import requests
 import json
 
@@ -10,6 +10,12 @@ THUID_CONST="THUID"
 TOKEN_CONST="TOKEN"
 OPENID_CONST="OPENID"
 SUCCESS_CONST="SUCCESS"
+
+def redirectToTHUAuthentication(request):
+    #TODO: 防止同一客户端未注销后再次发出登录请求
+    if False:
+        raise NotImplementedError
+    return HttpResponseRedirect(REDIRECT_TO_LOGIN)
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -79,8 +85,7 @@ def bindApi(request):
         THUID = thuuser["card"]
         wxuser.update(THUID = THUID)
         wxuser.save()
-        return HttpResponse('',status=200)
+        return HttpResponse('',status=200)
     else:
         return HttpResponse("Unable to bind", status=401)
 
-    
