@@ -40,19 +40,19 @@
 						menuarrow: true
 					}, {
 						id: 2,
-						description: '工时统计',
-						icon: 'cuIcon-timefill',
-						menuarrow: true
-					}, {
-						id: 3,
 						description: '志愿历史',
 						icon: 'cuIcon-selectionfill',
 						menuarrow: true
 					}, {
-						id: 4,
+						id: 3,
 						description: '志愿排行',
 						icon: 'cuIcon-sort',
 						menuarrow: true
+					}, {
+						id: 4,
+						description: '注销用户',
+						icon: 'cuIcon-deletefill',
+						menuarrow: false
 					}
 				]
 			}
