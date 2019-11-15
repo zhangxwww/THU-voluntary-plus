@@ -102,7 +102,19 @@
 		uni.login({
 		  provider: 'weixin',
 		  success: function (loginRes) {
-		    code = loginRes.code;
+			console.log(loginRes)
+			uni.request({
+				url: 'https://thuvplus.iterator-traits.com/api/login',
+				header: {
+					'wx_code': loginRes.code
+				},
+				success(res) {
+					console.log(res.data)
+				},
+				fail(res) {
+					console.log(res)
+				}
+			})
 		  }
 		});
     }

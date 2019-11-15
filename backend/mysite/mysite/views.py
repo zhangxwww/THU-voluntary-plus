@@ -2,7 +2,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
     WX_APPID, WX_SECRET, SESSION_ID_COL
-from .models import WX_OPENID_TO_THUID
+from mysite.models import WX_OPENID_TO_THUID
 import requests
 import json
 
@@ -10,6 +10,12 @@ THUID_CONST="THUID"
 TOKEN_CONST="TOKEN"
 OPENID_CONST="OPENID"
 SUCCESS_CONST="SUCCESS"
+
+def redirectToTHUAuthentication(request):
+    #TODO: 防止同一客户端未注销后再次发出登录请求
+    if False:
+        raise NotImplementedError
+    return HttpResponseRedirect(REDIRECT_TO_LOGIN)
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -39,11 +45,12 @@ def loginApi(request):
     登陆接口
     '''
     client_type = request.session.get('MicroMessenger')
-    if client_type == '': # Case 1: 微信端，POST请求
+    if client_type == None: # Case 1: 微信端，POST请求
         if WX_CODE_HEADER in request.META.keys(): # 处理code
             code = request.POST[WX_CODE_HEADER]
             r = requests.post(WX_HTTP_API,data={"appid":WX_APPID, "secret":WX_SECRET, "js_code":code, "grant_type":"authorization_code"})
             res = json.loads(r.text)
+            print(res)
             if res["errcode"] == 0:
                 request.session[SESSION_ID_COL]=res["openid"]
                 # 检查有没有绑定
@@ -83,4 +90,3 @@ def bindApi(request):
     else:
         return HttpResponse("Unable to bind", status=401)
 
-    
