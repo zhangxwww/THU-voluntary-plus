@@ -42,7 +42,18 @@
                     },
                     success: (res) => {
                         console.log(res)
-                        let token = res.token
+                        let code = res.code
+						let token = res.token
+						uni.request({
+							url: 'https://thuvplus.iterator-traits.com/api/login',
+							header: {
+								'wx_code': code,
+								'wx_token': token
+							},
+							success: (res) => {
+								console.log(res.data);
+							}
+						})
                         // TODO POST token
                     }, 
                     fail: (res) => {

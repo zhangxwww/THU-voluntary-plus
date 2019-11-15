@@ -79,7 +79,7 @@ def bindApi(request):
         THUID = thuuser["card"]
         wxuser.update(THUID = THUID)
         wxuser.save()
-        return HttpResponse('',status=200)
+        return HttpResponse('',status=200)
     else:
         return HttpResponse("Unable to bind", status=401)
 

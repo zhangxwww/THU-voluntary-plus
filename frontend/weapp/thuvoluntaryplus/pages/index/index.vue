@@ -79,25 +79,32 @@
 	}
     
     function login() {
-        uni.checkSession({
-            success: (res) => {
-                console.log("check", res)
-                // TODO
-                /*
-                if (!res) {
-                    uni.login({
-                        provider:"weixin",
-                        success: (res) => {
-                            console.log("login", res)
-                        }
-                    })
-                }
-                */
-            },
-            fail: (res) => {
-                console.log("check fail", res)
-            }
-        })
+		/*
+		uni.checkSession({
+		    success: (res) => {
+		        // TODO
+		        
+		        if (!res) {
+		            uni.login({
+		                provider:"weixin",
+		                success: (res) => {
+		                    console.log("login", res)
+		                }
+		            })
+		        }
+		        
+		    //},
+		
+		    fail: (res) => {
+		        console.log("check fail", res)
+		    }
+		})*/
+		uni.login({
+		  provider: 'weixin',
+		  success: function (loginRes) {
+		    code = loginRes.code;
+		  }
+		});
     }
     
 </script>

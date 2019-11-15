@@ -12,9 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import hashlib
-import pymysql
-
-pymysql.install_as_MySQLdb()
+import MySQLdb
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -92,8 +90,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'THU-voluntary-plus',
         'USER': 'ubuntu',
-        'PASSWORD': '3R4LrqnMdJYfDnrK',
-        'HOST': '62.234.31.126',  # mysql服务所在的主机ip
+        'PASSWORD': '123',
+        'HOST': '127.0.0.1',  # mysql服务所在的主机ip
         'PORT': '3306',  # mysql服务端口
     }
 }
@@ -155,7 +153,7 @@ TICKET_AUTHENTICATION = TICKET_AUTHENTICATION_PREFIX + TICKET_AUTHENTICATION_MID
 
 WX_TOKEN_HEADER = "wx_token"
 WX_OPENID_HEADER = "OPENID"
-WC_CODE_HEADER = "wx_code"
+WX_CODE_HEADER = "wx_code"
 WX_HTTP_API = "https://api.weixin.qq.com/sns/jscode2session"
 
 SESSION_ID_COL = "ID"
