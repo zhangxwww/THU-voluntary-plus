@@ -9,9 +9,19 @@ mysql -u root -p
 CREATE DATABASE IF NOT EXISTS THUVPlus;
 ```
 
+# HTTPS配置
+目前的证书放在了/etc/letsencrypt/live/thuvplus.iterator-traits.com/fullchain.pem和/etc/letsencrypt/live/thuvplus.iterator-traits.com/privkey.pem，如果我没弄错有效期是三个月。。。基于letsencrypt和certbot，**请勿修改这两个文件**
+
 # Start the server
+
+<font color=#0099ff>下面的配置都是默认django项目放在了/home/ubuntu/jxq_tmp/THU-voluntary-plus/backend/mysite/目录下，如果项目不是放在这个目录，需要修改这些命令和mysite_nginx.conf里的一些和项目目录相关的配置</font>
 ```
-sudo python3 manage.py makemigrations
-sudo python3 manage.py migrate
-sudo python3 manage.py runserver_plus --cert server.crt 0.0.0.0:443
+sudo ln -s /home/ubuntu/jxq_tmp/THU-voluntary-plus/backend/mysite/mysite_nginx.conf /etc/nginx/sites-enabled/
+sudo service nginx start
+```
+
+***启动uwsgi时不要使用sudo或root身份操作，否则可能会引发502 Bad Gateway的错误***
+```
+cd /home/ubuntu/jxq_tmp/THU-voluntary-plus/backend/mysite
+uwsgi --socket mysite.sock --wsgi-file mysite/wsgi.py
 ```

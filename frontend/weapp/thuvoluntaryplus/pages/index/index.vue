@@ -104,9 +104,13 @@
 		  success: function (loginRes) {
 			console.log(loginRes)
 			uni.request({
-				url: 'https://thuvplus.iterator-traits.com/api/login',
+				url: 'https://62.234.31.126/api/login',
+				method: 'POST',
 				header: {
-					'wx_code': loginRes.code
+					'Content-Type': 'application/json'
+				},
+				data: {
+				    'wx_code': loginRes.code
 				},
 				success(res) {
 					console.log(res.data)

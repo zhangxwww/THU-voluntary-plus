@@ -41,17 +41,18 @@
                         "type": "id.tsinghua"
                     },
                     success: (res) => {
-                        console.log(res)
-						uni.request({
-							url: 'https://thuvplus.iterator-traits.com/api/login',
-							header: {
-								'wx_code': res.code,
-								'wx_token': res.token
-							},
-							success: (res) => {
-								console.log(res.data);
-							}
-						})
+						
+                        //console.log(res)
+						//uni.request({
+							//url: 'https://62.234.31.126/api/bind',
+							//header: {
+								//'wx_code': res.code,
+								//'wx_token': res.token
+							//},
+							//success: (res) => {
+								//console.log(res.data);
+							//}
+						//})
                         // TODO POST token
                     }, 
                     fail: (res) => {

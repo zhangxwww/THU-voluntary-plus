@@ -1,10 +1,12 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
-    WX_APPID, WX_SECRET, SESSION_ID_COL
+    WX_APPID, WX_SECRET, SESSION_ID_COL, REDIRECT_TO_LOGIN
 from mysite.models import WX_OPENID_TO_THUID
 import requests
 import json
+from django.views.decorators.csrf import csrf_exempt
+
 
 THUID_CONST="THUID"
 TOKEN_CONST="TOKEN"
@@ -44,10 +46,13 @@ def loginApi(request):
     '''
     登陆接口
     '''
-    client_type = request.session.get('MicroMessenger')
-    if client_type == None: # Case 1: 微信端，POST请求
-        if WX_CODE_HEADER in request.META.keys(): # 处理code
-            code = request.POST[WX_CODE_HEADER]
+    client_type = request.META['HTTP_USER_AGENT']
+    print("client type: {}".format(client_type))
+    if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
+        print(request.META.keys())
+        jsonBody = json.loads(request.body)
+        if WX_CODE_HEADER in jsonBody.keys(): # 处理code
+            code = jsonBody[WX_CODE_HEADER]
             r = requests.post(WX_HTTP_API,data={"appid":WX_APPID, "secret":WX_SECRET, "js_code":code, "grant_type":"authorization_code"})
             res = json.loads(r.text)
             print(res)
@@ -62,6 +67,8 @@ def loginApi(request):
                     return JsonResponse({"THUID":"Not binded"})
             else:
                 return HttpResponse(status=404)
+        else:
+            return HttpResponse("not found WX_CODE_HEADER",status=404)
     else: # Case2: PC端，GET请求
         if request.user.is_authenticated: # 防止同一客户端未注销后再次发出登录请求
             return HttpResponse("You've already logged in!")
