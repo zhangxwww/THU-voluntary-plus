@@ -1,5 +1,5 @@
 <template>
-	<div class="login-container">
+	<div class="login-container bg-purple">
 		<el-form :model="loginForm"
 		:rules="loginRules" class="login-form" auto-complete="on"
 		label-position="left">
@@ -8,6 +8,7 @@
 			</div>
 			
 			<el-form-item prop="username">
+                <i class="icon-container el-icon-user" />
 				<el-input
 					ref="username"
 					v-model="loginForm.username"
@@ -20,6 +21,7 @@
 			</el-form-item>
 			
 			<el-form-item prop="password">
+                <i class="icon-container el-icon-lock" />
 				<el-input
 					:key="passwordType"
 					ref="password"
@@ -31,10 +33,12 @@
 					auto-complete="on"
 					@keyup.enter.native="handleLogin"
 				/>
+                <span class="show-pwd" @click="showPwd">
+                    <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+                </span>
 			</el-form-item>
 			<el-button :loading="loading"
 			type="primary"
-			stye="width:100%;margin-bottom:30px"
 			@click.native.prevent="handleLogin">登录</el-button>
 		</el-form>
 	</div>
@@ -43,6 +47,8 @@
 <script>
 export default {
 	name: 'login',
+    components: {
+    },
 	data: function() {
 		return {
 			loginForm: {
@@ -78,6 +84,7 @@ export default {
 <style>
 .login-container .el-input {
     display: inline-block;
+    border: 0px;
     height: 47px;
     width: 85%;
 }
@@ -97,8 +104,19 @@ export default {
 }
 
 .login-container .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid;
+    background: rgba(0, 0, 0, 0.01);
+    box-shadow: 0 2px 12px 0 rgba(116, 52, 129, 0.1);
+    border-color: rgba(116, 52, 129, 0.1);
+    border-radius: 5px;
+    color: #454545;
+}
+
+.login-container .el-form-item:hover {
+    border: 1px solid;
+    background: rgba(0, 0, 0, 0.01);
+    box-shadow: 0 2px 12px 0 rgba(116,52,129, 0.1);
+    border-color: rgba(116, 52, 129, 0.6);
     border-radius: 5px;
     color: #454545;
 }
@@ -106,18 +124,21 @@ export default {
 
 <style scoped>
 .login-container {
-  min-height: 100%;
-  width: 100%;
-  overflow: hidden;
+    min-height: 100%;
+    width: 100%;
+    overflow: hidden;
 }
 
 .login-container .login-form {
     position: relative;
     width: 520px;
     max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
+    padding: 35px 35px 0;
+    margin: 125px auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(116, 52, 129, .12), 0 0 6px rgba(116, 52, 129, .04);
     overflow: hidden;
+    background-color: #fff
 }
 
 .login-container .tips {
@@ -159,5 +180,18 @@ export default {
     color: fff;
     cursor: pointer;
     user-select: none;
+}
+
+.login-container .icon-container {
+    padding: 6px 5px 6px 15px;
+    color: $dark_gray;
+    vertical-align: middle;
+    width: 30px;
+    display: inline-block;
+}
+
+.login-container .el-button {
+    width: 100%;
+    margin-bottom: 30px;
 }
 </style>
