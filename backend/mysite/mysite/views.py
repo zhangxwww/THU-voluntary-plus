@@ -56,7 +56,7 @@ def loginApi(request):
             r = requests.post(WX_HTTP_API,data={"appid":WX_APPID, "secret":WX_SECRET, "js_code":code, "grant_type":"authorization_code"})
             res = json.loads(r.text)
             print(res)
-            if res["errcode"] == 0:
+            if ("errcode" not in res.keys()) or (res["errcode"] == 0):
                 request.session[SESSION_ID_COL]=res["openid"]
                 # 检查有没有绑定
                 try:
