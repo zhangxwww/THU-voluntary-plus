@@ -55,9 +55,9 @@ export default {
 .navbar {
   border-bottom:1px solid rgba(116, 52, 129, .12);
   padding-left: 30px;
-  margin-left: 50px;
+  margin-left: 270px;
   height: 80px;
-  width: 90%;
+  width: 80%;
   overflow: hidden;
   position: relative;
   //box-shadow: 0 1px 4px rgba(0,21,41,.08);

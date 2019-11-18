@@ -1,13 +1,10 @@
 <template>
-  <div class="showLogo">
-    <sidebar-logo collapse=false />
+  <div>
+    <sidebar-logo :collapse="false" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :collapse="false"
-        :background-color="variables.menuBg"
-        :text-color="variables.menuText"
         :unique-opened="false"
-        :active-text-color="variables.menuActiveText"
         :collapse-transition="false"
         mode="vertical"
       >
@@ -18,12 +15,11 @@
 </template>
 
 <script>
-import SidebarLogo from '@/components/SidebarLogo'
 import SidebarItem from '@/components/SidebarItem'
 import variables from '@/styles/variables.scss'
 
 export default {
-  components: { SidebarItem, SidebarLogo },
+  components: { SidebarItem},
   computed: {
     routes() {
       return this.$router.options.routes
