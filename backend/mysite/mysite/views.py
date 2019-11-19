@@ -7,6 +7,8 @@ import requests
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sessions.backends.db import SessionStore
+import datetime 
+from django.utils.timezone import utc
 
 
 THUID_CONST="THUID"
@@ -43,16 +45,32 @@ def validateToken(token, openid):
     raise NotImplementedError
     return {SUCCESS_CONST:True, THUID_CONST:"2016110011"}
 
-def checkSessionExpiry(request):
-    print('Session expiry date: ')
-    print(request.session.get_expiry_date())
+def checkSessionValid(request):
+    client_type = request.META['HTTP_USER_AGENT']
+    try:
+        if "MicroMessenger" in client_type:
+            sessionid = request.META["HTTP_SET_COOKIE"].split("=")[1]
+        else:
+            sessionid = request.session.session_key
+        s = SessionStore(session_key=sessionid)
+        expiry_date = s.get_expiry_date()
+        print("expiry_date: {}".format(expiry_date))
+        utcnow = datetime.datetime.utcnow().replace(tzinfo=utc)
+        print("utcnow: {}".format(utcnow))
+        if utcnow<expiry_date:
+            return True
+        else:
+            return False
+    except:
+        return False
 
 def loginApi(request):
     '''
     登陆接口
     '''
     client_type = request.META['HTTP_USER_AGENT']
-    
+    if checkSessionValid(request):
+        return HttpResponse("No need to login repeatedly", status=403)
     if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
         print(request)
         print(request.META.keys())
@@ -85,6 +103,8 @@ def loginApi(request):
         return JsonResponse(json.dumps(r), safe=False)
 
 def bindApi(request):
+    if not checkSessionValid(request):
+        return HttpResponse("Session expired", status=401)
     client_type = request.META['HTTP_USER_AGENT']
     if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
         sessionid = request.META["HTTP_SET_COOKIE"].split("=")[1]
@@ -106,10 +126,7 @@ def bindApi(request):
             return HttpResponse("Unable to bind", status=401)
         thuuser = r["user"]
         THUID = thuuser["card"]
-        idx = 0
         if alreadyBinded:
-            print("rebind!{}".format(idx))
-            idx++
             wxuser.THUID = THUID
             wxuser.save()
         else:
@@ -118,5 +135,5 @@ def bindApi(request):
             wxuser.save()
         return HttpResponse(str(THUID),status=200)
     else:
-        return HttpResponse("Unable to bind", status=401)
+        return HttpResponse("Unable to bind for PC client", status=401)
 
