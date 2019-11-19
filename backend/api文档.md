@@ -123,12 +123,10 @@
 
   ```json
   {
-  	  "message_detail":{
-          {
-              "ReadOrNot":ReadOrNot(int)
-              "Title":Title(char)
-              "DetailContent":DetailContent(char)
-          }
+  	  "message_detail":{       
+          "ReadOrNot":ReadOrNot(int)
+          "Title":Title(char)
+          "DetailContent":DetailContent(char)
       }
   }
   ```
