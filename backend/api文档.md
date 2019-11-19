@@ -81,5 +81,55 @@
       }
   }
   ```
+### 2.消息
 
+#### 1.1 显示消息列表
+
+- 函数名：message_catalog_grid
+
+- GET /api/messages/list
+
+- 参数：无
+
+- 返回值：
+
+  ```json
+  {
+  	"message_list":{
+          {
+              "ReadOrNot":ReadOrNot(int)
+              "Title":Title(char)
+              "BriefContent":content(char)
+          },
+  		    {
+             "ReadOrNot":ReadOrNot(int)
+              "Title":Title(char)
+              "BriefContent":BriefContent(char)
+          },
+  		...
+    }
+  }
+  ```
+
+#### 1.2 显示活动详情
+
+- 函数名：activity_detail
+
+- GET /api/messages/detail
+
+- 参数：message_id(char)
+
+- 返回值：
+
+  ```json
+  {
+  	"message_detail":{
+          {
+              "ReadOrNot":ReadOrNot(int)
+              "Title":Title(char)
+              "DetailContent":DetailContent(char)
+          }
+    }
+  }
+  ```
   
