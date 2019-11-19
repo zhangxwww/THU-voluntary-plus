@@ -40,7 +40,7 @@
 			},
 		},
 		
-		onLoad() {
+		mounted() {
 			uni.setNavigationBarTitle({
 				title: this.title
 			})

@@ -99,20 +99,24 @@ def bindApi(request):
         TOKEN = json.loads(request.body)[WX_TOKEN_HEADER]
         url = "https://alumni-test.iterator-traits.com/fake-id-tsinghua-proxy/api/user/session/token"
         data = {"token": TOKEN}
-        r = requests.post(url, data)
+        r = requests.post(url, json=data)
         r = json.loads(r.text)
         print(r)
+        if not "error" in r.keys() or r["error"]["code"]!=0:
+            return HttpResponse("Unable to bind", status=401)
         thuuser = r["user"]
         THUID = thuuser["card"]
+        idx = 0
         if alreadyBinded:
-            wxuser = WX_OPENID_TO_THUID(OPENID=OPENID)
-            wxuser.update(THUID = THUID)
+            print("rebind!{}".format(idx))
+            idx++
+            wxuser.THUID = THUID
             wxuser.save()
         else:
+            print("bind!")
             wxuser = WX_OPENID_TO_THUID(OPENID=OPENID, THUID = THUID)
             wxuser.save()
-        print(THUID)
-        return HttpResponse('',status=200)
+        return HttpResponse(str(THUID),status=200)
     else:
         return HttpResponse("Unable to bind", status=401)
 
