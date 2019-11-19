@@ -71,7 +71,7 @@
               "date":date(char)
               "pic":ActivityPic对象
           },
-  		{
+  		  {
               "id":id(char)
               "name":name(char)
               "date":date(char)
@@ -102,7 +102,7 @@
               "Title":Title(char)
               "BriefContent":content(char)
           },
-  		{
+  		  {
              "ReadOrNot":ReadOrNot(int)
               "Title":Title(char)
               "BriefContent":BriefContent(char)
