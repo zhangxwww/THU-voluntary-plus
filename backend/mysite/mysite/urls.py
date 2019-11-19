@@ -27,7 +27,11 @@ urlpatterns = [
     path(r'api/login', views.loginApi, name="login"),
     path(r'login.do', views.loginApi),
     path(r'api/bind', views.bindApi),
-    #path(r'^api/activities/list', showactivity_views.catalog_grid),
-    #path(r'^api/acrivities/detail',showactivity_views.activity_detail),
-    #path(r'^api/activities/search', showactivity_views.search),
+
+    path(r'^api/activities/list', showactivity_views.catalog_grid),
+    path(r'^api/acrivities/detail',showactivity_views.activity_detail),
+    path(r'^api/activities/search', showactivity_views.search),
+
+    path(r'^api/messages/list', showactivity_views.message_catalog_grid),
+    path(r'^api/messages/detail',showactivity_views.message_detail),
 ]
