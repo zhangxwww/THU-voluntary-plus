@@ -1,6 +1,15 @@
 from django.db import models
 
 # Create your models here.
+class Message(models.Model):
+    """
+    活动消息
+    """
+    MessageId = models.AutoField(primary_key=True, verbose_name='消息ID')
+    #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
+    ActivityNumber = models.ForeignKey(Activity, to_field='ActivityNumber', verbose_name='活动编号')
+    THUID = models.ForeignKey(User,to_field='THUID',verbose_name='用户学号')
+    
 class Activity(models.Model):
     """
     活动信息
@@ -16,7 +25,7 @@ class Activity(models.Model):
     Intro_pic = models.ImageField(null=True, blank=True, verbose_name='介绍图片')
     Category = models.CharField(null=True, blank=True, max_length=20, verbose_name='分类')
     ReleaseDate = models.DateTimeField(null=True, verbose_name='发布日期')
-
+    #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
 
     def __str__(self):
         return '{}({})'.format(self.ActivityName, self.ActivityNumber)
@@ -24,13 +33,11 @@ class Activity(models.Model):
     class Meta:
         verbose_name = "活动信息"
         verbose_name_plural = verbose_name
-
-
 #
 class ActivityPic(models.Model):
     """活动所有的描述图片"""
     PicId = models.AutoField(primary_key=True, verbose_name='图片ID')
-    ActivityNumber = models.ForeignKey(Activitys, to_field='ActivityNumber', verbose_name='活动编号')
+    ActivityNumber = models.ForeignKey(Activity, to_field='ActivityNumber', verbose_name='活动编号')
     ActivityPic = models.ImageField(verbose_name='文件名')
 
     def __str__(self):
@@ -41,5 +48,14 @@ class ActivityPic(models.Model):
         verbose_name_plural = verbose_name
 
 class WX_OPENID_TO_THUID(models.Model) :
+    """
+    微信绑定学号
+    """
     OPENID = models.TextField(primary_key=True)
     THUID = models.TextField(unique=True)
+
+class User(models.Model):
+    """
+    用户
+    """
+    THUID = models.TextField(primary_key=True)

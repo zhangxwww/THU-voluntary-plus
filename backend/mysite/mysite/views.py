@@ -80,7 +80,7 @@ def bindApi(request):
         OPENID = request.session.get('OPENID')
         wxuser = mysite_models.WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
         TOKEN = request.POST[WX_TOKEN_HEADER]
-        url = https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token 
+        url = "https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token" 
         data = {"token": TOKEN}
         r = requests.POST(url, data)
         js = json.loads(r.text)
@@ -88,6 +88,7 @@ def bindApi(request):
         THUID = thuuser["card"]
         wxuser.update(THUID = THUID)
         wxuser.save()
+        return HttpResponse("Bind successful", status=200)
     else:
         return HttpResponse("Unable to bind", status=401)
 

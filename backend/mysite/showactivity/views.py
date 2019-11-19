@@ -137,3 +137,6 @@ def search(request):
         #rtn_list.append(Activity(rtn_activity, showactivity_models.ActivityPic.objects.filter(ActivityNumber=rtn_activity.ActivityNumber)[0], rtn_activity.ActivityTime))
     #return render(request, "showactivity/search.html", locals())
     return JsonResponse({"search_result":rtn_listt})
+
+def read_message(request):
+    
