@@ -23,7 +23,7 @@
               "date":date(char)
               "pic":ActivityPic对象
           },
-  		{
+  		    {
               "id":id(char)
               "name":name(char)
               "date":date(char)
@@ -123,13 +123,13 @@
 
   ```json
   {
-  	"message_detail":{
+  	  "message_detail":{
           {
               "ReadOrNot":ReadOrNot(int)
               "Title":Title(char)
               "DetailContent":DetailContent(char)
           }
-    }
+      }
   }
   ```
   
