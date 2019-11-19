@@ -1,14 +1,23 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
-from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER
-from .models import WX_OPENID_TO_THUID
+from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
+    WX_APPID, WX_SECRET, SESSION_ID_COL, REDIRECT_TO_LOGIN
+from mysite.models import WX_OPENID_TO_THUID
 import requests
 import json
+from django.views.decorators.csrf import csrf_exempt
+
 
 THUID_CONST="THUID"
 TOKEN_CONST="TOKEN"
 OPENID_CONST="OPENID"
 SUCCESS_CONST="SUCCESS"
+
+def redirectToTHUAuthentication(request):
+    #TODO: 防止同一客户端未注销后再次发出登录请求
+    if False:
+        raise NotImplementedError
+    return HttpResponseRedirect(REDIRECT_TO_LOGIN)
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -37,33 +46,29 @@ def loginApi(request):
     '''
     登陆接口
     '''
-    if WX_OPENID_HEADER in request.META.keys(): # Case1: 微信端，POST请求，需要维护token和openid的对应关系、openid和学号的对应关系    
-        '''
-        检查是否数据库中存了相应OPENID到学号的映射。
-        注意openid对同一用户使用同一小程序是不变的，不会过期。
-        '''
-        try:
-            OPENID = request.POST[WX_OPENID_HEADER]
-        except:
-            return HttpResponse("OPENID not found erro", status=401)
-        try:
-            record = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
-            # 若存了相应OPENID，说明已经绑定（不过要不要考虑openid被黑客拿走这种问题。。）
-            return JsonResponse(json.dumps({THUID_CONST:record.THUID}), safe=False)
-        except:
-            # 若未存相应OPENID到学号的映射，说明未绑定，检查是否request header里有token：
-            try:
-                TOKEN = request.POST[WX_TOKEN_HEADER]
-                # 若token有的话就和助教服务器后端通讯，若确认token有效就保存openid和学号的关系：
-                r = validateToken(TOKEN, OPENID)
-                if r[SUCCESS_CONST]:
-                    record = WX_OPENID_TO_THUID(OPENID=OPENID, THUID=r[THUID_CONST])
-                    record.save()
-                    return JsonResponse(json.dumps({"THUID":record.THUID_CONST}), safe=False)
-                else:
-                    return HttpResponse("TOKEN invalid", status=401)
-            except:
-                return HttpResponse("TOKEN invalid", status=401)
+    client_type = request.META['HTTP_USER_AGENT']
+    print("client type: {}".format(client_type))
+    if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
+        print(request.META.keys())
+        jsonBody = json.loads(request.body)
+        if WX_CODE_HEADER in jsonBody.keys(): # 处理code
+            code = jsonBody[WX_CODE_HEADER]
+            r = requests.post(WX_HTTP_API,data={"appid":WX_APPID, "secret":WX_SECRET, "js_code":code, "grant_type":"authorization_code"})
+            res = json.loads(r.text)
+            print(res)
+            if ("errcode" not in res.keys()) or (res["errcode"] == 0):
+                request.session[SESSION_ID_COL]=res["openid"]
+                # 检查有没有绑定
+                try:
+                    record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
+                    THUID = record.THUID
+                    return JsonResponse({"THUID":THUID})
+                except:
+                    return JsonResponse({"THUID":"Not binded"})
+            else:
+                return HttpResponse(status=404)
+        else:
+            return HttpResponse("not found WX_CODE_HEADER",status=404)
     else: # Case2: PC端，GET请求
         if request.user.is_authenticated: # 防止同一客户端未注销后再次发出登录请求
             return HttpResponse("You've already logged in!")
@@ -78,9 +83,9 @@ def bindApi(request):
     client_type = request.session.get('MicroMessenger')
     if client_type != '':
         OPENID = request.session.get('OPENID')
-        wxuser = mysite_models.WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
+        wxuser = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
         TOKEN = request.POST[WX_TOKEN_HEADER]
-        url = "https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token" 
+        url = "https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token"
         data = {"token": TOKEN}
         r = requests.POST(url, data)
         js = json.loads(r.text)
@@ -88,8 +93,7 @@ def bindApi(request):
         THUID = thuuser["card"]
         wxuser.update(THUID = THUID)
         wxuser.save()
-        return HttpResponse("Bind successful", status=200)
+        return HttpResponse('',status=200)
     else:
         return HttpResponse("Unable to bind", status=401)
 
-    

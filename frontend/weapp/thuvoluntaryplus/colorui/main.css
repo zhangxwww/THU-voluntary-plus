@@ -3930,3 +3930,28 @@ scroll-view.cu-steps .cu-item {
 .lines-white {
 	color: #ffffff;
 }
+
+.text-gold,
+.line-gold,
+.lines-gold {
+    color: #FFD700;
+}
+
+.text-silver,
+.line-silver,
+.lines-silver {
+    color: #C0C0C0;
+}
+
+.text-bronze,
+.line-bronze,
+.lines-bronze {
+    color: #C1AD6F;
+}
+
+.icon-xl:before {
+    width: 120upx;
+    height: 120upx;
+    font-size: 50upx;
+}
+

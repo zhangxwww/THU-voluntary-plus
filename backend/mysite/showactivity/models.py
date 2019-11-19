@@ -6,10 +6,21 @@ class Message(models.Model):
     活动消息
     """
     MessageId = models.AutoField(primary_key=True, verbose_name='消息ID')
+    MessageTitle = models.TextField(null = True, blank = True, verbose_name="消息标题")
+    MessageBriefContent = models.TextField(null = True, blank = True, verbose_name="消息简略内容")
+    MessageDetailContent = models.TextField(null = True, blank = True, verbose_name="消息详细内容")
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
     ActivityNumber = models.ForeignKey(Activity, to_field='ActivityNumber', verbose_name='活动编号')
-    THUID = models.ForeignKey(User,to_field='THUID',verbose_name='用户学号')
+    #THUID = models.ForeignKey(User,to_field='THUID',verbose_name='用户学号')
     
+class MessageReadOrNot(models.Model):
+    """
+    消息是否被某个用户阅读
+    """
+    MessageId = models.AutoField(primary_key=True, verbose_name='消息ID')
+    THUID = models.ForeignKey(User,to_field='THUID',verbose_name='用户学号')
+    ReadOrNot = models.IntegerField(default=0, verbose_name='某用户是否阅读该条消息') # 1 for has read, 0 for not read yet
+
 class Activity(models.Model):
     """
     活动信息
@@ -26,6 +37,7 @@ class Activity(models.Model):
     Category = models.CharField(null=True, blank=True, max_length=20, verbose_name='分类')
     ReleaseDate = models.DateTimeField(null=True, verbose_name='发布日期')
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
+    Participants = models.ManyToManyField(User)
 
     def __str__(self):
         return '{}({})'.format(self.ActivityName, self.ActivityNumber)
@@ -59,3 +71,4 @@ class User(models.Model):
     用户
     """
     THUID = models.TextField(primary_key=True)
+    UserName = models.CharField(max_length=255, unique=True, verbose_name='用户姓名')

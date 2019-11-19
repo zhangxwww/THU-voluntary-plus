@@ -1,4 +1,10 @@
-install: true
+language: node_js
+node_js: 
+  - "8"
+
+install: 
+  - cd frontend/webadmin/web
+  - npm install
 
 script:
-  - echo "THU voluntary plus"
+  - true

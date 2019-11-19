@@ -98,9 +98,7 @@ def activity_detail(request,activity_id):
     return JsonResponse({"activity_detail":activity_rtn})
 
 def search(request):
-    #is_login = request.session.get('is_login', None)
-    #if is_login:
-    #    user = User.objects.get(pk=request.session.get('studentID'))
+
     user = check_login(request)
     keyword = request.GET.get('search')
     rtn_set = set()
@@ -138,5 +136,30 @@ def search(request):
     #return render(request, "showactivity/search.html", locals())
     return JsonResponse({"search_result":rtn_listt})
 
-def read_message(request):
+def message_catalog_grid(request):
+
+    # user = User.objects.get(pk = request.session.get('THUID'))
+    # message = showactivity_models.Message.objects.get(MessageId=messaage_id)
+    message_list = showactivity_models.MessageReadOrNot.objects.filter(THUID=request.session.get('THUID'))
+    rtn_list = []
+    for i in range(len(message_list)):
+        message_id = message_list[i].MessageId
+        message = showactivity_models.Message.objects.get(MessageId=messaage_id)
+        rtn = {}
+        rtn["ReadOrNot"] = message_list[i].ReadOrNot
+        rtn["Title"] = message.MessageTitle
+        rtn["BriefContent"] = message.MessageBriefContent
+        rtn_list.append(rtn)    
+    return JsonResponse({"message_list":rtn_list})
+
+def read_message(request, message_id):
+    user = User.objects.get(pk = request.session.get('THUID'))
+    message = showactivity_models.Message.objects.get(MessageId=messaage_id)
+    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.get(MessageId=message_id)
+    rtn = {}
+    rtn["Title"] = message.MessageTitle
+    rtn["DetailContent"] = message.MessageDetailContent
+    message_ReadOrNot.update(ReadOrNot = 1)
+    message_ReadOrNot.save()
+    return JsonResponse({"message_detail":rtn})
     
