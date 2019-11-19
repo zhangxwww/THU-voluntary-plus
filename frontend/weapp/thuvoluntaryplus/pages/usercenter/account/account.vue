@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<info-list-card :itemprop="bindprop"></info-list-card>
+		<info-list-card :itemprop="bindprop" @tap="bindStudentId"></info-list-card>
 		<info-list-card v-for="itemprop in itemproplist" :key="itemprop.id" :itemprop="itemprop"></info-list-card>
 	</view>
 </template>
@@ -51,7 +51,7 @@
 			}
 		},
 		computed: {
-			...mapState(['personalinfo']),
+			...mapState(['personalinfo', 'sessionid']),
 			bindprop: function() {
 				if (this.bind) {
 					return {
@@ -75,11 +75,43 @@
 			},
 		},
 		methods: {
-			...mapMutations(['setTitle'])
+			...mapMutations(['setTitle']),
+            bindStudentId: function() {
+                wx.navigateToMiniProgram({
+                    'appId': 'wx1ebe3b2266f4afe0',
+                    'path': 'pages/index/index',
+                    'envVersion': 'trial',
+                    'extraData': {
+                        'origin': 'miniapp',
+                        'type': 'id.tsinghua',
+                    }
+                })
+                let sessionid = this.sessionid
+                wx.onAppShow(function(res) {
+                    console.log(res)
+                    let extra = res.referrerInfo.extraData
+                    if (extra !== undefined) {
+                        let token = res.referrerInfo.extraData.token
+                        uni.request({
+                            url: '/api/bind',
+                            header: {
+                                sessionid: sessionid
+                            },
+                            data: {
+                                token: token
+                            },
+                            method: 'POST',
+                            complete: (res) => {
+                                console.log(res.statusCode)
+                            }
+                        })
+                    }
+                })
+            }
 		},
 		onload() {
 			this.setTitle('个人信息')
-		}
+		},
 	}
 </script>
 

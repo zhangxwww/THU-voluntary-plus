@@ -30,36 +30,10 @@
 					name: '汪大头'
 				},
 				activitydetail: null,
-                activeList: [{
-                        id: 0,
-                        location: "北京",
-                        name: "十一期间参观志愿者",
-                        leader: "汪元标",
-                        startTime: "2019.10.1",
-                        endTime: "2019.10.1",
-                        curnum: 5,
-                        totalnum: 10,
-                        type: "校内志愿活动",
-                        likes: 3,
-                        liked: true
-                    }, {
-                        id: 1,
-                        location: "河北",
-                        name: "廊坊志愿小学支教",
-                        leader: "金昕琪",
-                        startTime: "2019.10.1",
-                        endTime: "2019.10.1",
-                        curnum: 5,
-                        totalnum: 10,
-                        type: "支教",
-                        likes: 5,
-                        liked: false
-                    }
-                ]
 			}
 		},
 		computed: {
-			...mapState(['curpage', 'title']),
+			...mapState(['curpage', 'title', 'sessionid']),
 			needSearch: function() {
 				//console.log(this.curpage === 'index')
 				return (this.curpage === 'index')
@@ -70,11 +44,31 @@
 			uni.setNavigationBarTitle({
 				title: this.title
 			})
-            login()
+            this.login()
 		},
 		
 		methods: {
-			...mapMutations(['setTitle', 'setActivityData']),
+			...mapMutations(['setTitle', 'setActivityData', 'setSessionId']),
+            login: function() {
+                uni.login({
+                    provider:"weixin",
+                    success: (res) => {
+                        console.log("login", res)
+                        uni.request({
+                            url: "/api/login",
+                            data: {
+                                code: res.code
+                            },
+                            method: "POST",
+                            success: function(res) {
+                                let sessionid = res.header.sessionid
+                                console.log(sessionid)
+                                this.setSessionId(sessionid)
+                            }
+                        })
+                    }
+                })
+            }
 		}
 	}
     

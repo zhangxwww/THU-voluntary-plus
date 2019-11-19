@@ -11,7 +11,17 @@ const store = new Vuex.Store({
 			subject: '黑魔法防御术',
 			avatarurl: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg'
 		},
-		activitydata: null
+		activitydata: null,
+        sessionid: '',
+		curmsg: {
+			id: 0,
+			sender: '特奖得主张欣炜',
+			avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg',
+			title: '特奖得主邀您加入清华首家线上赌场',
+			time: '22:20',
+			read: false,
+			content: '特奖得主金昕祺邀请您加入清华首家线上赌场，同花顺，扎金花，24点，统统赚大钱，美元澳元港元带回家！'
+		}
 	},
 	mutations: {
 		changePageTo(state, page) {
@@ -28,6 +38,12 @@ const store = new Vuex.Store({
 		},
 		setActivityData(state, data) {
 			state.activitydata = data
+		},
+        setSessionId(state, sessionid) {
+            state.sessionid = sessionid
+        },
+		setCurmsg(state, msg) {
+			state.curmsg = msg
 		}
 	}
 })
