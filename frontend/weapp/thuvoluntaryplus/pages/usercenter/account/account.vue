@@ -86,19 +86,23 @@
                         'type': 'id.tsinghua',
                     }
                 })
-                let sessionid = this.sessionid
+				var sessionid = this.sessionid
+				var that = this
                 wx.onAppShow(function(res) {
                     console.log(res)
                     let extra = res.referrerInfo.extraData
                     if (extra !== undefined) {
-                        let token = res.referrerInfo.extraData.token
+						let token = res.referrerInfo.extraData.token
+						console.log(this)
+						debugger
                         uni.request({
-                            url: '/api/bind',
-                            header: {
-                                sessionid: sessionid
-                            },
+							url: 'https://thuvplus.iterator-traits.com/api/bind',
+							header: {
+								'Content-Type': 'application/json',
+								"Set-Cookie": "sessionid="+sessionid
+							},
                             data: {
-                                token: token
+								wx_token: token
                             },
                             method: 'POST',
                             complete: (res) => {

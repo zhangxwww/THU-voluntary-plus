@@ -1,11 +1,12 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
-    WX_APPID, WX_SECRET, SESSION_ID_COL, REDIRECT_TO_LOGIN
-from mysite.models import WX_OPENID_TO_THUID
+    WX_APPID, WX_SECRET, REDIRECT_TO_LOGIN
+from .models import WX_OPENID_TO_THUID
 import requests
 import json
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.sessions.backends.db import SessionStore
 
 
 THUID_CONST="THUID"
@@ -42,13 +43,18 @@ def validateToken(token, openid):
     raise NotImplementedError
     return {SUCCESS_CONST:True, THUID_CONST:"2016110011"}
 
+def checkSessionExpiry(request):
+    print('Session expiry date: ')
+    print(request.session.get_expiry_date())
+
 def loginApi(request):
     '''
     登陆接口
     '''
     client_type = request.META['HTTP_USER_AGENT']
-    print("client type: {}".format(client_type))
+    
     if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
+        print(request)
         print(request.META.keys())
         jsonBody = json.loads(request.body)
         if WX_CODE_HEADER in jsonBody.keys(): # 处理code
@@ -57,7 +63,7 @@ def loginApi(request):
             res = json.loads(r.text)
             print(res)
             if ("errcode" not in res.keys()) or (res["errcode"] == 0):
-                request.session[SESSION_ID_COL]=res["openid"]
+                request.session[OPENID_CONST]=res["openid"]
                 # 检查有没有绑定
                 try:
                     record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
@@ -79,20 +85,33 @@ def loginApi(request):
         return JsonResponse(json.dumps(r), safe=False)
 
 def bindApi(request):
-    #id = request.session.get('sessionid')
-    client_type = request.session.get('MicroMessenger')
-    if client_type != '':
-        OPENID = request.session.get('OPENID')
-        wxuser = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
-        TOKEN = request.POST[WX_TOKEN_HEADER]
-        url = "https://alumni-test.iterator-traits.com/fake-id-tsinghuaproxy/api/user/session/token"
+    client_type = request.META['HTTP_USER_AGENT']
+    if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
+        sessionid = request.META["HTTP_SET_COOKIE"].split("=")[1]
+        s = SessionStore(session_key=sessionid)
+        OPENID = s.get('OPENID')
+        alreadyBinded = True # 若已经绑定，可以重新绑定
+        try:
+            wxuser = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
+        except:
+            alreadyBinded = False
+        print(request.body)
+        TOKEN = json.loads(request.body)[WX_TOKEN_HEADER]
+        url = "https://alumni-test.iterator-traits.com/fake-id-tsinghua-proxy/api/user/session/token"
         data = {"token": TOKEN}
-        r = requests.POST(url, data)
-        js = json.loads(r.text)
-        thuuser = js["user"]
+        r = requests.post(url, data)
+        r = json.loads(r.text)
+        print(r)
+        thuuser = r["user"]
         THUID = thuuser["card"]
-        wxuser.update(THUID = THUID)
-        wxuser.save()
+        if alreadyBinded:
+            wxuser = WX_OPENID_TO_THUID(OPENID=OPENID)
+            wxuser.update(THUID = THUID)
+            wxuser.save()
+        else:
+            wxuser = WX_OPENID_TO_THUID(OPENID=OPENID, THUID = THUID)
+            wxuser.save()
+        print(THUID)
         return HttpResponse('',status=200)
     else:
         return HttpResponse("Unable to bind", status=401)

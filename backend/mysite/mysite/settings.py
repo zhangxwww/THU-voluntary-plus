@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'werkzeug_debugger_runserver',
     'django_extensions',
-    'mysite'
+    "mysite"
 ]
 
 MIDDLEWARE = [
@@ -159,4 +159,3 @@ WX_HTTP_API = "https://api.weixin.qq.com/sns/jscode2session"
 
 REDIRECT_TO_LOGIN = "https://alumni-test.iterator-traits.com/fake-id-tsinghua/do/off/ui/auth/login/form/"+APPIDMD5+"/0?/login.do"
 
-SESSION_ID_COL = "ID"
