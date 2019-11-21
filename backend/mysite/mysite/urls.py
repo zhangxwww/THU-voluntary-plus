@@ -27,6 +27,7 @@ urlpatterns = [
     path(r'api/login', views.loginApi, name="login"),
     path(r'login.do', views.loginApi),
     path(r'api/bind', views.bindApi),
+    path(r'api/volunteer/changeInfo', views.volunteerChangeInfo)
 
     #path(r'^api/activities/list', showactivity_views.catalog_grid),
     #path(r'^api/acrivities/detail',showactivity_views.activity_detail),
