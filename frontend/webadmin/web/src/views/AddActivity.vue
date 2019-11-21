@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { addNewActivity } from '../script/send'
+import { addNewActivity } from '../script/index'
 export default {
   name: 'AddActivity',
 
