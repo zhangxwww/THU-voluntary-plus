@@ -118,28 +118,36 @@
                     'extraData': {
                         'origin': 'miniapp',
                         'type': 'id.tsinghua',
-                    }
+                    },
+					complete: function(){
+						that.$data.BindOperationFinished = false;
+					}
                 })
-                let sessionid = this.sessionid
+				var sessionid = this.sessionid
+				var that = this
                 wx.onAppShow(function(res) {
-                    console.log(res)
-                    let extra = res.referrerInfo.extraData
-                    if (extra !== undefined) {
-                        let token = res.referrerInfo.extraData.token
-                        uni.request({
-                            url: '/api/bind',
-                            header: {
-                                sessionid: sessionid
-                            },
-                            data: {
-                                token: token
-                            },
-                            method: 'POST',
-                            complete: (res) => {
-                                console.log(res.statusCode)
-                            }
-                        })
-                    }
+					if(that.$data.BindOperationFinished===false){
+						console.log(res)
+						let extra = res.referrerInfo.extraData
+						if (extra !== undefined) {
+							that.$data.BindOperationFinished = true;
+							let token = res.referrerInfo.extraData.token
+							uni.request({
+								url: 'https://thuvplus.iterator-traits.com/api/bind',
+								header: {
+									'Content-Type': 'application/json',
+									"Set-Cookie": "sessionid="+sessionid
+								},
+								data: {
+									wx_token: token
+								},
+								method: 'POST',
+								complete: (res) => {
+									console.log(res.statusCode)
+								}
+							})
+						}
+					}
                 })
             }
 		},

@@ -11,6 +11,7 @@ export function addNewActivity(form, success, fail) {
     axios.post('/api/activity/new', {
         name: form.name,
         region: form.region,
+        totalNum: form.totalNum,
         date1: form.date1,
         date2: form.date2,
         tag: form.tag,

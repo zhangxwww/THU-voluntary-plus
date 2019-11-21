@@ -40,37 +40,48 @@
 			},
 		},
 		
-		onLoad() {
+		mounted() {
 			uni.setNavigationBarTitle({
 				title: this.title
 			})
             this.login()
 		},
 		
+		
 		methods: {
 			...mapMutations(['setTitle', 'setActivityData', 'setSessionId']),
-            login: function() {
-                uni.login({
-                    provider:"weixin",
-                    success: (res) => {
-                        console.log("login", res)
-                        uni.request({
-                            url: "/api/login",
-                            data: {
-                                code: res.code
-                            },
-                            method: "POST",
-                            success: function(res) {
-                                let sessionid = res.header.sessionid
-                                console.log(sessionid)
-                                this.setSessionId(sessionid)
-                            }
-                        })
-                    }
-                })
-            }
+            login() {
+				var that=this
+				uni.login({
+					provider: 'weixin',
+					success: function(loginRes) {
+						uni.request({
+							url: 'https://thuvplus.iterator-traits.com/api/login',
+							method: 'POST',
+							header: {
+								'Content-Type': 'application/json'
+							},
+							data: {
+								'wx_code': loginRes.code
+							},
+							success(res) {
+								console.log(res);
+								let sessionid = res["header"]["Set-Cookie"].split(";")[0].split("=")[1];
+								console.log(sessionid)
+								that.$store.commit('setSessionId',sessionid);
+							},
+							fail(res) {
+								console.log(res)
+							}
+						})
+					}
+				})
+			}
 		}
 	}
+		
+		
+    
 </script>
 
 <style>

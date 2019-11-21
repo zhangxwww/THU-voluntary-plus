@@ -18,6 +18,13 @@
                    :key="pro.id"></el-option>
       </el-select>
     </el-form-item>
+    <el-form-item label="活动人数"
+                  prop="totalNum">
+      <el-input-number v-model="ruleForm.totalNum"
+                       :min="1"
+                       :max="50"
+                       label="活动人数"></el-input-number>
+    </el-form-item>
     <el-form-item label="活动时间"
                   required>
       <el-row :gutter="20">
@@ -93,6 +100,7 @@ export default {
       ruleForm: {
         name: '',
         region: '',
+        totalNum: 1,
         date1: '',
         date2: '',
         delivery: false,
@@ -106,6 +114,9 @@ export default {
         ],
         region: [
           { required: true, message: '请选择活动区域', trigger: 'change' }
+        ],
+        totalNum: [
+          { required: true }
         ],
         date1: [
           {
