@@ -51,6 +51,11 @@
 		},
 		methods: {
 			
+		},
+		beforeMount() {
+			uni.setNavigationBarTitle({
+				title: '消息详情'
+			})
 		}
 	}
 </script>

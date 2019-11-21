@@ -2357,11 +2357,9 @@ button.cuIcon.lg {
 
 .cu-form-group input {
 	flex: 1;
-	border: 2upx solid #CCCCCC; 
-	border-radius: 5upx;
 	font-size: 30upx;
-	color: #FFFFFF;
-	padding-right: 30upx;
+	color: #555;
+	padding-right: 20upx;
 }
 
 .cu-form-group>text[class*="cuIcon-"] {
