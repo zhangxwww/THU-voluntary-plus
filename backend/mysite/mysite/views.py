@@ -15,6 +15,7 @@ THUID_CONST="THUID"
 TOKEN_CONST="TOKEN"
 OPENID_CONST="OPENID"
 SUCCESS_CONST="SUCCESS"
+LOGGED_IN_CONST="LOGGED_IN"
 
 def redirectToTHUAuthentication(request):
     #TODO: 防止同一客户端未注销后再次发出登录请求
@@ -53,6 +54,10 @@ def checkSessionValid(request):
         else:
             sessionid = request.session.session_key
         s = SessionStore(session_key=sessionid)
+        print("LOGGED IN?{}")
+        print(s[LOGGED_IN_CONST])
+        if s[LOGGED_IN_CONST]!= True:
+            return False
         expiry_date = s.get_expiry_date()
         print("expiry_date: {}".format(expiry_date))
         utcnow = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -60,6 +65,7 @@ def checkSessionValid(request):
         if utcnow<expiry_date:
             return True
         else:
+            s[LOGGED_IN_CONST] = False
             return False
     except:
         return False
@@ -82,6 +88,7 @@ def loginApi(request):
             print(res)
             if ("errcode" not in res.keys()) or (res["errcode"] == 0):
                 request.session[OPENID_CONST]=res["openid"]
+                request.session[LOGGED_IN_CONST] = True
                 # 检查有没有绑定
                 try:
                     record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
@@ -94,12 +101,12 @@ def loginApi(request):
         else:
             return HttpResponse("not found WX_CODE_HEADER",status=404)
     else: # Case2: PC端，GET请求
-        if request.user.is_authenticated: # 防止同一客户端未注销后再次发出登录请求
-            return HttpResponse("You've already logged in!")
         ip = get_client_ip(request).replace('.','_')
         r = requests.get(TICKET_AUTHENTICATION+request.GET.get("ticket")+'/'+ip)
         r = parseUserInfoFromTHUAuthentication(r.text)
-        login(request, r["zjh"])
+        print(r["zjh"])
+        request.session[LOGGED_IN_CONST] = True
+        request.session[THUID_CONST] = r["zjh"]
         return JsonResponse(json.dumps(r), safe=False)
 
 def bindApi(request):
