@@ -59,14 +59,9 @@
 		},
 		computed: {
 		},
-		onLoad() {
-			uni.setNavigationBarTitle({
-				title: '个人信息'
-			})
-		},
 		methods: {
 			...mapMutations(['setTitle'])
-		}
+		},
 	}
 </script>
 
