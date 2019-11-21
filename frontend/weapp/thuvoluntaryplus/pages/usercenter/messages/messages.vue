@@ -123,6 +123,11 @@
 				}
 				this.listTouchDirection = null
 			}
+		},
+		beforeMount() {
+			uni.setNavigationBarTitle({
+				title: '消息中心'
+			})
 		}
 	}
 </script>

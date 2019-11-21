@@ -30,6 +30,11 @@
 		},
 		methods: {
 			...mapMutations(['setTitle'])
+		},
+		beforeMount() {
+			uni.setNavigationBarTitle({
+				title: '活动详情'
+			})
 		}
 	}
 </script>

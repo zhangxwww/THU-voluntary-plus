@@ -7,6 +7,11 @@ pip3 install pyOpenSSL
 ```
 mysql -u root -p
 CREATE DATABASE IF NOT EXISTS THUVPlus;
+exit
+```
+```
+python3 manage.py makemigrations
+python3 manage.py migrate
 ```
 
 ---
