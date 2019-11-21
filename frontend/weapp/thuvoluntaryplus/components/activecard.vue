@@ -8,7 +8,7 @@
 	                    <text class="text-white">{{ item.location }}</text>
 	                </view>
 	            </view>
-	            <text class="basis-lg text-gray text-lg">{{ item.name }} </text>
+	            <text class="basis-lg text-black text-lg">{{ item.name }} </text>
 	            <text class="basis-xs text-grey text-right">({{ item.curnum }}/{{ item.totalnum }})</text> 
 	        </view>
 	    </view>
@@ -41,6 +41,11 @@
 </template>
 
 <script>
+	import {
+	    mapState,  
+	    mapMutations
+	} from 'vuex'
+	
 	export default {
 		name: 'ActiveCard',
 		props: {
@@ -51,21 +56,55 @@
 		},
 		data() {
 			return {
-				
+				 
 			};
 		},
 		computed: {
+			activitydata: function() {
+				return {
+					location: '北京紫荆餐厅地下',
+					title: '集体编程开发活动',
+					time: '2019.10.1-2019.10.4',
+					organizer: "张大头",
+					tag: "集体开发",
+					city:"北京",
+					detail:"周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。",
+					participantList:[
+						{
+							id: 0,
+							username:"汪元标",
+							gender: 'male',
+							studentID:"2016010022",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						},{
+							id: 1,
+							gender: 'male',
+							username:'张欣炜',
+							studentID:"2016010023",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						},{
+							id: 2,
+							gender: 'female',
+							username:'邵璟之',
+							studentID:"2016010023",
+							avatarUrl:'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+						}
+					]
+				}
+			}
 		},
 		methods: {
-			showDetail(e) {
-			    let activeId = parseInt(e.currentTarget.id.substring(6))
-			    // TODO POST
-			    console.log(activeId)
+			showDetail: function(e) {
+			    this.$store.commit('setActivityData',this.activitydata)
+				uni.navigateTo({
+					url: '/pages/index/detail/detail'
+				})
 			},
 			like(e) {
 			    let activeId = parseInt(e.currentTarget.id.substring(4))
 			    // TODO POST
 			    console.log(activeId)
+                /*
 			    if (this.activeList[activeId].liked) {
 			        let likes = this.activeList[activeId].likes
 			        this.$set(this.activeList[activeId], "liked", false)
@@ -75,6 +114,7 @@
 			        this.$set(this.activeList[activeId], "liked", true)
 			        this.$set(this.activeList[activeId], "likes", likes + 1)
 			    }
+                */
 			}
 		}
 	}

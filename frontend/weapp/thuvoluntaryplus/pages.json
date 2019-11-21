@@ -11,24 +11,38 @@
 				"navigationBarTitleText": "uni-app"
 			}
 		}
-	],
-    /*
-    "tabBar": {
-        "list": [
-            {
-                "pagePath":"pages/index/index",
-                "text": "志愿广场"
-            }, {
-                "pagePath":"pages/usercenter/usercenter",
-                "text":"个人中心"
-            }
-        ]
-    },
-    */
+	    ,{
+            "path" : "pages/usercenter/account/account",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/usercenter/ranklist/ranklist",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/usercenter/history/history",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/index/detail/detail",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/usercenter/messages/messages",
+            "style" : {}
+        }
+        ,{
+            "path" : "pages/usercenter/messages/messagedetail/messagedetail",
+            "style" : {}
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
 		"navigationBarTitleText": "THU志愿+",
 		"navigationBarBackgroundColor": "#9C26B0",
 		"backgroundColor": "#9C26B0"
-	}
+	},
+    "navigateToMiniProgramAppIdList": [
+        "wx1ebe3b2266f4afe0"
+    ]
 }

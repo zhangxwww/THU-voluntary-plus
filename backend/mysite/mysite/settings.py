@@ -12,10 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 import hashlib
-import pymysql
-
-pymysql.install_as_MySQLdb()
-
+import MySQLdb
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -29,7 +26,7 @@ SECRET_KEY = '19!-+#%0jld%4#ygya5%t@aqaak0-^j@cz_1sh9*5=1k%dn=tp'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['thuvplus.iterator-traits.com','62.234.31.126','localhost']
 
 
 # Application definition
@@ -41,13 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'werkzeug_debugger_runserver',
+    'django_extensions',
+    'mysite'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -72,7 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
-
+CSRF_TRUSTED_ORIGINS = ["servicewechat.com"]
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -88,10 +88,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'THU-voluntary-plus',
-        'USER': 'ubuntu',
-        'PASSWORD': '3R4LrqnMdJYfDnrK',
-        'HOST': '62.234.31.126',  # mysql服务所在的主机ip
+        'NAME': 'THUVPlus',
+        'USER': 'root',
+        'PASSWORD': '123',
+        'HOST': '127.0.0.1',  # mysql服务所在的主机ip
         'PORT': '3306',  # mysql服务端口
     }
 }
@@ -134,24 +134,29 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+#STATICFILES_DIRS = [
+ #   os.path.join(BASE_DIR, "static"),
+#]
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname('__file__')))
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
 
+WX_APPID = "wx993c16f900513f44"
+WX_SECRET = "fa62f60d29b4760f7a1b08a505cf9f1d"
+
 APPID = "A13"
-m = hashlib.md5()
-m.update(APPID.encode('utf-8'))
-APPID = m.hexdigest()
-SEQ = '0'
+APPIDMD5 = hashlib.md5(APPID.encode('utf-8')).hexdigest()
+TICKET_AUTHENTICATION_PREFIX = 'https://alumni-test.iterator-traits.com/fake-id-tsinghua/'
+TICKET_AUTHENTICATION_MID = 'thuser/authapi/checkticket/{}/'.format(APPID)
+TICKET_AUTHENTICATION = TICKET_AUTHENTICATION_PREFIX + TICKET_AUTHENTICATION_MID
 
-REDIRECT_PREFIX = 'https://alumni-test.iterator-traits.com/fake-id-tsinghua/'
-REDIRECT_LOGIN_MID = 'do/off/ui/auth/login/form/'
-REDIRECT_LOGIN_SUFFIX = '{}/{}?/api/login'.format(APPID, SEQ)
-REDIRECT_TO_LOGIN = REDIRECT_PREFIX + REDIRECT_LOGIN_MID + REDIRECT_LOGIN_SUFFIX
+WX_TOKEN_HEADER = "wx_token"
+WX_OPENID_HEADER = "OPENID"
+WX_CODE_HEADER = "wx_code"
+WX_HTTP_API = "https://api.weixin.qq.com/sns/jscode2session"
 
-REDIRECT_TICKET_AUTHENTICATION_MID = 'thuser/authapi/checkticket/{}/'.format(APPID)
-REDIRECT_TO_TICKET_AUTHENTICATION = REDIRECT_PREFIX + REDIRECT_TICKET_AUTHENTICATION_MID
+REDIRECT_TO_LOGIN = "https://alumni-test.iterator-traits.com/fake-id-tsinghua/do/off/ui/auth/login/form/"+APPIDMD5+"/0?/login.do"
+
+SESSION_ID_COL = "ID"
