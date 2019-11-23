@@ -7,13 +7,17 @@
       fit
       highlight-current-row
     >
+      <el-table-column
+        type="selection"
+        width="55">
+      </el-table-column>
       <el-table-column prop="id" sortable align="center" label="#" width="80">
       </el-table-column>
-      <el-table-column prop="title" sortable label="活动名称">
+      <el-table-column prop="title" width="200" sortable label="活动名称">
       </el-table-column>
       <el-table-column prop="assembler" label="发起人" width="110" align="center">
       </el-table-column>
-      <el-table-column prop="location" sortable label="活动地点" width="200" align="center">
+      <el-table-column prop="location" sortable label="活动地点" width="120" align="center">
       </el-table-column>
       <el-table-column 
         prop="status" 
@@ -27,13 +31,13 @@
           <el-tag :type="scope.row.status | statusMapper">{{ scope.row.status }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="time" align="center" label="活动时间" width="200">
+      <el-table-column prop="time" align="center" label="活动时间" width="120">
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.time }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="right" width="200">
+      <el-table-column align="right" width="230">
         <template slot="header" slot-scope="scope">
           <el-input
             v-model="search"
@@ -43,6 +47,10 @@
           <span style="display:none">{{ scope.$index }}</span>
         </template>
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="info"
+            @click="handleDetail(scope.$index, scope.row)">详情</el-button>
           <el-button
             size="mini"
             @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
@@ -152,6 +160,9 @@ export default {
       alert(index, row)
     },
     handleDelete(index, row) {
+      alert(index, row)
+    },
+    handleDetail(index, row) {
       alert(index, row)
     },
     filterStatus(value, row) {
