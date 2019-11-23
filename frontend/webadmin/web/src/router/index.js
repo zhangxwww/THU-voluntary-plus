@@ -18,37 +18,7 @@ const routes = [{
 
     {
         path: '/',
-        redirect: '/index'
-    },
-
-    {
-        path: '/index',
-        component: Layout,
-        redirect: '/index/table',
-        name: 'Index',
-        meta: {
-            title: '例子',
-            icon: 'index'
-        },
-        children: [{
-                path: 'table',
-                name: 'Table',
-                component: Login,
-                meta: {
-                    title: '表格',
-                    icon: 'table'
-                }
-            },
-            {
-                path: 'tree',
-                name: 'Tree',
-                component: Login,
-                meta: {
-                    title: '树状图',
-                    icon: 'tree'
-                }
-            }
-        ]
+        redirect: '/dashboard'
     },
 
     {
