@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.views.generic.base import RedirectView
 from django.urls import path, re_path
 from . import views
+import showactivity.views as showactivity_views
 
 
 favicon_view = RedirectView.as_view(url='static/favicon.ico', permanent=True)
@@ -27,7 +28,9 @@ urlpatterns = [
     path(r'api/login', views.loginApi, name="login"),
     path(r'login.do', views.loginApi),
     path(r'api/bind', views.bindApi),
-    path(r'api/volunteer/changeInfo', views.volunteerChangeInfo)
+    path(r'api/volunteer/changeInfo', views.volunteerChangeInfo),
+
+    path(r'api/activities/postactivity', showactivity_views.post_activity)
 
     #path(r'^api/activities/list', showactivity_views.catalog_grid),
     #path(r'^api/acrivities/detail',showactivity_views.activity_detail),

@@ -8,7 +8,7 @@ export function addNewActivity(form, success, fail) {
     alert(form.tag)
     alert(form.desc)
 
-    axios.post('/api/activity/new', {
+    axios.post('/api/api/activities/postactivity', {
         name: form.name,
         region: form.region,
         totalNum: form.totalNum,
@@ -16,13 +16,13 @@ export function addNewActivity(form, success, fail) {
         date2: form.date2,
         tag: form.tag,
         desc: form.desc
-    }).then(function (res) {
-        if (res.state === 'success') {
+    }).then(res => {
+        if (res.status === 200) {
             success()
         } else {
             fail()
         }
-    }).catch(function () {
-        fail()
+    }).catch(function (e) {
+        alert(e)
     })
 }

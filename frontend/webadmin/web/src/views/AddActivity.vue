@@ -142,6 +142,7 @@ export default {
     submitForm () {
       this.$refs['ruleForm'].validate((valid) => {
         if (valid) {
+          alert("Valid!")
           addNewActivity(this.ruleForm, () => {
             this.resetForm()
             alert('发布成功!')
