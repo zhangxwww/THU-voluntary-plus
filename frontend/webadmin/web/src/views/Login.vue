@@ -11,6 +11,7 @@
                 <i class="icon-container el-icon-user" />
 				<el-input
 					ref="username"
+                    size="large"
 					v-model="loginForm.username"
 					placeholder="用户名"
 					name="username"
@@ -25,10 +26,12 @@
 				<el-input
 					:key="passwordType"
 					ref="password"
+                    size="large"
 					v-model="loginForm.password"
 					placeholder="用户名"
 					name="password"
 					:type="passwordType"
+                    showPassword
 					tabindex="2"
 					auto-complete="on"
 					@keyup.enter.native="handleLogin"
@@ -82,6 +85,14 @@ export default {
 </script>
 
 <style>
+.page-title {
+    color: #fff;
+    font-size: 32px;
+    font-weight: heavy;
+    position: fixed;
+    left: 80px;
+    top: 20px;
+}
 .login-container .el-input {
     display: inline-block;
     border: 0px;
@@ -122,10 +133,14 @@ export default {
 }
 </style>
 
-<style scoped>
+<style type="scss" scoped>
 .login-container {
-    min-height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
     width: 100%;
+    background: #50296B;
     overflow: hidden;
 }
 
@@ -133,12 +148,13 @@ export default {
     position: relative;
     width: 520px;
     max-width: 100%;
+    top: 200px;
     padding: 35px 35px 0;
-    margin: 125px auto;
+    margin: 0 auto;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(116, 52, 129, .12), 0 0 6px rgba(116, 52, 129, .04);
     overflow: hidden;
-    background-color: #fff
+    background-color: #fff;
 }
 
 .login-container .tips {
@@ -165,11 +181,11 @@ export default {
     position: relative;
 }
 .login-container .title-container .title {
-    font-size: 24px;
+    font-size: 28px;
     color: $fff;
     margin: 0px auto 40px auto;
     text-align: ledt;
-    font-weight: bold;
+    font-weight: heavy;
 }
 
 .login-container .show-pwd {
@@ -177,7 +193,7 @@ export default {
     right: 10px;
     top: 7px;
     font-size: 16px;
-    color: fff;
+    color: #fff;
     cursor: pointer;
     user-select: none;
 }

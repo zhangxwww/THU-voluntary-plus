@@ -1,205 +1,190 @@
 <template>
   <div class="app-container">
-    <el-table :key="tableKey"
-              v-loading="listLoading"
-              :data="list"
-              border
-              fit
-              highlight-current-row
-              style="width: 100%;">
-      <el-table-column label="ID"
-                       prop="id"
-                       sortable="custom"
-                       align="center"
-                       width="80"
-                       :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
+    <el-table
+      v-loading="listLoading"
+      :data="list.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))"
+      element-loading-text="Loading"
+      fit
+      highlight-current-row
+    >
+      <el-table-column
+        type="selection"
+        width="55">
+      </el-table-column>
+      <el-table-column prop="id" sortable align="center" label="#" width="80">
+      </el-table-column>
+      <el-table-column prop="title" width="200" sortable label="活动名称">
+      </el-table-column>
+      <el-table-column prop="assembler" label="发起人" width="110" align="center">
+      </el-table-column>
+      <el-table-column prop="location" sortable label="活动地点" width="120" align="center">
+      </el-table-column>
+      <el-table-column 
+        prop="status" 
+        class-name="status-col" 
+        label="状态" 
+        width="80" align="center"
+        :filters="[{ text: '已发布', value: '已发布' }, { text: '审核中', value: '审核中' }, { text: '已删除', value: '已删除'}]"
+        :filter-method="filterStatus"
+        filter-placement="bottom-end">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.status | statusMapper">{{ scope.row.status }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Date"
-                       width="150px"
-                       align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+      <el-table-column prop="time" align="center" label="活动时间" width="120">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.time }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Title"
-                       min-width="150px">
-        <template slot-scope="{row}">
-          <span class="link-type"
-                @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+      <el-table-column align="right" width="230">
+        <template slot="header" slot-scope="scope">
+          <el-input
+            v-model="search"
+            size="mini"
+            placeholder="搜索标题">
+          </el-input>
+          <span style="display:none">{{ scope.$index }}</span>
         </template>
-      </el-table-column>
-      <el-table-column label="Author"
-                       width="110px"
-                       align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column v-if="showReviewer"
-                       label="Reviewer"
-                       width="110px"
-                       align="center">
-        <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Imp"
-                       width="80px">
-        <template slot-scope="{row}">
-          <svg-icon v-for="n in + row.importance"
-                    :key="n"
-                    icon-class="star"
-                    class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column label="Readings"
-                       align="center"
-                       width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews"
-                class="link-type"
-                @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="Status"
-                       class-name="status-col"
-                       width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="Actions"
-                       align="center"
-                       width="230"
-                       class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary"
-                     size="mini"
-                     @click="handleUpdate(row)">
-            Edit
-          </el-button>
-          <el-button v-if="row.status!='published'"
-                     size="mini"
-                     type="success"
-                     @click="handleModifyStatus(row,'published')">
-            Publish
-          </el-button>
-          <el-button v-if="row.status!='draft'"
-                     size="mini"
-                     @click="handleModifyStatus(row,'draft')">
-            Draft
-          </el-button>
-          <el-button v-if="row.status!='deleted'"
-                     size="mini"
-                     type="danger"
-                     @click="handleModifyStatus(row,'deleted')">
-            Delete
-          </el-button>
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="info"
+            @click="handleDetail(scope.$index, scope.row)">详情</el-button>
+          <el-button
+            size="mini"
+            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
-    <pagination v-show="total>0"
-                :total="total"
-                :page.sync="listQuery.page"
-                :limit.sync="listQuery.limit"
-                @pagination="getList" />
-
-    <el-dialog :title="textMap[dialogStatus]"
-               :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm"
-               :rules="rules"
-               :model="temp"
-               label-position="left"
-               label-width="70px"
-               style="width: 400px; margin-left:50px;">
-        <el-form-item label="Type"
-                      prop="type">
-          <el-select v-model="temp.type"
-                     class="filter-item"
-                     placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions"
-                       :key="item.key"
-                       :label="item.display_name"
-                       :value="item.key" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Date"
-                      prop="timestamp">
-          <el-date-picker v-model="temp.timestamp"
-                          type="datetime"
-                          placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item label="Title"
-                      prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item label="Status">
-          <el-select v-model="temp.status"
-                     class="filter-item"
-                     placeholder="Please select">
-            <el-option v-for="item in statusOptions"
-                       :key="item"
-                       :label="item"
-                       :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Imp">
-          <el-rate v-model="temp.importance"
-                   :colors="['#99A9BF', '#F7BA2A', '#FF9900']"
-                   :max="3"
-                   style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item label="Remark">
-          <el-input v-model="temp.remark"
-                    :autosize="{ minRows: 2, maxRows: 4}"
-                    type="textarea"
-                    placeholder="Please input" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          Cancel
-        </el-button>
-        <el-button type="primary"
-                   @click="dialogStatus==='create'?createData():updateData()">
-          Confirm
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogPvVisible"
-               title="Reading statistics">
-      <el-table :data="pvData"
-                border
-                fit
-                highlight-current-row
-                style="width: 100%">
-        <el-table-column prop="key"
-                         label="Channel" />
-        <el-table-column prop="pv"
-                         label="Pv" />
-      </el-table>
-      <span slot="footer"
-            class="dialog-footer">
-        <el-button type="primary"
-                   @click="dialogPvVisible = false">Confirm</el-button>
-      </span>
-    </el-dialog>
+    <div class="pagination">
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="1"
+        :page-sizes="[3, 5, 10]"
+        :page-size="3"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'ActivityCenter',
-
+  filters: {
+    statusMapper(status) {
+      const statusMap = {
+        '已发布': 'success',
+        '审核中': 'warning',
+        '已删除': 'danger'
+      }
+      return statusMap[status]
+    }
+  },
+  data() {
+    return {
+      page: 1,
+      rawlist: [{
+        id: 1,
+        title: '国庆期间参观志愿者',
+        assembler: '张大头',
+        location: '请问是二校门',
+        tag: '参观志愿者',
+        status: '已发布',
+        time: '2019-10-1'
+      }, {
+        id: 2,
+        title: '国庆期间参观撒旦志愿者',
+        assembler: '张大头',
+        location: '阿佘滴二校门',
+        tag: '参观志愿者',
+        status: '审核中',
+        time: '2019-10-1'
+      }, {
+        id: 3,
+        title: '国庆期间参观阿佘滴志愿者',
+        assembler: '阿斯顿撒旦张大头',
+        location: '二校门',
+        tag: '参观志愿者',
+        status: '已发布',
+        time: '2019-10-1'
+      }, {
+        id: 4,
+        title: '国庆期间参放到观志愿者',
+        assembler: '张大头',
+        location: '二校门',
+        tag: '参观志愿者',
+        status: '已发布',
+        time: '2019-10-1'
+      }, {
+        id: 5,
+        title: '国庆期间参观志愿者',
+        assembler: '张大头',
+        location: '二校门',
+        tag: '参观志愿者',
+        status: '已删除',
+        time: '2019-10-1'
+      }, {
+        id: 6,
+        title: '国庆期间参观志愿者',
+        assembler: '张大头',
+        location: '二校门',
+        tag: '参观志愿者',
+        status: '已删除',
+        time: '2019-10-1'
+      },
+      ],
+      listLoading: false,
+      search: '',
+      pagesize: 3,
+      list: []
+    }
+  },
+  computed: {
+    total: function() {
+      return this.rawlist.length
+    }
+  },
+  created() {
+    this.list = this.rawlist.slice(0, this.pagesize)
+  },
+  methods: {
+    handleEdit(index, row) {
+      alert(index, row)
+    },
+    handleDelete(index, row) {
+      alert(index, row)
+    },
+    handleDetail(index, row) {
+      alert(index, row)
+    },
+    filterStatus(value, row) {
+      return row.status === value;
+    },
+    getList: function() {
+      this.list = this.rawlist.slice((this.page - 1) * this.pagesize, this.page  * this.pagesize)
+    },
+    handleSizeChange(val) {
+      this.pagesize = val
+      this.getList()
+    },
+    handleCurrentChange(val) {
+      this.page = val
+      this.getList()
+    }
+  }
 }
 </script>
+
+<style scope>
+.pagination {
+  margin-top: 30px;
+}
+</style>
