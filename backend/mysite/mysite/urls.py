@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.views.generic.base import RedirectView
 from django.urls import path, re_path
 from . import views
-
+import showactivity.views as showactivity_views
 
 favicon_view = RedirectView.as_view(url='static/favicon.ico', permanent=True)
 
