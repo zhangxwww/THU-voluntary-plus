@@ -253,7 +253,7 @@ def register_activity(request):
     activity.save()
 
 # 取消报名
-def register_activity(request):
+def cancel_registration(request):
     if not checkSessionValid(request):
         return HttpResponse("You need to login!", status = 401)
     THUID = getStudentID(request)
