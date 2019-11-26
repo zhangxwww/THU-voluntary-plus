@@ -53,6 +53,11 @@
                     }
                 ]
             }
-        }
+        },
+		beforeMount() {
+			uni.setNavigationBarTitle({
+				title: '志愿排行'
+			})
+		}
     }
 </script>

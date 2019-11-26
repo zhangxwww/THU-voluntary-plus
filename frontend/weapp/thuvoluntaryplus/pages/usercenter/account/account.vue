@@ -1,7 +1,7 @@
 <template>
 	<view>
 		<info-list-card :itemprop="bindprop" @tap="bindStudentId"></info-list-card>
-		<info-list-card v-for="itemprop in itemproplist" :key="itemprop.id" :itemprop="itemprop"></info-list-card>
+		<info-list-card v-for="itemprop in itemproplist" :key="itemprop.id" :itemprop="itemprop" @tap="onTapInfo(itemprop)"></info-list-card>
 	</view>
 </template>
 
@@ -19,14 +19,19 @@
 		data() {
 			return {
 				bind: false,
-				BindOperationFinished: false,
-				itemproplist: [
+			}
+		},
+		computed: {
+			...mapState(['personalinfo', 'sessionid', 'currentModified']),
+			itemproplist: function() {
+				return [
 					{
 						id: 0,
 						menuarrow: false,
+						key: 'nickname',
 						infokey: '昵称',
 						infotype: 'text',
-						infovalue: '张大头',
+						infovalue: this.personalinfo.nickname,
 						hasIcon: false,
 						separate: false
 					},
@@ -34,8 +39,9 @@
 						id: 1,
 						menuarrow: false,
 						infokey: '姓名',
+						key: 'name',
 						infotype: 'text',
-						infovalue: '张欣炜',
+						infovalue: this.personalinfo.name,
 						hasIcon: false,
 						separate: false
 					},
@@ -43,26 +49,34 @@
 						id: 2,
 						menuarrow: false,
 						infokey: '学号',
+						key: 'studentId',
 						infotype: 'text',
-						infovalue: '2016111111',
+						infovalue: this.personalinfo.studentId,
+						hasIcon: false,
+						separate: false
+					},
+					{
+						id: 3,
+						menuarrow: true,
+						infokey: '电话',
+						key: 'phone',
+						infotype: 'text',
+						infovalue: this.personalinfo.phone,
+						hasIcon: false,
+						separate: false
+					},
+					{
+						id: 4,
+						menuarrow: true,
+						infokey: '签名',
+						key: 'signature',
+						infotype: 'text',
+						infovalue: this.personalinfo.signature,
 						hasIcon: false,
 						separate: false
 					}
-				],
-			}
-		},
-		watch: {
-			BindOperationFinished(newValue, oldValue) {
-				if(newValue === true){
-					wx.onAppShow(function(res){
-						console.log("No!")
-					})
-				}
-			}
-		},
-		
-		computed: {
-			...mapState(['personalinfo', 'sessionid']),
+				]
+			},
 			bindprop: function() {
 				if (this.bind) {
 					return {
@@ -86,7 +100,16 @@
 			},
 		},
 		methods: {
-			...mapMutations(['setTitle']),
+			...mapMutations(['setCurrentModified']),
+			onTapInfo: function(itemprop) {
+				if (itemprop.menuarrow) {
+					this.setCurrentModified(itemprop)
+					console.log(this.currentModified)
+					uni.navigateTo({
+						url: '/pages/usercenter/account/modify/modify'
+					})
+				}
+			},
             bindStudentId: function() {
                 wx.navigateToMiniProgram({
                     'appId': 'wx1ebe3b2266f4afe0',
@@ -128,8 +151,10 @@
                 })
             }
 		},
-		onload() {
-			this.setTitle('个人信息')
+		beforeMount() {
+			uni.setNavigationBarTitle({
+				title: '个人信息'
+			})
 		},
 	}
 </script>

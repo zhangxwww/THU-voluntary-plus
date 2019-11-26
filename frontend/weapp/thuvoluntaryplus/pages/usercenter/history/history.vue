@@ -43,6 +43,11 @@
         		]
         	};
         },
+		beforeMount() {
+			uni.setNavigationBarTitle({
+				title: '志愿历史'
+			})
+		}
     }
 </script>
 

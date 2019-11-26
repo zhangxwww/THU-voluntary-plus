@@ -7,9 +7,11 @@ from django.shortcuts import HttpResponse
 
 import showactivity.models as showactivity_models
 import mysite.models as mysite_models
+from .models import Message, MessageReadOrNot, Activity, ActivityPic, WX_OPENID_TO_THUID, User
 
 # Create your views here.
 #检查登录
+"""
 def check_login(request):
     is_login = request.session.get('is_login', None)
     if is_login :
@@ -27,7 +29,22 @@ def check_login(request):
                 request.session.flush()
                 return redirect('/login/')
     return user
-    
+"""
+
+# 发布活动
+def post_activity(request): # name, place, date, time, tag, description, amount
+    # json = request.body
+    name = json.loads(request.body)[name]
+    place = json.loads(request.body)[place]
+    date = json.loads(request.body)[date]
+    time = json.loads(request.body)[time]
+    tag = json.loads(request.body)[tag]
+    description = json.loads(request.body)[description]
+    amount = json.loads(request.body)[amount]
+
+    activity = Activity(ActivityName = name, ActivityPlace = place, ActivityDate = date, ActivityTime = time, Tag = tag, ActivityIntro = description, ActivityRemain = amount)
+    activity.save()
+
 
 #显示活动列表
 def catalog_grid(request):
@@ -37,9 +54,15 @@ def catalog_grid(request):
     #if not request.session.get('studentID'):
     #    request.session.flush()
     #   return redirect('/login/')
-    user = check_login(request)
-        
-    type = request.GET.get('type')
+    # user = check_login(request)
+
+    if not checkSessionValid(request):
+        return HttpResponse("You need to login!", status = 401)
+    THUID = getStudentID(request)
+    if THUID == False:
+        return HttpResponse("Fail to get THUID!", status = 404)
+
+    type = request.GET.get('tag')
     if type is None:
         rtn_list = showactivity_models.Activity.objects.all()
     else:
@@ -66,14 +89,15 @@ def catalog_grid(request):
     return JsonResponse({"activity_list":rtn_listt})
 
 # 查看活动详细信息
-def activity_detail(request,activity_id):
+def activity_detail(request):
     #is_login = request.session.get('is_login', None)
     #if is_login:
     #    user = User.objects.get(pk=request.session.get('studentID'))
-    user = check_login(request)
+    # user = check_login(request)
     #Activity_Number = request.GET.get('Number')
-    activity = showactivity_models.Activity.objects.get(ActivityNumber=activity_id)
-    pic = showactivity_models.ActivityPic.objects.filter(ActivityNumber=activity_id)
+    activity_id = request.POST.get(activity_id)
+    activity = showactivity_models.Activity.objects.get(id=activity_id)
+    pic = showactivity_models.ActivityPic.objects.filter(ActivityId=activity_id)
     class Recommend:
         def __init__(self, activity, pic):
             self.activity = activity
@@ -99,14 +123,14 @@ def activity_detail(request,activity_id):
 
 def search(request):
 
-    user = check_login(request)
+    #user = check_login(request)
     keyword = request.GET.get('search')
     rtn_set = set()
     rtn_list = []
     name_key = showactivity_models.Activity.objects.filter(ActivityName__contains=keyword)
     content_key = showactivity_models.Activity.objects.filter(ActivityIntro__contains=keyword)
     organizer_key = showactivity_models.Activity.objects.filter(ActivityOrganizer__contains=keyword)
-    num_key = showactivity_models.Activity.objects.filter(ActivityNumber__contains=keyword)
+    num_key = showactivity_models.Activity.objects.filter(id__contains=keyword)
 
     #class Activity:
     #    def __init__(self, id,name,date, pic):
@@ -136,15 +160,16 @@ def search(request):
     #return render(request, "showactivity/search.html", locals())
     return JsonResponse({"search_result":rtn_listt})
 
+# 消息列表
 def message_catalog_grid(request):
-
+    
     # user = User.objects.get(pk = request.session.get('THUID'))
     # message = showactivity_models.Message.objects.get(MessageId=messaage_id)
     message_list = showactivity_models.MessageReadOrNot.objects.filter(THUID=request.session.get('THUID'))
     rtn_list = []
     for i in range(len(message_list)):
         message_id = message_list[i].MessageId
-        message = showactivity_models.Message.objects.get(MessageId=messaage_id)
+        message = showactivity_models.Message.objects.get(id=messaage_id)
         rtn = {}
         rtn["ReadOrNot"] = message_list[i].ReadOrNot
         rtn["Title"] = message.MessageTitle
@@ -152,9 +177,17 @@ def message_catalog_grid(request):
         rtn_list.append(rtn)    
     return JsonResponse({"message_list":rtn_list})
 
-def read_message(request, message_id):
-    user = User.objects.get(pk = request.session.get('THUID'))
-    message = showactivity_models.Message.objects.get(MessageId=messaage_id)
+# 读消息
+def read_message(request):
+    if not checkSessionValid(request):
+        return HttpResponse("You need to login!", status = 401)
+    THUID = getStudentID(request)
+    if THUID == False:
+        return HttpResponse("Fail to get THUID!", status = 404)
+    # message_id = request.POST.get(message_id)
+    user = User.objects.get(pk = THUID)
+    message_id = request.POST.get(message_id)
+    message = showactivity_models.Message.objects.get(id=messaage_id)
     message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.get(MessageId=message_id)
     rtn = {}
     rtn["Title"] = message.MessageTitle
@@ -162,4 +195,81 @@ def read_message(request, message_id):
     message_ReadOrNot.update(ReadOrNot = 1)
     message_ReadOrNot.save()
     return JsonResponse({"message_detail":rtn})
-    
+
+# 将消息标记为已读
+def mark_read(request):
+    if not checkSessionValid(request):
+        return HttpResponse("You need to login!", status = 401)
+    THUID = getStudentID(request)
+    if THUID == False:
+        return HttpResponse("Fail to get THUID!", status = 404)
+    message_id = request.POST.get(message_id)
+    # THUID = 
+    message = showactivity_models.Message.objects.get(id=messaage_id)
+    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.filter(THUId=THUID)
+    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.get(MessageId=message_id)
+    message_ReadOrNot.update(ReadOrNot = 1)
+    message_ReadOrNot.save()
+    return HttpResponse("Succeed to mark as read already", status = 200)
+
+# 删除一条消息
+def delete_message(request):
+    if not checkSessionValid(request):
+        return HttpResponse("You need to login!", status = 401)
+    THUID = getStudentID(request)
+    if THUID == False:
+        return HttpResponse("Fail to get THUID!", status = 404)
+    message_id = request.POST.get(message_id)
+    # THUID = 
+    # message = showactivity_models.Message.objects.get(MessageId=messaage_id)
+    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.filter(THUId=THUID)
+    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.get(MessageId=message_id)
+    message_ReadOrNot.delete()
+    # message_ReadOrNot.update(ReadOrNot = 1)
+    # message_ReadOrNot.save()
+
+    return HttpResponse("Succeed to delete message", status = 200)
+
+# 报名活动
+def register_activity(request):
+    if not checkSessionValid(request):
+        return HttpResponse("You need to login!", status = 401)
+    THUID = getStudentID(request)
+    if THUID == False:
+        return HttpResponse("Fail to get THUID!", status = 404)
+    activity_id = request.POST.get(activity_id)
+
+    user = User.objects.get(pk = THUID)
+    activity = Activity.objects.get(id = activity_id)
+
+    user.Activities.add(activity)
+    user.save()
+
+    activity.Participants.add(user)
+    activity.save()
+
+    amount = activity.ActivityRemain - 1
+    activity.update(ActivityRemain=amount)
+    activity.save()
+
+# 取消报名
+def register_activity(request):
+    if not checkSessionValid(request):
+        return HttpResponse("You need to login!", status = 401)
+    THUID = getStudentID(request)
+    if THUID == False:
+        return HttpResponse("Fail to get THUID!", status = 404)
+    activity_id = request.POST.get(activity_id)
+
+    user = User.objects.get(pk = THUID)
+    activity = Activity.objects.get(id = activity_id)
+
+    user.Activities.remove(activity)
+    user.save()
+
+    activity.Participants.remove(user)
+    activity.save()
+
+    amount = activity.ActivityRemain + 1
+    activity.update(ActivityRemain=amount)
+    activity.save()
