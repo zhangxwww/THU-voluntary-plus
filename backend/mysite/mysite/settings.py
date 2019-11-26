@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'werkzeug_debugger_runserver',
     'django_extensions',
-    "mysite"
+    "mysite",
+    "showactivity"
 ]
 
 MIDDLEWARE = [
@@ -93,10 +94,11 @@ DATABASES = {
         'PASSWORD': '123',
         'HOST': '127.0.0.1',  # mysql服务所在的主机ip
         'PORT': '3306',  # mysql服务端口
+        'OPTIONS': {
+            'init_command': 'ALTER DATABASE THUVPlus CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci'
+        },
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

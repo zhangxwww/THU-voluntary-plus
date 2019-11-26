@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.shortcuts import HttpResponse
 
-import showactivity.models as showactivity_models
+from . import models as showactivity_models
 import mysite.models as mysite_models
 from .models import Message, MessageReadOrNot, Activity, ActivityPic, WX_OPENID_TO_THUID, User
 
