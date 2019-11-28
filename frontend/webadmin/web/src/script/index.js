@@ -1,13 +1,22 @@
 import axios from 'axios'
 
-export function addNewActivity(form, success, fail) {
-    alert(form.name)
-    alert(form.region)
-    alert(form.date1)
-    alert(form.date2)
-    alert(form.tag)
-    alert(form.desc)
+export function getActivity(success, fail) {
+    axios.get('/api/activities/list', {
 
+    }).then(res => {
+        if (res.status === 200) {
+            let list = res.activity_list
+            success(list)
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function addNewActivity(form, success, fail) {
     axios.post('/api/api/activities/postactivity', {
         name: form.name,
         region: form.region,
@@ -24,5 +33,22 @@ export function addNewActivity(form, success, fail) {
         }
     }).catch(function (e) {
         alert(e)
+        fail()
+    })
+}
+
+export function login(form, success, fail) {
+    axios.post('', {
+        username: form.username,
+        password: form.password
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(function (e) {
+        alert(e)
+        fail()
     })
 }
