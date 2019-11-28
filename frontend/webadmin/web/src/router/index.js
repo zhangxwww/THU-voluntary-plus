@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '@/views/Login'
 import AddActivity from '@/views/AddActivity'
 import ActivityCenter from '@/views/ActivityCenter'
+import ConfigActivity from '@/views/ConfigActivity'
 import Layout from '@/layout/Index.vue'
 //import Layout from '@/layout/index'
 Vue.use(VueRouter)
@@ -43,6 +44,10 @@ const routes = [{
             meta: {
                 title: '查看活动'
             }
+        }, {
+            path: 'config',
+            name: 'ConfigActivity',
+            component: ConfigActivity
         }]
     }
 ]
