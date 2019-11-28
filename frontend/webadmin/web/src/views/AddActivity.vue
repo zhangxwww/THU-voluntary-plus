@@ -151,7 +151,7 @@ export default {
             () => {
               this.resetForm()
               alert('发布成功!')
-              // TODO redirect
+              this.$router.push('/dashboard/activity')
             },
             () => {
               alert('发布失败')
