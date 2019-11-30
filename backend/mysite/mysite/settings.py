@@ -76,7 +76,7 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 CSRF_TRUSTED_ORIGINS = ["servicewechat.com"]
 
-AUTH_USER_MODEL = 'mysite.Managers'
+AUTH_USER_MODEL = 'mysite.User'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

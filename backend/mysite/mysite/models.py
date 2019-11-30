@@ -18,7 +18,7 @@ class VOLUNTEER(models.Model):
     #AVATAR = 
 
 class Managers(AbstractUser):
-    Identity = models.IntegerField(verbose_name='身份', blank=True, null=True)  # 0 表示老师， 1表示志愿团体
+    isTeacher = models.IntegerField(verbose_name='身份', default=False)  # True 表示老师， False表示志愿团体
 
     def __str__(self):
         return self.username
