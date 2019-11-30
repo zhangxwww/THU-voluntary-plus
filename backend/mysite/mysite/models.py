@@ -17,8 +17,28 @@ class VOLUNTEER(models.Model):
     EMAIL = models.TextField()
     #AVATAR = 
 
-class Managers(AbstractUser):
+class UserManager(BaseUserManager):
+    def _create_user(self , Identity, username, password, **kwargs):
+        if not Identity:
+            raise  ValueError("必须要确认用户身份！")
+        if not password:
+            raise  ValueError("必须输入密码！")
+        user = self.model( Identity = Tdentity, username= username , **kwargs)
+        user.set_password( password )
+        user.save()
+        return user
+
+    def create_user(self,  telephone, username, password, **kwargs):
+        kwargs['is_superuser'] = False
+        return self._create_user( telephone = telephone, username=username, password = password, **kwargs )
+
+    def create_superuser(self, telephone, username, password, **kwargs):
+        kwargs['is_superuser'] = True
+        return  self._create_user( telephone = telephone, username=username, password = password, **kwargs )
+
+class User(AbstractUser):  # 老师或志愿团体
     Identity = models.IntegerField(verbose_name='身份', blank=True, null=True)  # 0 表示老师， 1表示志愿团体
 
-    def __str__(self):
-        return self.username
+    USERNAME_FIELD = "Identity"
+
+    objects = UserManager()

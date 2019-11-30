@@ -1,13 +1,15 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
+from django.contrib.auth import  authenticate
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
     WX_APPID, WX_SECRET, REDIRECT_TO_LOGIN
-from .models import WX_OPENID_TO_THUID, VOLUNTEER
+from .models import WX_OPENID_TO_THUID, VOLUNTEER, User, UserManager
 import requests
 import json
 from django.contrib.sessions.backends.db import SessionStore
 import datetime 
 from django.utils.timezone import utc
+import hashlib
 
 
 THUID_CONST="THUID"
@@ -15,6 +17,11 @@ TOKEN_CONST="TOKEN"
 OPENID_CONST="OPENID"
 SUCCESS_CONST="SUCCESS"
 LOGGED_IN_CONST="LOGGED_IN"
+
+def get_hash(s):
+    hash = hashlib.sha256()
+    hash.update(s.encode('utf-8'))
+    return hash.hexdigest()
 
 def redirectToTHUAuthentication(request):
     #TODO: 防止同一客户端未注销后再次发出登录请求
@@ -205,3 +212,23 @@ def volunteerChangeInfo(request):
     except:
         return HttpResponse("OPERATION FAILED", status=404)
 
+def createUser(request):
+    login_name = json.loads(request.body)["username"]
+    pwd = json.loads(request.body)["password"]
+    pwd = get_hash(pwd)
+    # identity = json.loads(request.body)["identity"] # identity = 0 or 1
+    identity = 1
+    user = User.objects.create_user(Identity = identity, username = login_name, password = pwd)
+
+def weblogin(request):
+    login_name = json.loads(request.body)["username"]
+    pwd = json.loads(request.body)["password"]
+    pwd = get_hash(pwd)
+    user = authenticate(request, username= login_name, password = pwd)
+    try:
+        login(request, user)
+        request.session[LOGGED_IN_CONST] = True
+        return HttpResponse("LOGIN SUCCESS", status = 200)
+    except:
+        request.session[LOGGED_IN_CONST] = False
+        return HttpResponse("LOGIN FAILED", status = 404)
