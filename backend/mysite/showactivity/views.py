@@ -135,13 +135,13 @@ def activity_detail(request):
         activity_id = request.POST.get(activity_id)
         activity = showactivity_models.Activity.objects.get(id=activity_id)
         #pic = showactivity_models.ActivityPic.objects.filter(ActivityId=activity_id
-    '''
-    class Recommend:
-        def __init__(self, activity, pic):
-            self.activity = activity
-            self.pic = pic
-    activity_rtn = Recommend(activity,pic)
-    '''
+   # '''
+   # class Recommend:
+   #     def __init__(self, activity, pic):
+   #         self.activity = activity
+   #         self.pic = pic
+   # activity_rtn = Recommend(activity,pic)
+   # '''
         rtn = {}
         rtn["id"] = rtn_list[i].id
         rtn["title"] = rtn_list[i].ActivityName

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from datetime import datetime, timedelta
 
 class WX_OPENID_TO_THUID(models.Model):
@@ -39,6 +39,6 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):  # 老师或志愿团体
     Identity = models.IntegerField(verbose_name='身份', blank=True, null=True)  # 0 表示老师， 1表示志愿团体
 
-    USERNAME_FIELD = "Identity"
+    #USERNAME_FIELD = "Identity"
 
     objects = UserManager()

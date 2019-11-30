@@ -1,5 +1,5 @@
 from django.db import models
-from mysite.models import Volunteer, User
+from mysite.models import VOLUNTEER, User
 # Create your models here.
 
 ENROLL_STATE_CONST = {
@@ -27,7 +27,7 @@ class Activity(models.Model):
     ReleaseDate = models.DateTimeField(null=True, verbose_name='发布日期')
     ActivityStatus = models.IntegerField(default=0, verbose_name='状态')  # 0 for success, 1 for warning, 2 for danger
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
-    members = models.ManyToManyField(Volunteer, through=Membership, verbose_name='参与者')
+    members = models.ManyToManyField(VOLUNTEER, through='Membership', verbose_name='参与者')
 
     def __str__(self):
         return '{}({})'.format(self.ActivityName, self.ActivityNumber)
@@ -36,8 +36,8 @@ class Activity(models.Model):
         verbose_name = "活动信息"
         verbose_name_plural = verbose_name
 
-class Membership(models.model):
-    volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
+class Membership(models.Model):
+    volunteer = models.ForeignKey(VOLUNTEER, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     state = models.IntegerField(default=ENROLL_STATE_CONST["UNCENSORED"])
 
@@ -51,7 +51,7 @@ class Message(models.Model):
     MessageDetailContent = models.TextField(null = True, blank = True, verbose_name="消息详细内容")
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
     ActivityNumber = models.ForeignKey(Activity, verbose_name='活动编号', on_delete=models.CASCADE)
-    volunteers = models.ManyToManyField(Volunteer, through=MessageReadOrNot, verbose_name='消息接受者')
+    volunteers = models.ManyToManyField(VOLUNTEER, through='MessageReadOrNot', verbose_name='消息接受者')
     #THUID = models.ForeignKey(User,to_field='THUID',verbose_name='用户学号')
     
 class MessageReadOrNot(models.Model):
@@ -59,7 +59,7 @@ class MessageReadOrNot(models.Model):
     消息是否被某个用户阅读
     """
     MessageID = models.ForeignKey(Message,verbose_name='消息编号', on_delete=models.CASCADE)
-    VolunteerID = models.ForeignKey(Volunteer, verbose_name='用户学号', on_delete=models.CASCADE)
+    VolunteerID = models.ForeignKey(VOLUNTEER, verbose_name='用户学号', on_delete=models.CASCADE)
     ReadOrNot = models.BooleanField(default=False, verbose_name='某用户是否阅读该条消息')
    
 

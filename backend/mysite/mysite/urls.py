@@ -27,8 +27,8 @@ urlpatterns = [
     path(r'api/login', views.loginApi, name="login"),
     path(r'login.do', views.loginApi),
 
-    path(r'api/weblogin',views.weblogin, name="weblogin")
-    path(r'api/users/create',views.createUser, name="createUser")
+    path(r'api/weblogin',views.weblogin, name="weblogin"),
+    path(r'api/users/create',views.createUser, name="createUser"),
 
     path(r'api/bind', views.bindApi),
     path(r'api/volunteer/changeInfo', views.volunteerChangeInfo),
