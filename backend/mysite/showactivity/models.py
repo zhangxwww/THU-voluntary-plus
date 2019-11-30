@@ -8,10 +8,10 @@ class Activity(models.Model):
     """
     活动信息
     """
-    ActivityId = models.CharField(max_length=50, primary_key=True, verbose_name='活动编号')
     ActivityName = models.CharField(max_length=255, unique=True, verbose_name='活动名称')
-    ActivityPlace = models.CharField(max_length=255,verbose_name='活动日期')
-    ActivityDate = models.CharField(max_length=255,verbose_name='活动日期')
+    ActivityPlace = models.CharField(max_length=255,verbose_name='活动地点')
+    ActivityStartDate = models.CharField(max_length=255,verbose_name='活动开始日期')
+    ActivityEndDate = models.CharField(max_length=255,verbose_name='活动结束日期')
     ActivityTime = models.CharField(max_length=255,verbose_name='活动时间')
     ActivityOrganizer = models.CharField(max_length=255, null=True, blank=True, verbose_name='发起者')
     ActivityIntro = models.TextField(null=True, blank=True, verbose_name='活动介绍')
@@ -21,6 +21,7 @@ class Activity(models.Model):
     Intro_pic = models.ImageField(null=True, blank=True, verbose_name='介绍图片')
     Tag = models.CharField(null=True, blank=True, max_length=100, verbose_name='标签')
     ReleaseDate = models.DateTimeField(null=True, verbose_name='发布日期')
+    ActivityStatus = models.IntegerField(default=0, verbose_name='状态')  # 0 for success, 1 for warning, 2 for danger
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
     # Participants = models.ManyToManyField(User, blank=True, verbose_name='参与者')
 

@@ -7,7 +7,7 @@ from django.shortcuts import HttpResponse
 
 from . import models as showactivity_models
 import mysite.models as mysite_models
-from .models import Message, MessageReadOrNot, Activity, ActivityPic, WX_OPENID_TO_THUID, User
+from .models import Message, MessageReadOrNot, Activity, ActivityPic
 
 # Create your views here.
 #检查登录
@@ -34,16 +34,19 @@ def check_login(request):
 # 发布活动
 def post_activity(request): # name, place, date, time, tag, description, amount
     # json = request.body
-    name = json.loads(request.body)[name]
-    place = json.loads(request.body)[place]
-    date = json.loads(request.body)[date]
-    time = json.loads(request.body)[time]
-    tag = json.loads(request.body)[tag]
-    description = json.loads(request.body)[description]
-    amount = json.loads(request.body)[amount]
+    name = json.loads(request.body)["name"]
+    region = json.loads(request.body)["region"]
+    totalNum = json.loads(request.body)["totalNum"]
+    startDate = json.loads(request.body)["date1"]
+    endDate = json.loads(request.body)["date2"]
+    tag = json.loads(request.body)["tag"]
+    description = json.loads(request.body)["desc"]
 
-    activity = Activity(ActivityName = name, ActivityPlace = place, ActivityDate = date, ActivityTime = time, Tag = tag, ActivityIntro = description, ActivityRemain = amount)
+    activity = Activity(ActivityName = name, ActivityPlace = region, ActivityStartDate = startDate, \
+        ActivityEndDate = endDate, Tag = tag, ActivityIntro = description, ActivityRemain = totalNum)
     activity.save()
+    print("POST ACTIVITY SUCCESS")
+    return HttpResponse("POST ACTIVITY SUCCESS", status=200)
 
 
 #显示活动列表
@@ -77,16 +80,20 @@ def catalog_grid(request):
     for i in range(len(rtn_list)):
         rtn = {}
         ActivityID = rtn_list[i].ActivityNumber
-        rtn["id"] = ActivityID
-        rtn["name"] = rtn_list[i].ActivityName
-        rtn["date"] = rtn_list[i].ActivityTime
+        rtn["id"] = rtn_list[i].id
+        rtn["title"] = rtn_list[i].ActivityName
+        rtn["assembler"] = rtn_list[i].ActivityOrganizer
+        rtn["location"] = rtn_list[i].ActivityPlace
+        rtn["tag"] = rtn_list[i].Tag
+        rtn["status"] = rtn_list[i].ActivityStatus
+        rtn["time"] = rtn_list[i].ActivityTime
         pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
         #rtn_pic.append(pic_tmp[0])
         rtn["pic"] = pic_tmp[0]
         rtn_listt.append(rtn)
     #rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
     #return render(request, "showactivity/catalog_grid.html", locals())
-    return JsonResponse({"activity_list":rtn_listt})
+    return JsonResponse({"rawlist":rtn_listt})
 
 # 查看活动详细信息
 def activity_detail(request):
@@ -178,6 +185,7 @@ def message_catalog_grid(request):
     return JsonResponse({"message_list":rtn_list})
 
 # 读消息
+'''
 def read_message(request):
     if not checkSessionValid(request):
         return HttpResponse("You need to login!", status = 401)
@@ -185,7 +193,8 @@ def read_message(request):
     if THUID == False:
         return HttpResponse("Fail to get THUID!", status = 404)
     # message_id = request.POST.get(message_id)
-    user = User.objects.get(pk = THUID)
+    user = 
+    .objects.get(pk = THUID)
     message_id = request.POST.get(message_id)
     message = showactivity_models.Message.objects.get(id=messaage_id)
     message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.get(MessageId=message_id)
@@ -195,7 +204,7 @@ def read_message(request):
     message_ReadOrNot.update(ReadOrNot = 1)
     message_ReadOrNot.save()
     return JsonResponse({"message_detail":rtn})
-
+'''
 # 将消息标记为已读
 def mark_read(request):
     if not checkSessionValid(request):
@@ -229,7 +238,7 @@ def delete_message(request):
     # message_ReadOrNot.save()
 
     return HttpResponse("Succeed to delete message", status = 200)
-
+'''
 # 报名活动
 def register_activity(request):
     if not checkSessionValid(request):
@@ -273,3 +282,4 @@ def cancel_registration(request):
     amount = activity.ActivityRemain + 1
     activity.update(ActivityRemain=amount)
     activity.save()
+'''
