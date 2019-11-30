@@ -1,8 +1,12 @@
 from django.db import models
-
+from mysite.models import Volunteer
 # Create your models here.
 
-    
+ENROLL_STATE_CONST = {
+    'UNCENSORED': 2323,
+    'ACCEPTED': 3434,
+    'REJECTED': 4545
+}
 
 class Activity(models.Model):
     """
@@ -22,7 +26,7 @@ class Activity(models.Model):
     Tag = models.CharField(null=True, blank=True, max_length=100, verbose_name='标签')
     ReleaseDate = models.DateTimeField(null=True, verbose_name='发布日期')
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
-    # Participants = models.ManyToManyField(User, blank=True, verbose_name='参与者')
+    members = models.ManyToManyField(Volunteer, through=Membership, verbose_name='参与者')
 
     def __str__(self):
         return '{}({})'.format(self.ActivityName, self.ActivityNumber)
@@ -30,7 +34,12 @@ class Activity(models.Model):
     class Meta:
         verbose_name = "活动信息"
         verbose_name_plural = verbose_name
-#
+
+class Membership(models.model):
+    volunteer = models.ForeignKey(Volunteer, on_delete=models.CASCADE)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    state = models.IntegerField(default=ENROLL_STATE_CONST["UNCENSORED"])
+
 class Message(models.Model):
     """
     活动消息
@@ -41,16 +50,18 @@ class Message(models.Model):
     MessageDetailContent = models.TextField(null = True, blank = True, verbose_name="消息详细内容")
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
     ActivityNumber = models.ForeignKey(Activity, verbose_name='活动编号', on_delete=models.CASCADE)
+    volunteers = models.ManyToManyField(Volunteer, through=MessageReadOrNot, verbose_name='消息接受者')
     #THUID = models.ForeignKey(User,to_field='THUID',verbose_name='用户学号')
     
 class MessageReadOrNot(models.Model):
     """
     消息是否被某个用户阅读
     """
-    MessageId = models.ForeignKey(Message,verbose_name='消息编号', on_delete=models.CASCADE)
-    #THUID = models.ForeignKey(User,to_field='THUID',verbose_name='用户学号')
-    ReadOrNot = models.IntegerField(default=0, verbose_name='某用户是否阅读该条消息') # 1 for has read, 0 for not read yet
+    MessageID = models.ForeignKey(Message,verbose_name='消息编号', on_delete=models.CASCADE)
+    VolunteerID = models.ForeignKey(Volunteer, verbose_name='用户学号', on_delete=models.CASCADE)
+    ReadOrNot = models.BooleanField(default=False, verbose_name='某用户是否阅读该条消息')
    
+
 class ActivityPic(models.Model):
     """活动所有的描述图片"""
     PicId = models.AutoField(primary_key=True, verbose_name='图片ID')
