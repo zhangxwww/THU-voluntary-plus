@@ -1,5 +1,5 @@
 from django.db import models
-from mysite.models import Volunteer
+from mysite.models import Volunteer, User
 # Create your models here.
 
 ENROLL_STATE_CONST = {
@@ -12,12 +12,12 @@ class Activity(models.Model):
     """
     活动信息
     """
-    ActivityName = models.CharField(max_length=255, unique=True, verbose_name='活动名称')
+    ActivityName = models.CharField(max_length=255, verbose_name='活动名称')
     ActivityPlace = models.CharField(max_length=255,verbose_name='活动地点')
     ActivityStartDate = models.CharField(max_length=255,verbose_name='活动开始日期')
     ActivityEndDate = models.CharField(max_length=255,verbose_name='活动结束日期')
     ActivityTime = models.CharField(max_length=255,verbose_name='活动时间')
-    ActivityOrganizer = models.CharField(max_length=255, null=True, blank=True, verbose_name='发起者')
+    ActivityOrganizer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='发起者')
     ActivityIntro = models.TextField(null=True, blank=True, verbose_name='活动介绍')
     ActivityRemain = models.IntegerField(default=0, verbose_name='剩余名额')
     IsFull = models.IntegerField(default=0, verbose_name='是否报满')

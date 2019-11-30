@@ -38,9 +38,9 @@ urlpatterns = [
     path(r'api/activities/list', showactivity_views.catalog_grid),
 
     
-    #path(r'api/acrivities/detail',showactivity_views.activity_detail),
+    path(r'api/acrivities/detail',showactivity_views.activity_detail),
     #path(r'api/activities/search', showactivity_views.search),
-    #path(r'api/activities/post', showactivity_views.post_activity),
+    path(r'api/activities/post', showactivity_views.post_activity),
     #path(r'api/activities/register', showactivity_views.register_activity),
     #path(r'api/activities/cancelregistration', showactivity_views.cancel_registration),
 
