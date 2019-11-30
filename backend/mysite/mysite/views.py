@@ -43,11 +43,12 @@ def getOpenID(request):
 
 def validateToken(token, openid):
     raise NotImplementedError
-    return {SUCCESS_CONST:True, THUID_CONST:"2016110011"}
+    return {SUCCESS_CONST:True, THUID_CONST:"2016110011"}   
 
 def checkSessionValid(request):
     '''
-    检查用户是否登录、登录是否过期，若登录且未过期返回True，否则返回False
+    检查学生是否登录、登录是否过期、是否可以获取到学号（小程序端登录时，只有绑定了学号才能获取到学号）。
+    若登录且未过期返回(True, THUID/None)（注：若为小程序端且未绑定，才返回None），否则返回(False, None)
     '''
     client_type = request.META['HTTP_USER_AGENT']
     try:
@@ -57,24 +58,36 @@ def checkSessionValid(request):
             sessionid = request.session.session_key
         s = SessionStore(session_key=sessionid)
         if s[LOGGED_IN_CONST]!= True:
-            return False
+            return False, None
         expiry_date = s.get_expiry_date()
         print("expiry_date: {}".format(expiry_date))
         utcnow = datetime.datetime.utcnow().replace(tzinfo=utc)
         print("utcnow: {}".format(utcnow))
         if utcnow<expiry_date:
-            return True
+            if "MicroMessenger" in client_type:
+                try:
+                    record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
+                    THUID = record.THUID
+                    # return JsonResponse({"THUID":THUID})
+                    return True, THUID # 已登录，已绑定
+                except:
+                    # return JsonResponse({"THUID":"Not binded"})
+                    return True, None # 已登录，未绑定
+            else:
+                return True, int(s[THUID_CONST])
         else:
             s[LOGGED_IN_CONST] = False
-            return False
+            return False, None
     except:
-        return False
+        return False, None
 
+
+'''
 def getStudentID(request):
-    '''
-    获取学号，调用此函数前应调用checkSessionValid函数检查登录状态
-    若获取成功则返回学号，否则返回False
-    '''
+    
+    #获取学号，调用此函数前应调用checkSessionValid函数检查登录状态
+    #若获取成功则返回学号，否则返回False
+    
     client_type = request.META['HTTP_USER_AGENT']
     if "MicroMessenger" in client_type:
         try:
@@ -90,13 +103,15 @@ def getStudentID(request):
             return request.session[THUID_CONST]
         else:
             return False
+'''
 
 def loginApi(request):
     '''
     登陆接口
     '''
     client_type = request.META['HTTP_USER_AGENT']
-    if checkSessionValid(request):
+    sessionValidInfo = checkSessionValid(request)
+    if sessionValidInfo[0]:
         return HttpResponse("No need to login repeatedly", status=403)
     if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
         jsonBody = json.loads(request.body)
@@ -108,11 +123,9 @@ def loginApi(request):
                 request.session[OPENID_CONST]=res["openid"]
                 request.session[LOGGED_IN_CONST] = True
                 # 检查有没有绑定
-                try:
-                    record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
-                    THUID = record.THUID
-                    return JsonResponse({"THUID":THUID})
-                except:
+                if sessionValidInfo[1] is not None:
+                    return JsonResponse({"THUID":sessionValidInfo[1]})
+                else:
                     return JsonResponse({"THUID":"Not binded"})
             else:
                 return HttpResponse(status=404)
@@ -134,7 +147,7 @@ def loginApi(request):
         return JsonResponse(json.dumps(r), safe=False)
 
 def bindApi(request):
-    if not checkSessionValid(request):
+    if not checkSessionValid(request)[0]:
         return HttpResponse("You need to login!", status=401)
     client_type = request.META['HTTP_USER_AGENT']
     if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
@@ -174,10 +187,11 @@ def bindApi(request):
         return HttpResponse("Unable to bind for PC client", status=401)
 
 def volunteerChangeInfo(request):
-    if not checkSessionValid(request):
+    sessionValidInfo = checkSessionValid(request)
+    if sessionValidInfo[0]:
         return HttpResponse("You need to login!", status=401)
-    THUID = getStudentID(request)
-    if THUID == False:
+    THUID = sessionValidInfo[1]
+    if THUID is None:
         return HttpResponse("Failed to get THUID!", status=404)
     MODIFIABLE_PROPS = ["NICKNAME","SIGNATURE","PHONE"]
     try:
