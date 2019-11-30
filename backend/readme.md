@@ -11,6 +11,8 @@ exit
 ```
 ```
 python3 manage.py makemigrations
+python3 manage.py makemigrations mysite
+python3 manage.py makemigrations showactivity
 python3 manage.py migrate
 ```
 
