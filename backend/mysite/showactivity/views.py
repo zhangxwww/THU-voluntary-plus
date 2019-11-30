@@ -335,3 +335,23 @@ def cancel_registration(request):
     activity.update(ActivityRemain=amount)
     activity.save()
 '''
+
+def post_message(request):
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        activity_id = request.POST.get(id)
+        activity = showactivity_models.Activity.objects.get(id=activity_id)
+        volunteers = activity.Participants
+
+        title = json.loads(request.body)["title"]
+        content = json.loads(request.body)["content"]
+        
+
+        message = Message(MessageTitle = title, MessageDetailContent = content,ActivityNumber = activity_id, volunteers = volunteers)
+        message.save()
+
+        message_ReadOrNot = MessageReadOrNot(MessageID = message.id, VolunteerID = volunteers, ReadOrNot = 0)
+        message_ReadOrNot.save()
+        
+        return HttpResponse("Post messages successful", status = 200)
+    else:
+        return HttpResponse("You have no access", status = 401)
