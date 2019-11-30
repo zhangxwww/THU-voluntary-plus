@@ -25,6 +25,7 @@ class Activity(models.Model):
     Intro_pic = models.ImageField(null=True, blank=True, verbose_name='介绍图片')
     Tag = models.CharField(null=True, blank=True, max_length=100, verbose_name='标签')
     ReleaseDate = models.DateTimeField(null=True, verbose_name='发布日期')
+    ActivityStatus = models.IntegerField(default=0, verbose_name='状态')  # 0 for success, 1 for warning, 2 for danger
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
     members = models.ManyToManyField(Volunteer, through=Membership, verbose_name='参与者')
 

@@ -80,16 +80,20 @@ def catalog_grid(request):
     for i in range(len(rtn_list)):
         rtn = {}
         ActivityID = rtn_list[i].ActivityNumber
-        rtn["id"] = ActivityID
-        rtn["name"] = rtn_list[i].ActivityName
-        rtn["date"] = rtn_list[i].ActivityTime
+        rtn["id"] = rtn_list[i].id
+        rtn["title"] = rtn_list[i].ActivityName
+        rtn["assembler"] = rtn_list[i].ActivityOrganizer
+        rtn["location"] = rtn_list[i].ActivityPlace
+        rtn["tag"] = rtn_list[i].Tag
+        rtn["status"] = rtn_list[i].ActivityStatus
+        rtn["time"] = rtn_list[i].ActivityTime
         pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
         #rtn_pic.append(pic_tmp[0])
         rtn["pic"] = pic_tmp[0]
         rtn_listt.append(rtn)
     #rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
     #return render(request, "showactivity/catalog_grid.html", locals())
-    return JsonResponse({"activity_list":rtn_listt})
+    return JsonResponse({"rawlist":rtn_listt})
 
 # 查看活动详细信息
 def activity_detail(request):
