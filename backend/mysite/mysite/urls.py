@@ -28,6 +28,7 @@ urlpatterns = [
     path(r'login.do', views.loginApi),
 
     path(r'api/weblogin',views.weblogin, name="weblogin")
+    path(r'api/users/create',views.createUser, name="createUser")
 
     path(r'api/bind', views.bindApi),
     path(r'api/volunteer/changeInfo', views.volunteerChangeInfo),
@@ -47,4 +48,5 @@ urlpatterns = [
     #path(r'api/messages/detail',showactivity_views.read_message),
     #path(r'api/messages/mark',showactivity_views.mark_read),
     #path(r'api/messages/delete',showactivity_views.delete_message),
+    path(r'api/messages/post', showactivity_views.post_message)
 ]
