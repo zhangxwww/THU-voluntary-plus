@@ -218,7 +218,11 @@ def createUser(request):
     pwd = get_hash(pwd)
     # identity = json.loads(request.body)["identity"] # identity = 0 or 1
     identity = 1
-    user = User.objects.create_user(Identity = identity, username = login_name, password = pwd)
+    try:
+        user = User.objects.create_user(Identity = identity, username = login_name, password = pwd)
+        return HttpResponse("CREATE USER SUCCESS",status = 200)
+    except:
+        return HttpResponse("CREATE USER FAIL", status = 404)
 
 def weblogin(request):
     login_name = json.loads(request.body)["username"]
