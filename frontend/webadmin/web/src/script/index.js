@@ -38,7 +38,7 @@ export function addNewActivity(form, success, fail) {
 }
 
 export function login(form, success, fail) {
-    axios.post('', {
+    axios.post('/api/api/manager/login', {
         username: form.username,
         password: form.password
     }).then(res => {
