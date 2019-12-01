@@ -12,8 +12,8 @@ class VOLUNTEER(models.Model):
     DEPARTMENT = models.TextField()
     NICKNAME = models.CharField(max_length=100)
     SIGNATURE = models.TextField()
-    PHONE = models.IntegerField(blank=True, null=True)
-    TIME = models.FloatField(default=0)
+    PHONE = models.TextField()
+    VOLUNTEER_TIME = models.FloatField(default=0)
     EMAIL = models.TextField()
     #AVATAR = 
 

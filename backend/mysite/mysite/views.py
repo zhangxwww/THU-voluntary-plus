@@ -73,7 +73,7 @@ def checkSessionValid(request):
         if utcnow<expiry_date:
             if "MicroMessenger" in client_type:
                 try:
-                    record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
+                    record = WX_OPENID_TO_THUID.objects.get(OPENID = s[OPENID_CONST])
                     THUID = record.THUID
                     # return JsonResponse({"THUID":THUID})
                     return True, THUID # 已登录，已绑定
@@ -93,7 +93,7 @@ def checkSessionValid(request):
 def getStudentID(request):
     
     #获取学号，调用此函数前应调用checkSessionValid函数检查登录状态
-    #若获取成功则返回学号，否则返回False
+    #若获取成功则返回学号，否则返回None
     
     client_type = request.META['HTTP_USER_AGENT']
     if "MicroMessenger" in client_type:
@@ -104,12 +104,12 @@ def getStudentID(request):
             THUID = record.THUID
             return THUID
         except:
-            return False
+            return None
     else:
         if THUID_CONST in request.session.keys():
             return request.session[THUID_CONST]
         else:
-            return False
+            return None
 '''
 
 def loginApi(request):
@@ -118,6 +118,7 @@ def loginApi(request):
     '''
     client_type = request.META['HTTP_USER_AGENT']
     sessionValidInfo = checkSessionValid(request)
+    print(sessionValidInfo)
     if sessionValidInfo[0]:
         return HttpResponse("No need to login repeatedly", status=403)
     if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
@@ -126,14 +127,34 @@ def loginApi(request):
             code = jsonBody[WX_CODE_HEADER]
             r = requests.post(WX_HTTP_API,data={"appid":WX_APPID, "secret":WX_SECRET, "js_code":code, "grant_type":"authorization_code"})
             res = json.loads(r.text)
+            print(res)
             if ("errcode" not in res.keys()) or (res["errcode"] == 0):
                 request.session[OPENID_CONST]=res["openid"]
                 request.session[LOGGED_IN_CONST] = True
+                THUID = None
+                try:
+                    THUID = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"]).THUID
+                except:
+                    THUID = None
+                print(THUID)
                 # 检查有没有绑定
-                if sessionValidInfo[1] is not None:
-                    return JsonResponse({"THUID":sessionValidInfo[1]})
+                if THUID is not None:
+                    volunteer = VOLUNTEER.objects.get(THUID=THUID)
+                    jsonData = {
+                        "THUID":volunteer.THUID,
+                        "NAME": volunteer.NAME,
+                        "DEPARTMENT": volunteer.DEPARTMENT,
+                        "NICKNAME": volunteer.NICKNAME,
+                        "SIGNATURE": volunteer.SIGNATURE,
+                        "PHONE": volunteer.PHONE,
+                        "VOLUNTEER_TIME": volunteer.VOLUNTEER_TIME,
+                        "EMAIL": volunteer.EMAIL,
+                        "BINDED": True
+                    }
+                    print(jsonData)
+                    return JsonResponse(jsonData)
                 else:
-                    return JsonResponse({"THUID":"Not binded"})
+                    return JsonResponse({"BINDED":False})
             else:
                 return HttpResponse(status=404)
         else:
@@ -185,29 +206,51 @@ def bindApi(request):
             wxuser.save()
         # 更新VOLUNTEER表
         try:
-            VOLUNTEER.objects.get(THUID=THUID)
+            volunteer = VOLUNTEER.objects.get(THUID=THUID)
         except:
             volunteer = VOLUNTEER(THUID = THUID, NAME = thuuser["name"], DEPARTMENT=thuuser["department"], EMAIL=thuuser["mail"], NICKNAME = thuuser["name"])
             volunteer.save()
-        return HttpResponse(str(THUID),status=200)
+        jsonData = {
+            "THUID":volunteer.THUID,
+            "NAME": volunteer.NAME,
+            "DEPARTMENT": volunteer.DEPARTMENT,
+            "NICKNAME": volunteer.NICKNAME,
+            "SIGNATURE": volunteer.SIGNATURE,
+            "PHONE": volunteer.PHONE,
+            "VOLUNTEER_TIME": volunteer.VOLUNTEER_TIME,
+            "EMAIL": volunteer.EMAIL
+        }
+
+        return JsonResponse(jsonData)
     else:
         return HttpResponse("Unable to bind for PC client", status=401)
 
 def volunteerChangeInfo(request):
     sessionValidInfo = checkSessionValid(request)
-    if sessionValidInfo[0]:
+    print(sessionValidInfo)
+    if not sessionValidInfo[0]:
         return HttpResponse("You need to login!", status=401)
     THUID = sessionValidInfo[1]
     if THUID is None:
         return HttpResponse("Failed to get THUID!", status=404)
-    MODIFIABLE_PROPS = ["NICKNAME","SIGNATURE","PHONE"]
+    MODIFIABLE_PROPS = ["NICKNAME","SIGNATURE","PHONE","EMAIL"]
     try:
+        print("xixixi")
         info = VOLUNTEER.objects.get(THUID=THUID)
         body = json.loads(request.body)
-        for key in body.keys():
-            if key in MODIFIABLE_PROPS:
-                setattr(info, key, body[key])
-        info.save()
+        print("hhh")
+        print(body)
+        client_type = request.META['HTTP_USER_AGENT']
+        if "MicroMessenger" in client_type:
+            key = body["key"]
+            if key.upper() in MODIFIABLE_PROPS:
+                setattr(info, key.upper(), body["value"])
+            info.save()
+        else:
+            for key in body.keys():
+                if key.upper() in MODIFIABLE_PROPS:
+                    setattr(info, key.upper(), body[key])
+            info.save()
         return HttpResponse("OPERATION SUCCESS", status=200)
     except:
         return HttpResponse("OPERATION FAILED", status=404)
