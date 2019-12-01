@@ -4,6 +4,7 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
+        bind: false,
 		curpage: 'index',
 		title: '志愿广场',
 		personalinfo: {
@@ -29,6 +30,9 @@ const store = new Vuex.Store({
 		currentModified: null,
 	},
 	mutations: {
+        setBind(state, bind) {
+            state.bind = bind
+        },
 		changePageTo(state, page) {
 			state.curpage = page
 		},
