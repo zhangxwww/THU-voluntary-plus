@@ -22,7 +22,8 @@
       <el-form-item prop="password">
         <el-input
           placeholder="密码"
-          v-model="loginForm.password">
+          v-model="loginForm.password"
+          show-password>
           <i slot="prefix" class="el-input__icon el-icon-lock"></i>
         </el-input>
       </el-form-item>
@@ -109,7 +110,7 @@ export default {
   -webkit-appearance: none;
   border-radius: 0px;
   padding: 12px 5px 12px 15px;
-  margin-left:20px;
+  margin-left: 20px;
   height: 47px;
 
   &:-webkit-autofill {
