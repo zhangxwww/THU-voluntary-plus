@@ -6,6 +6,7 @@ pip3 install pyOpenSSL
 ```
 ```
 mysql -u root -p
+#drop database THUVPlus;
 CREATE DATABASE IF NOT EXISTS THUVPlus;
 exit
 ```

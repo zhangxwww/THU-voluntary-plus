@@ -25,6 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'api/redirectToTHUAuthentication', views.redirectToTHUAuthentication, name="THUAuthentication"),
     path(r'api/login', views.loginApi, name="login"),
+    path(r'api/manager/login', views.managerLoginApi, name="manegerLogin"),
     path(r'login.do', views.loginApi),
 
     path(r'api/weblogin',views.weblogin, name="weblogin"),

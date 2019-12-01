@@ -21,20 +21,20 @@ PERMISSION_CONST = {
 def checkUserType(request):
     try:
         if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
-            user_type = request.user.isTeacher
-            if user_type:
+            print("authenticated")
+            if mysite_models.UserIdentity(request.user).isTeacher:
                 return PERMISSION_CONST['TEACHER']
             else:
                 return PERMISSION_CONST['ORGANIZATION']
         else:
-            res = checkSessionValid(request)[1]
-            if res is not None:
-                return PERMISSION_CONST['VOLUNTEER']
-            else:
-                return PERMISSION_CONST['UNAUTHENTICATED']
+            return PERMISSION_CONST['UNAUTHENTICATED']
     except:
         traceback.print_exc()
-        return PERMISSION_CONST['UNAUTHENTICATED']
+        res = checkSessionValid(request)[1]
+        if res is not None:
+            return PERMISSION_CONST['VOLUNTEER']
+        else:
+            return PERMISSION_CONST['UNAUTHENTICATED']
 
 # Create your views here.
 #检查登录
@@ -60,6 +60,8 @@ def check_login(request):
 
 # 发布活动
 def post_activity(request): # name, place, date, time, tag, description, amount
+    print(request.COOKIES)
+    print(checkUserType(request))
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         name = json.loads(request.body)["name"]
         region = json.loads(request.body)["region"]

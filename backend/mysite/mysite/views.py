@@ -1,15 +1,18 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
 from django.contrib.auth import  authenticate
+from django.contrib.auth.models import User
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
     WX_APPID, WX_SECRET, REDIRECT_TO_LOGIN
-from .models import WX_OPENID_TO_THUID, VOLUNTEER, User, UserManager
+from .models import WX_OPENID_TO_THUID, VOLUNTEER, UserIdentity
+#User, UserManager
 import requests
 import json
 from django.contrib.sessions.backends.db import SessionStore
 import datetime 
 from django.utils.timezone import utc
 import hashlib
+import traceback
 
 
 THUID_CONST="THUID"
@@ -173,6 +176,30 @@ def loginApi(request):
             volunteer = VOLUNTEER(THUID = THUID, NAME = r["xm"], DEPARTMENT=r["dw"], EMAIL=r["email"], NICKNAME = r["xm"])
             volunteer.save()
         return JsonResponse(json.dumps(r), safe=False)
+
+def managerLoginApi(request):
+    '''
+    志愿中心老师/公益团体的登录接口，网页端。
+    '''
+    jsonBody = json.loads(request.body)
+    username = jsonBody["username"]
+    passwd = jsonBody["password"]
+    user = User.objects.create_user(username = 'admin', password = '111111')
+    UserIdentity(isTeacher=True, user=user).save()
+    try:
+        print(passwd)
+        print(username)
+        user = authenticate(username=username, password=passwd)
+        print("xixi")
+        if user is not None:
+            login(request, user)
+        else:
+            return HttpResponse("LOGIN FAILED", status=404)
+        return HttpResponse("LOGIN SUCCESS")
+    except:
+        traceback.print_exc()
+        return HttpResponse("LOGIN FAILED", status=404)
+
 
 def bindApi(request):
     if not checkSessionValid(request)[0]:
