@@ -1,11 +1,11 @@
 import axios from 'axios'
 
 export function getActivity(success, fail) {
-    axios.get('/api/activities/list', {
+    axios.get('/api/api/activities/list', {
 
     }).then(res => {
         if (res.status === 200) {
-            let list = res.activity_list
+            let list = res.data.ActivityList
             success(list)
         } else {
             fail()
@@ -21,8 +21,10 @@ export function addNewActivity(form, success, fail) {
         name: form.name,
         region: form.region,
         totalNum: form.totalNum,
-        date1: form.date1,
-        date2: form.date2,
+        startdate: form.startdate,
+        starttime: form.starttime,
+        enddate: form.enddate,
+        endtime: form.endtime,
         tag: form.tag,
         desc: form.desc
     }).then(res => {
