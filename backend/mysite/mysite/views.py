@@ -184,8 +184,6 @@ def managerLoginApi(request):
     jsonBody = json.loads(request.body)
     username = jsonBody["username"]
     passwd = jsonBody["password"]
-    user = User.objects.create_user(username = 'admin', password = '111111')
-    UserIdentity(isTeacher=True, user=user).save()
     try:
         print(passwd)
         print(username)

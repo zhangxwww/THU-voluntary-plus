@@ -19,6 +19,7 @@ class Activity(models.Model):
     ActivityTime = models.CharField(max_length=255,verbose_name='活动时间')
     ActivityOrganizer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='发起者')
     ActivityIntro = models.TextField(null=True, blank=True, verbose_name='活动介绍')
+    ActivityTotalAmount = models.IntegerField(default=0, verbose_name='总名额')
     ActivityRemain = models.IntegerField(default=0, verbose_name='剩余名额')
     IsFull = models.IntegerField(default=0, verbose_name='是否报满')
     IsOverDeadline = models.IntegerField(default=0, verbose_name='是否截止报名') # 1 for unable to sign up
