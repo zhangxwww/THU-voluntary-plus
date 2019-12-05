@@ -102,6 +102,7 @@
         </view>
         <view class="action">
           <button v-if="hasJoin"
+                  @tap="signin"
                   class="cu-btn sm shadow bg-blue margin-right">
             <text class="cuIcon-location"></text>定位打卡</button>
           <button class="cu-btn sm shadow"
@@ -198,6 +199,41 @@ export default {
           }
         })
       }
+    },
+    signin: function () {
+      uni.getLocation({
+        success: (res) => {
+          uni.request({
+            url: 'https://thuvplus.iterator-traits.com/api/activities/register',
+            method: 'POST',
+            header: {
+              'Content-Type': 'application/json',
+              "Set-Cookie": "sessionid=" + this.sessionid
+            },
+            data: {
+              id: this.itemprop.id,
+              latitude: res.latitude,
+              longitude: res.longitude,
+              altitude: res.altitude,
+              address: res.address
+            },
+            success: (res) => {
+              if (res.statusCode === 200) {
+                console.log('sign up!')
+              } else {
+                console.log('fail')
+              }
+            },
+            fail: (res) => {
+              console.log('fail')
+            }
+          })
+        },
+        fail: (res) => {
+          console.log('fail to get location')
+          console.log(res)
+        }
+      })
     }
   }
 }
