@@ -97,16 +97,16 @@
       <view class="cu-item sm">
         <view class="content">
           <text class="cuIcon-roundcheck"
-                :class="itemprop.hasJoin?'text-green':'text-gray'"></text>
+                :class="hasJoinFunc?'text-green':'text-gray'"></text>
           <text class="text-grey text-sm">{{ joinInstructionText }}</text>
         </view>
         <view class="action">
-          <button v-if="itemprop.hasJoin"
+          <button v-if="hasJoinFunc"
                   @tap="signin"
                   class="cu-btn sm shadow bg-blue margin-right">
             <text class="cuIcon-location"></text>定位打卡</button>
           <button class="cu-btn sm shadow"
-                  :class="itemprop.hasJoin?'bg-gray':'bg-green'"
+                  :class="hasJoinFunc?'bg-gray':'bg-green'"
                   @tap="join">
             <text class="cuIcon-write"></text>{{ joinButtonText }}</button>
         </view>
@@ -127,34 +127,42 @@ export default {
     itemprop: {
       type: Object,
       required: true
+    },
+    hasJoin: {
+      type: Boolean,
+      required: true
     }
   },
   data () {
     return {
       created: false,
-      // hasJoin: false
+      //hasJoin: false
     }
   },
   computed: {
     ...mapState(['sessionid']),
     joinInstructionText: function () {
-      if (this.itemprop.hasJoin) {
+      if (this.hasJoin) {
         return '您已报名参加此活动'
       } else {
         return '您尚未报名此活动，点击按钮报名'
       }
     },
     joinButtonText: function () {
-      if (this.itemprop.hasJoin) {
+      if (this.hasJoin) {
         return '取消'
       } else {
         return '加入'
       }
+    },
+    hasJoinFunc: function () {
+      return this.hasJoin
     }
   },
+
   methods: {
     join: function () {
-      if (this.itemprop.hasJoin) {
+      if (this.hasJoin) {
         uni.request({
           url: 'https://thuvplus.iterator-traits.com/api/activities/cancelregistration',
           method: 'POST',
@@ -168,7 +176,7 @@ export default {
           success: (res) => {
             if (res.statusCode === 200) {
               if (res.data.success) {
-                this.itemprop.hasJoin = false
+                this.hasJoin = false
               } else {
                 console.log(res.data.failinfo)
               }
@@ -194,9 +202,9 @@ export default {
           success: (res) => {
             if (res.statusCode === 200) {
               if (res.data.success) {
-                this.itemprop.hasJoin = true
+                this.hasJoin = true
               } else {
-                alert(res.data.failinfo)
+                console.log(res.data.failinfo)
               }
             } else {
               console.log(res)
@@ -214,6 +222,8 @@ export default {
         success: () => {
           uni.getLocation({
             success: (res) => {
+              console.log('GPS')
+              console.log(res)
               uni.request({
                 url: 'https://thuvplus.iterator-traits.com/api/activities/checkin',
                 method: 'POST',
@@ -225,7 +235,6 @@ export default {
                   id: this.itemprop.id,
                   latitude: res.latitude,
                   longitude: res.longitude,
-                  altitude: res.altitude,
                   address: res.address
                 },
                 success: (res) => {
@@ -233,7 +242,8 @@ export default {
                     if (res.data.success) {
                       console.log('sign up!')
                     } else {
-                      alert(res.data.failinfo)
+                      console.log('sign up fail')
+                      console.log(res.data.failinfo)
                     }
                   } else {
                     console.log('fail')

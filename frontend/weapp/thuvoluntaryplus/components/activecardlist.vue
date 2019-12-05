@@ -79,7 +79,7 @@ export default {
                   that.$store.commit('setPersonalInfo', info)
                   that.$store.commit('setBind', true)
                 }
-                this.getActivityList()
+                that.getActivityList()
               } else {
                 print('post login fail')
                 print(res)
