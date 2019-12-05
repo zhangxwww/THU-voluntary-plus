@@ -4,11 +4,13 @@ import Login from '@/views/Login'
 import AddActivity from '@/views/AddActivity'
 import ActivityCenter from '@/views/ActivityCenter'
 import ConfigActivity from '@/views/ConfigActivity'
+import GroupCenter from "@/views/GroupCenter"
 import Layout from '@/layout/Index.vue'
 //import Layout from '@/layout/index'
 Vue.use(VueRouter)
 
-const routes = [{
+const routes = [
+    {
         path: '/login',
         name: 'login',
         component: Login,
@@ -16,7 +18,6 @@ const routes = [{
             title: '登录'
         }
     },
-
     {
         path: '/',
         redirect: '/dashboard'
@@ -49,6 +50,25 @@ const routes = [{
             name: 'ConfigActivity',
             component: ConfigActivity
         }]
+    },
+    {
+        path: '/group',
+        component: Layout,
+        redirect: '/group/groupcenter',
+        name: 'Group',
+        meta: {
+            title: '团体中心'
+        },
+        children: [
+            {
+                path: 'groupcenter',
+                name: 'GroupCenter',
+                component: GroupCenter,
+                meta: {
+                    title: '团体信息'
+                }
+            }
+        ]
     }
 ]
 
