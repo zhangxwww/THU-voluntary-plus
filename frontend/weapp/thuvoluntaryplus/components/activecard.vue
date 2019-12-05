@@ -115,30 +115,32 @@ export default {
         },
         success: (res) => {
           if (res.statusCode === 200) {
-              let data = res.data
-              this.activitydata = {
-                id: data.id,
-                location: data.location,
-                time: data.startdate + '-' + data.enddate,
-                organizer: data.organizer,
-                tag: data.tag,
-                city: data.location,
-                detail: data.desc,
-                participantList: []
-              }
-              for (let part of data.participants) {
-                this.activitydata.participantList.push({
-                  id: part.thuid,
-                  username: part.name,
-                  studentID: part.thuid,
-                  gender: 'male',
-                  avatarUrl: 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-                })
-              }
-              this.$store.commit('setActivityData', this.activitydata)
-              uni.navigateTo({
-                url: '/pages/index/detail/detail'
+            let data = res.data
+            this.activitydata = {
+              id: data.id,
+              location: data.location,
+              time: data.startdate + '-' + data.enddate,
+              organizer: data.organizer,
+              tag: data.tag,
+              city: data.city,
+              location: data.location,
+              detail: data.desc,
+              participantList: [],
+              hasJoin: data.registered
+            }
+            for (let part of data.participants) {
+              this.activitydata.participantList.push({
+                id: part.thuid,
+                username: part.name,
+                studentID: part.thuid,
+                gender: 'male',
+                avatarUrl: 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
               })
+            }
+            this.$store.commit('setActivityData', this.activitydata)
+            uni.navigateTo({
+              url: '/pages/index/detail/detail'
+            })
           }
         },
         fail: (res) => {
