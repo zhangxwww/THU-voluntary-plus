@@ -115,6 +115,11 @@
 </template>
 
 <script>
+import {
+  mapState,
+  mapMutations
+} from 'vuex'
+
 export default {
   Name: 'ActiveInfo',
   props: {
@@ -130,6 +135,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['sessionid']),
     joinInstructionText: function () {
       if (this.hasJoin) {
         return '您已报名参加此活动'
@@ -148,11 +154,49 @@ export default {
   methods: {
     join: function () {
       if (this.hasJoin) {
-        // POST
-        this.hasJoin = false
+        uni.request({
+          url: 'https://thuvplus.iterator-traits.com/api/activities/cancelregister',
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            "Set-Cookie": "sessionid=" + this.sessionid
+          },
+          data: {
+            id: this.itemprop.id
+          },
+          success: (res) => {
+            if (res.statusCode === 200) {
+              this.hasJoin = false
+            } else {
+              console.log(res)
+            }
+          },
+          fail: (res) => {
+            console.log(res)
+          }
+        })
       } else {
-        // POST
-        this.hasJoin = true
+        uni.request({
+          url: 'https://thuvplus.iterator-traits.com/api/activities/register',
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            "Set-Cookie": "sessionid=" + this.sessionid
+          },
+          data: {
+            id: this.itemprop.id
+          },
+          success: (res) => {
+            if (res.statusCode === 200) {
+              this.hasJoin = true
+            } else {
+              console.log(res)
+            }
+          },
+          fail: (res) => {
+            console.log(res)
+          }
+        })
       }
     }
   }
