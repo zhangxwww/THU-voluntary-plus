@@ -192,7 +192,7 @@ export default {
             id: item.id,
             title: item.title,
             assembler: item.organizer,
-            location: item.location,
+            location: item.city,
             tag: item.tag,
             status: item.status,
             time: item.time1

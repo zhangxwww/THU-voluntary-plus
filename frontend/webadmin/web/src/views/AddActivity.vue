@@ -8,15 +8,19 @@
                   prop="name">
       <el-input v-model="ruleForm.name"></el-input>
     </el-form-item>
-    <el-form-item label="活动区域"
-                  prop="region">
-      <el-select v-model="ruleForm.region"
+    <el-form-item label="所在省份"
+                  prop="city">
+      <el-select v-model="ruleForm.city"
                  placeholder="请选择所在省份">
         <el-option v-for="pro in provinces"
                    :label="pro.label"
                    :value="pro.value"
                    :key="pro.id"></el-option>
       </el-select>
+    </el-form-item>
+    <el-form-item label="具体地点"
+                  prop="location">
+      <el-input v-model="ruleForm.location"></el-input>
     </el-form-item>
     <el-form-item label="活动人数"
                   prop="totalNum">
@@ -109,12 +113,12 @@ export default {
         {
           id: 0,
           label: '北京',
-          value: 'beijing'
+          value: '北京'
         },
         {
           id: 1,
           label: '上海',
-          value: 'shanghai'
+          value: '上海'
         }
       ],
       ruleForm: {
@@ -134,8 +138,11 @@ export default {
           { required: true, message: '请输入活动名称', trigger: 'blur' },
           { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
         ],
-        region: [
-          { required: true, message: '请选择活动区域', trigger: 'change' }
+        city: [
+          { required: true, message: '请选择所在省份', trigger: 'change' }
+        ],
+        location: [
+          { required: true, message: '请输入具体地点', trigger: 'change' }
         ],
         totalNum: [{ required: true }],
         startdate: [
@@ -178,7 +185,6 @@ export default {
     submitForm () {
       this.$refs['ruleForm'].validate(valid => {
         if (valid) {
-          alert('Valid!')
           addNewActivity(
             this.ruleForm,
             () => {
