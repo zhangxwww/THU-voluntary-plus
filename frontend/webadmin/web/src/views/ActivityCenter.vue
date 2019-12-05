@@ -94,7 +94,6 @@
                      :total="total">
       </el-pagination>
     </div>
-  </div>
 </template>
 
 <script>
@@ -235,10 +234,11 @@ export default {
     }
   }
 }
+
 </script>
 
 <style scope>
-.pagination {
-  margin-top: 30px;
-}
+    .pagination {
+        margin-top: 30px;
+    }
 </style>
