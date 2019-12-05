@@ -139,7 +139,10 @@
             },
             handleCheck: function () {
 
-            }
+            },
+            filterStatus(value, row) {
+                return row.status === value;
+            },
         },
         created() {
             this.list = this.rawlist.slice(0, this.pagesize)
