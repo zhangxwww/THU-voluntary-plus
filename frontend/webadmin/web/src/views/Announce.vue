@@ -12,6 +12,20 @@
                 <el-button @click="onCancel">取消</el-button>
             </el-form-item>
         </el-form>
+        <el-dialog title="编辑消息" :visible.sync="dialogFormVisible">
+            <el-form :model="editform">
+                <el-form-item label="通知标题">
+                    <el-input v-model="editform.title"></el-input>
+                </el-form-item>
+                <el-form-item label="通知内容">
+                    <el-input type="textarea" v-model="editform.content"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible=false">取消</el-button>
+                <el-button type="success" @click="handleSubmitEdit">编辑</el-button>
+            </div>
+        </el-dialog>
         <div v-if="!isAdding">
             <el-button type="primary" icon="el-icon-edit"
                        @mouseenter.native="onHoverAddButton"
@@ -33,7 +47,7 @@
                 <el-table-column prop="title" label="标题" width="180"></el-table-column>
                 <el-table-column prop="time" label="发布时间" width="180">
                     <template slot-scope="scope">
-                        <i class="el-icon-time" />
+                        <i class="el-icon-time"/>
                         <span>{{ scope.row.time }}</span>
                     </template>
                 </el-table-column>
@@ -49,7 +63,7 @@
                         <el-tag :type="scope.row.status | statusMapper">{{ scope.row.status }}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column align="right" width="230">
+                <el-table-column align="right" width="180">
                     <template slot="header" slot-scope="scope">
                         <el-input
                                 v-model="search"
@@ -61,11 +75,13 @@
                     <template slot-scope="scope">
                         <el-button
                                 size="mini"
-                                @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                                @click="handleEdit(scope.$index, scope.row)">编辑
+                        </el-button>
                         <el-button
                                 size="mini"
                                 type="danger"
-                                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                                @click="handleDelete(scope.$index, scope.row)">删除
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -104,6 +120,11 @@
                     title: '',
                     content: ''
                 },
+                editform: {
+                  title: '',
+                  content: '',
+                    id: 0
+                },
                 isAdding: false,
                 hover: false,
                 rawlist: [{
@@ -134,41 +155,45 @@
                 ],
                 search: '',
                 pagesize: 10,
-                list: []
+                list: [],
+                page: 1,
+                dialogFormVisible: false
             }
         },
         computed: {
-            buttontext: function() {
+            buttontext: function () {
                 if (this.hover) {
                     return '添加新活动'
                 } else {
                     return ''
                 }
             },
-            total: function() {
+            total: function () {
                 return this.rawlist.length
             }
         },
         methods: {
-            onHoverAddButton: function() {
+            onHoverAddButton: function () {
                 this.hover = true
             },
-            onLeaveAddButton: function() {
+            onLeaveAddButton: function () {
                 this.hover = false
             },
-            onClickAddButton: function() {
+            onClickAddButton: function () {
                 this.isAdding = true
             },
-            onSubmit: function() {
+            onSubmit: function () {
                 this.isAdding = false
                 this.hover = false
             },
-            onCancel: function() {
+            onCancel: function () {
                 this.isAdding = false
                 this.hover = false
             },
+            // eslint-disable-next-line no-unused-vars
             handleEdit(index, row) {
-                alert(index, row)
+                this.dialogFormVisible = true
+                this.editform.id = index
             },
             handleDelete(index, row) {
                 alert(index, row)
@@ -179,8 +204,8 @@
             filterStatus(value, row) {
                 return row.status === value;
             },
-            getList: function() {
-                this.list = this.rawlist.slice((this.page - 1) * this.pagesize, this.page  * this.pagesize)
+            getList: function () {
+                this.list = this.rawlist.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
             },
             handleSizeChange(val) {
                 this.pagesize = val
@@ -189,6 +214,10 @@
             handleCurrentChange(val) {
                 this.page = val
                 this.getList()
+            },
+            handleSubmitEdit() {
+                alert(this.editform.content)
+                this.dialogFormVisible = false
             }
         },
         created() {
