@@ -49,7 +49,7 @@
 		
 		
 		methods: {
-			...mapMutations(['setTitle', 'setActivityData', 'setSessionId']),
+			...mapMutations(['setTitle', 'setActivityData', 'setSessionId', 'setPersonalInfo', 'setBind']),
             login() {
 				var that=this
 				uni.login({
@@ -69,6 +69,18 @@
 								let sessionid = res["header"]["Set-Cookie"].split(";")[0].split("=")[1];
 								console.log(sessionid)
 								that.$store.commit('setSessionId',sessionid);
+                                if (res.data.BINDED) {
+                                    let info = {
+                                        nickname: res.data.NICKNAME,
+                                        name: res.data.NAME,
+                                        subject: res.data.DEPARTMENT,
+                                        studentId: res.data.THUID,
+                                        phone: res.data.PHONE,
+                                        signature: res.data.SIGNATURE
+                                    }
+                                    that.$store.commit('setPersonalInfo', info)
+                                    that.$store.commit('setBind', true)
+                                }
 							},
 							fail(res) {
 								console.log(res)

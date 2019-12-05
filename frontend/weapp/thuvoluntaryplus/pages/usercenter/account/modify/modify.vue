@@ -23,7 +23,7 @@
 			}
 		},
 		computed: {
-			...mapState(['currentModified']),
+			...mapState(['currentModified', 'sessionid']),
 			infokey: function() {
 				return this.currentModified.infokey
 			},
@@ -37,7 +37,23 @@
 		methods: {
 			...mapMutations(['modifyInfo']),
 			confirm: function() {
+                var sessionid = this.sessionid
+                var that = this
+                var postKey = this.key
+                var postValue = this.newVal
 				/* todo: 与服务器同步 */
+                uni.request({
+                    url: 'https://thuvplus.iterator-traits.com/api/volunteer/changeInfo',
+                    header: {
+                        'Content-Type': 'application/json',
+                        'Set-Cookie': 'sessionid=' + sessionid
+                    },
+                    data: {
+                        key: postKey,
+                        value: postValue
+                    },
+                    method: 'POST'
+                })
 				this.$store.commit('modifyInfo', { key: this.key, value: this.newVal})
 				uni.navigateBack()
 			}

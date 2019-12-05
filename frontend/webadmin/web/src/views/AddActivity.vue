@@ -25,21 +25,41 @@
                        :max="50"
                        label="活动人数"></el-input-number>
     </el-form-item>
-    <el-form-item label="活动时间"
+    <el-form-item label="开始时间"
                   required>
       <el-row :gutter="20">
         <el-col :span="11">
-          <el-form-item prop="date1">
+          <el-form-item prop="startdate">
             <el-date-picker type="date"
                             placeholder="选择日期"
-                            v-model="ruleForm.date1"
+                            v-model="ruleForm.startdate"
                             style="width: 100%;"></el-date-picker>
           </el-form-item>
         </el-col>
         <el-col :span="11">
-          <el-form-item prop="date2">
+          <el-form-item prop="starttime">
             <el-time-picker placeholder="选择时间"
-                            v-model="ruleForm.date2"
+                            v-model="ruleForm.starttime"
+                            style="width: 100%;"></el-time-picker>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </el-form-item>
+    <el-form-item label="结束时间"
+                  required>
+      <el-row :gutter="20">
+        <el-col :span="11">
+          <el-form-item prop="enddate">
+            <el-date-picker type="date"
+                            placeholder="选择日期"
+                            v-model="ruleForm.enddate"
+                            style="width: 100%;"></el-date-picker>
+          </el-form-item>
+        </el-col>
+        <el-col :span="11">
+          <el-form-item prop="endtime">
+            <el-time-picker placeholder="选择时间"
+                            v-model="ruleForm.endtime"
                             style="width: 100%;"></el-time-picker>
           </el-form-item>
         </el-col>
@@ -101,8 +121,10 @@ export default {
         name: '',
         region: '',
         totalNum: 1,
-        date1: '',
-        date2: '',
+        startdate: '',
+        starttime: '',
+        enddate: '',
+        endtime: '',
         delivery: false,
         tag: '志愿活动',
         desc: ''
@@ -110,15 +132,13 @@ export default {
       rules: {
         name: [
           { required: true, message: '请输入活动名称', trigger: 'blur' },
-          { min: 3, max: 20, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
         ],
         region: [
           { required: true, message: '请选择活动区域', trigger: 'change' }
         ],
-        totalNum: [
-          { required: true }
-        ],
-        date1: [
+        totalNum: [{ required: true }],
+        startdate: [
           {
             type: 'date',
             required: true,
@@ -126,7 +146,23 @@ export default {
             trigger: 'change'
           }
         ],
-        date2: [
+        starttime: [
+          {
+            type: 'date',
+            required: true,
+            message: '请选择时间',
+            trigger: 'change'
+          }
+        ],
+        enddate: [
+          {
+            type: 'date',
+            required: true,
+            message: '请选择日期',
+            trigger: 'change'
+          }
+        ],
+        endtime: [
           {
             type: 'date',
             required: true,
@@ -140,16 +176,20 @@ export default {
   },
   methods: {
     submitForm () {
-      this.$refs['ruleForm'].validate((valid) => {
+      this.$refs['ruleForm'].validate(valid => {
         if (valid) {
-          alert("Valid!")
-          addNewActivity(this.ruleForm, () => {
-            this.resetForm()
-            alert('发布成功!')
-            // TODO redirect
-          }, () => {
-            alert('发布失败')
-          })
+          alert('Valid!')
+          addNewActivity(
+            this.ruleForm,
+            () => {
+              this.resetForm()
+              alert('发布成功!')
+              this.$router.push('/dashboard/activity')
+            },
+            () => {
+              alert('发布失败')
+            }
+          )
         } else {
           alert('发布失败!!')
           return false

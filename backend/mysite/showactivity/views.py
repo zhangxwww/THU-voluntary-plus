@@ -1,13 +1,41 @@
 import json
 import math
+import traceback
 
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.shortcuts import HttpResponse
+from django.http import JsonResponse
 
 from . import models as showactivity_models
 import mysite.models as mysite_models
-from .models import Message, MessageReadOrNot, Activity, ActivityPic
+from .models import Message, MessageReadOrNot, Activity, ActivityPic, ENROLL_STATE_CONST, Membership
+from mysite.views import checkSessionValid, LOGGED_IN_CONST
+
+PERMISSION_CONST = {
+    'TEACHER': 233,
+    'ORGANIZATION': 255,
+    'VOLUNTEER': 258,
+    'UNAUTHENTICATED': 266
+}
+
+def checkUserType(request):
+    try:
+        if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
+            print("authenticated")
+            if mysite_models.UserIdentity(request.user).isTeacher:
+                return PERMISSION_CONST['TEACHER']
+            else:
+                return PERMISSION_CONST['ORGANIZATION']
+        else:
+            res = checkSessionValid(request)[1]
+            if res is not None:
+                return PERMISSION_CONST['VOLUNTEER']
+            else:
+                return PERMISSION_CONST['UNAUTHENTICATED']
+    except:
+        return PERMISSION_CONST['UNAUTHENTICATED']
+            
 
 # Create your views here.
 #检查登录
@@ -33,20 +61,33 @@ def check_login(request):
 
 # 发布活动
 def post_activity(request): # name, place, date, time, tag, description, amount
-    # json = request.body
-    name = json.loads(request.body)["name"]
-    region = json.loads(request.body)["region"]
-    totalNum = json.loads(request.body)["totalNum"]
-    startDate = json.loads(request.body)["date1"]
-    endDate = json.loads(request.body)["date2"]
-    tag = json.loads(request.body)["tag"]
-    description = json.loads(request.body)["desc"]
+    print(request.COOKIES)
+    print(checkUserType(request))
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        name = json.loads(request.body)["name"]
+        region = json.loads(request.body)["region"]
+        totalNum = json.loads(request.body)["totalNum"]
+        startDate = json.loads(request.body)["startdate"]
+        startTime = json.loads(request.body)["starttime"]
+        endDate = json.loads(request.body)["enddate"]
+        endTime = json.loads(request.body)["endtime"]
+        startDateTime = startDate.split('T')[0] + " " + startTime.split('T')[1][:5]
+        endDateTime = endDate.split('T')[0] + " " + endTime.split('T')[1][:5]
+        tag = json.loads(request.body)["tag"]
+        description = json.loads(request.body)["desc"]
 
-    activity = Activity(ActivityName = name, ActivityPlace = region, ActivityStartDate = startDate, \
-        ActivityEndDate = endDate, Tag = tag, ActivityIntro = description, ActivityRemain = totalNum)
-    activity.save()
-    print("POST ACTIVITY SUCCESS")
-    return HttpResponse("POST ACTIVITY SUCCESS", status=200)
+        try:
+            organizer = mysite_models.User.objects.get(username = request.user.username)
+        except:
+            organizer = None
+        activity = Activity(ActivityName = name, ActivityPlace = region, ActivityStartDate = startDateTime, \
+            ActivityEndDate = endDateTime, Tag = tag, ActivityIntro = description, ActivityTotalAmount = totalNum, \
+            ActivityRemain = totalNum, ActivityOrganizer = organizer)
+        activity.save()
+        print("POST ACTIVITY SUCCESS")
+        return HttpResponse("POST ACTIVITY SUCCESS", status=200)
+    else:
+        return HttpResponse("NOT AUTHENTICATED", status=401)
 
 
 #显示活动列表
@@ -59,19 +100,13 @@ def catalog_grid(request):
     #   return redirect('/login/')
     # user = check_login(request)
 
-    if not checkSessionValid(request):
-        return HttpResponse("You need to login!", status = 401)
-    THUID = getStudentID(request)
-    if THUID == False:
-        return HttpResponse("Fail to get THUID!", status = 404)
+    if checkUserType(request) == PERMISSION_CONST['UNAUTHENTICATED']:
+        return HttpResponse("You need to login or bind wxID to THUID!", status = 401)
 
-    type = request.GET.get('tag')
-    if type is None:
-        rtn_list = showactivity_models.Activity.objects.all()
-    else:
-        rtn_list = showactivity_models.Activity.objects.filter(Category=type)
+    rtn_list = showactivity_models.Activity.objects.all()
+
     rtn_pic = []
-    rtn_listt = []
+    result = []
     #page_str = request.GET.get('page')
     #if page_str is None:
     #    page = 1
@@ -79,33 +114,78 @@ def catalog_grid(request):
     #    page = int(page_str)
     for i in range(len(rtn_list)):
         rtn = {}
-        ActivityID = rtn_list[i].ActivityNumber
-        rtn["id"] = ActivityID
-        rtn["name"] = rtn_list[i].ActivityName
-        rtn["date"] = rtn_list[i].ActivityTime
-        pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
+        #ActivityID = rtn_list[i].ActivityNumber
+        rtn["id"] = rtn_list[i].id
+        rtn["title"] = rtn_list[i].ActivityName
+        rtn["location"] = rtn_list[i].ActivityPlace
+        rtn["tag"] = rtn_list[i].Tag
+        rtn["status"] = rtn_list[i].ActivityStatus
+        rtn["startdate"] = rtn_list[i].ActivityStartDate.split(" ")[0]
+        rtn["starttime"] = rtn_list[i].ActivityStartDate.split(" ")[1]
+        rtn["enddate"] = rtn_list[i].ActivityEndDate.split(" ")[0]
+        rtn["endtime"] = rtn_list[i].ActivityEndDate.split(" ")[1]
+        rtn["totalAmount"] = rtn_list[i].ActivityTotalAmount
+        rtn["remainAmount"] = rtn_list[i].ActivityRemain
+        rtn["desc"] = rtn_list[i].ActivityIntro
+        try:
+            rtn["organizer"] = rtn_list[i].ActivityOrganizer.username
+        except:
+            rtn["organizer"] = "Unable to get"
+        #pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
         #rtn_pic.append(pic_tmp[0])
-        rtn["pic"] = pic_tmp[0]
-        rtn_listt.append(rtn)
+        #rtn["pic"] = pic_tmp[0]
+        result.append(rtn)
     #rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
     #return render(request, "showactivity/catalog_grid.html", locals())
-    return JsonResponse({"activity_list":rtn_listt})
+    return JsonResponse({"ActivityList": result}, safe=False)
 
 # 查看活动详细信息
 def activity_detail(request):
-    #is_login = request.session.get('is_login', None)
-    #if is_login:
-    #    user = User.objects.get(pk=request.session.get('studentID'))
-    # user = check_login(request)
-    #Activity_Number = request.GET.get('Number')
-    activity_id = request.POST.get(activity_id)
-    activity = showactivity_models.Activity.objects.get(id=activity_id)
-    pic = showactivity_models.ActivityPic.objects.filter(ActivityId=activity_id)
-    class Recommend:
-        def __init__(self, activity, pic):
-            self.activity = activity
-            self.pic = pic
-    activity_rtn = Recommend(activity,pic)
+    if checkUserType(request) == PERMISSION_CONST['UNAUTHENTICATED']:
+        return HttpResponse("You need to login or bind wxID to THUID!", status = 401)
+    try:
+        activity_id = json.loads(request.body)["activity_id"]
+        activity = showactivity_models.Activity.objects.get(id=activity_id)
+        #pic = showactivity_models.ActivityPic.objects.filter(ActivityId=activity_id
+   # '''
+   # class Recommend:
+   #     def __init__(self, activity, pic):
+   #         self.activity = activity
+   #         self.pic = pic
+   # activity_rtn = Recommend(activity,pic)
+   # '''
+        rtn = {}
+        rtn["id"] = activity.id
+        rtn["title"] = activity.ActivityName
+        rtn["location"] = activity.ActivityPlace
+        rtn["tag"] = activity.Tag
+        rtn["status"] = activity.ActivityStatus
+        rtn["startdate"] = activity.ActivityStartDate.split(" ")[0]
+        rtn["starttime"] = activity.ActivityStartDate.split(" ")[1]
+        rtn["enddate"] = activity.ActivityEndDate.split(" ")[0]
+        rtn["endtime"] = activity.ActivityEndDate.split(" ")[1]
+        rtn["totalAmount"] = activity.ActivityTotalAmount
+        rtn["remainAmount"] = activity.ActivityRemain
+        rtn["desc"] = activity.ActivityIntro
+        try:
+            rtn["organizer"] = activity.ActivityOrganizer.username
+        except:
+            rtn["organizer"] = "Unable to get"
+        rtn["participants"] = []
+        for m in Membership.objects.filter(activity=activity):
+            if m.state == ENROLL_STATE_CONST['ACCEPTED']:
+                volunteer = m.volunteer
+                info = {
+                    "THUID".lower(): volunteer.THUID,
+                    "NAME".lower(): volunteer.NAME,
+                    "DEPARTMENT".lower(): volunteer.DEPARTMENT,
+                    "NICKNAME".lower(): volunteer.NICKNAME,
+                    "SIGNATURE".lower(): volunteer.SIGNATURE,
+                    "PHONE".lower(): volunteer.PHONE,
+                    "VOLUNTEER_TIME".lower(): volunteer.VOLUNTEER_TIME,
+                    "EMAIL".lower(): volunteer.EMAIL
+                }
+                rtn["participants"].append(info)
 
     #Activity_recommend = showactivity_models.Activity.objects.filter(IsOverDeadline=0)
     #Number_set = set()
@@ -122,10 +202,14 @@ def activity_detail(request):
     #user = User.objects.get(studentID=studentID)
     #request.session['number'] = Activity.ActivityNumber
     #return render(request, "showactivity/activity_detail_page.html", locals())
-    return JsonResponse({"activity_detail":activity_rtn})
+        return JsonResponse(rtn)
+    except:
+        traceback.print_exc()
+        return HttpResponse("INVALID ACTIVITY ID", status=404)
 
 def search(request):
-
+    if checkUserType(request) == PERMISSION_CONST['UNAUTHENTICATED']:
+        return HttpResponse("You need to login or bind wxID to THUID!", status = 401)
     #user = check_login(request)
     keyword = request.GET.get('search')
     rtn_set = set()
@@ -133,7 +217,7 @@ def search(request):
     name_key = showactivity_models.Activity.objects.filter(ActivityName__contains=keyword)
     content_key = showactivity_models.Activity.objects.filter(ActivityIntro__contains=keyword)
     organizer_key = showactivity_models.Activity.objects.filter(ActivityOrganizer__contains=keyword)
-    num_key = showactivity_models.Activity.objects.filter(id__contains=keyword)
+    #num_key = showactivity_models.Activity.objects.filter(id__contains=keyword)
 
     #class Activity:
     #    def __init__(self, id,name,date, pic):
@@ -146,22 +230,26 @@ def search(request):
         rtn_set.add(content)
     for organizer in organizer_key:
         rtn_set.add(organizer)
-    for num in num_key:
-        rtn_set.add(num)
-    rtn_listt = []
+    #for num in num_key:
+        #rtn_set.add(num)
+    rtn_list = []
     for rtn_activity in rtn_set:
         rtn = {}
-        ActivityID = rtn_activity.ActivityNumber
-        rtn["id"] = ActivityID
-        rtn["name"] = rtn_activity.ActivityName
-        rtn["date"] = rtn_activity.ActivityTime
-        pic_tmp = showactivity_models.ActivityPic.objects.filter(ActivityNumber=ActivityID)
-        #rtn_pic.append(pic_tmp[0])
-        rtn["pic"] = pic_tmp[0]
-        rtn_listt.append(rtn)
+        rtn["id"] = rtn_activity.id
+        rtn["title"] = rtn_activity.ActivityName
+        rtn["location"] = rtn_activity.ActivityPlace
+        rtn["tag"] = rtn_activity.Tag
+        rtn["status"] = rtn_activity.ActivityStatus
+        rtn["time1"] = rtn_activity.ActivityStartDate
+        rtn["time2"] = rtn_activity.ActivityEndDate
+        try:
+            rtn["organizer"] = rtn_activity.ActivityOrganizer.username
+        except:
+            rtn["organizer"] = "Unable to get"
+        rtn_list.append(rtn)
         #rtn_list.append(Activity(rtn_activity, showactivity_models.ActivityPic.objects.filter(ActivityNumber=rtn_activity.ActivityNumber)[0], rtn_activity.ActivityTime))
     #return render(request, "showactivity/search.html", locals())
-    return JsonResponse({"search_result":rtn_listt})
+    return JsonResponse(rtn_list)
 
 # 消息列表
 def message_catalog_grid(request):
@@ -208,7 +296,7 @@ def mark_read(request):
     THUID = getStudentID(request)
     if THUID == False:
         return HttpResponse("Fail to get THUID!", status = 404)
-    message_id = request.POST.get(message_id)
+    message_id = json.loads(request.body)["message_id"]
     # THUID = 
     message = showactivity_models.Message.objects.get(id=messaage_id)
     message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.filter(THUId=THUID)
@@ -224,7 +312,7 @@ def delete_message(request):
     THUID = getStudentID(request)
     if THUID == False:
         return HttpResponse("Fail to get THUID!", status = 404)
-    message_id = request.POST.get(message_id)
+    message_id = json.loads(request.body)["message_id"]
     # THUID = 
     # message = showactivity_models.Message.objects.get(MessageId=messaage_id)
     message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.filter(THUId=THUID)
@@ -279,3 +367,23 @@ def cancel_registration(request):
     activity.update(ActivityRemain=amount)
     activity.save()
 '''
+
+def post_message(request):
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        activity_id = json.loads(request.body)["id"]
+        activity = showactivity_models.Activity.objects.get(id=activity_id)
+        volunteers = activity.Participants
+
+        title = json.loads(request.body)["title"]
+        content = json.loads(request.body)["content"]
+        
+
+        message = Message(MessageTitle = title, MessageDetailContent = content,ActivityNumber = activity_id, volunteers = volunteers)
+        message.save()
+
+        message_ReadOrNot = MessageReadOrNot(MessageID = message.id, VolunteerID = volunteers, ReadOrNot = 0)
+        message_ReadOrNot.save()
+        
+        return HttpResponse("Post messages successful", status = 200)
+    else:
+        return HttpResponse("You have no access", status = 401)
