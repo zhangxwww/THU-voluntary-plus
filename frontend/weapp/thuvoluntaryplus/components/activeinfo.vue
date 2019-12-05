@@ -156,7 +156,7 @@ export default {
     join: function () {
       if (this.hasJoin) {
         uni.request({
-          url: 'https://thuvplus.iterator-traits.com/api/activities/cancelregister',
+          url: 'https://thuvplus.iterator-traits.com/api/activities/cancelregistration',
           method: 'POST',
           header: {
             'Content-Type': 'application/json',
@@ -167,7 +167,11 @@ export default {
           },
           success: (res) => {
             if (res.statusCode === 200) {
-              this.hasJoin = false
+              if (res.data.success) {
+                this.hasJoin = false
+              } else {
+                alert(res.data.failinfo)
+              }
             } else {
               console.log(res)
             }
@@ -189,7 +193,11 @@ export default {
           },
           success: (res) => {
             if (res.statusCode === 200) {
-              this.hasJoin = true
+              if (res.data.success) {
+                this.hasJoin = true
+              } else {
+                alert(res.data.failinfo)
+              }
             } else {
               console.log(res)
             }
@@ -219,7 +227,11 @@ export default {
             },
             success: (res) => {
               if (res.statusCode === 200) {
-                console.log('sign up!')
+                if (res.data.success) {
+                  console.log('sign up!')
+                } else {
+                  alert(res.data.failinfo)
+                }
               } else {
                 console.log('fail')
               }
