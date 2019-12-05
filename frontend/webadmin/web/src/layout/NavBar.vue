@@ -12,9 +12,9 @@
                     class="el-menu-demo right-menu-item"
                     mode="horizontal"
                     active-text-color="#5c307d">
-                <el-menu-item index="1">活动中心</el-menu-item>
-                <el-menu-item index="2">管理面板</el-menu-item>
-                <el-menu-item index="3">个人信息</el-menu-item>
+                <el-menu-item index="1"><router-link to="/">活动中心</router-link></el-menu-item>
+                <el-menu-item index="2"><router-link to="/">管理面板</router-link></el-menu-item>
+                <el-menu-item index="3"><router-link to="/group">团体信息</router-link></el-menu-item>
             </el-menu>
             <el-dropdown class="avatar-container" trigger="click">
                 <div class="avatar-wrapper">
