@@ -19,7 +19,8 @@ export function getActivity(success, fail) {
 export function addNewActivity(form, success, fail) {
     axios.post('/api/activities/postactivity', {
         name: form.name,
-        region: form.region,
+        location: form.location,
+        city: form.city,
         totalNum: form.totalNum,
         startdate: form.startdate,
         starttime: form.starttime,

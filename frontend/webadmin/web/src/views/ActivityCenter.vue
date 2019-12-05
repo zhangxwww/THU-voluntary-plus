@@ -11,7 +11,7 @@
               fit
               highlight-current-row>
       <el-table-column type="selection"
-                       width="55"> </el-table-column>
+                       width="55"></el-table-column>
       <el-table-column prop="id"
                        sortable
                        align="center"
@@ -48,8 +48,9 @@
                        filter-placement="bottom-end">
         <template slot-scope="scope">
           <el-tag :type="scope.row.status | statusMapper">{{
-            scope.row.status
-          }}</el-tag>
+                        scope.row.status
+                        }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="time"
@@ -74,12 +75,16 @@
         <template slot-scope="scope">
           <el-button size="mini"
                      type="info"
-                     @click="handleDetail(scope.$index, scope.row)">详情</el-button>
+                     @click="handleDetail(scope.$index, scope.row)">
+            <router-link to="/dashboard/config">设置</router-link>
+          </el-button>
           <el-button size="mini"
-                     @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                     @click="handleEdit(scope.$index, scope.row)">编辑
+          </el-button>
           <el-button size="mini"
                      type="danger"
-                     @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                     @click="handleDelete(scope.$index, scope.row)">删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -99,6 +104,7 @@
 
 <script>
 import { getActivity } from '../script/index'
+
 export default {
   filters: {
     statusMapper (status) {
@@ -113,62 +119,7 @@ export default {
   data () {
     return {
       page: 1,
-      rawlist: [
-        {
-          id: 1,
-          title: '国庆期间参观志愿者',
-          assembler: '张大头',
-          location: '请问是二校门',
-          tag: '参观志愿者',
-          status: '已发布',
-          time: '2019-10-1'
-        },
-        {
-          id: 2,
-          title: '国庆期间参观撒旦志愿者',
-          assembler: '张大头',
-          location: '阿佘滴二校门',
-          tag: '参观志愿者',
-          status: '审核中',
-          time: '2019-10-1'
-        },
-        {
-          id: 3,
-          title: '国庆期间参观阿佘滴志愿者',
-          assembler: '阿斯顿撒旦张大头',
-          location: '二校门',
-          tag: '参观志愿者',
-          status: '已发布',
-          time: '2019-10-1'
-        },
-        {
-          id: 4,
-          title: '国庆期间参放到观志愿者',
-          assembler: '张大头',
-          location: '二校门',
-          tag: '参观志愿者',
-          status: '已发布',
-          time: '2019-10-1'
-        },
-        {
-          id: 5,
-          title: '国庆期间参观志愿者',
-          assembler: '张大头',
-          location: '二校门',
-          tag: '参观志愿者',
-          status: '已删除',
-          time: '2019-10-1'
-        },
-        {
-          id: 6,
-          title: '国庆期间参观志愿者',
-          assembler: '张大头',
-          location: '二校门',
-          tag: '参观志愿者',
-          status: '已删除',
-          time: '2019-10-1'
-        }
-      ],
+      rawlist: [],
       listLoading: false,
       search: '',
       pagesize: 3,
@@ -202,10 +153,11 @@ export default {
       },
       () => {
         alert('Fail to get activity list')
-        this.list = this.rawlist.slice(0, this.pagesize)
+        //this.list = this.rawlist.slice(0, this.pagesize)
       }
     )
   },
+
   methods: {
     handleEdit (index, row) {
       alert(index, row)
@@ -235,6 +187,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style scope>
