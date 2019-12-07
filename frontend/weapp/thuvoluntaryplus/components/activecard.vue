@@ -1,4 +1,4 @@
-/<template>
+<template>
   <view class="cu-list menu card-menu margin-top">
     <view class="cu-item noneBottom"
           @tap="showDetail"
@@ -95,11 +95,6 @@ export default {
   },
   computed: {
     ...mapState(['sessionid']),
-    /*
-    activitydata: function () {
-      return
-    }
-    */
   },
   methods: {
     showDetail: function (e) {

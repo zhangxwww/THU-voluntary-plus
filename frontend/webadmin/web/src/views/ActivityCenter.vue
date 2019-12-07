@@ -146,7 +146,7 @@ export default {
             location: item.location,
             tag: item.tag,
             status: item.status,
-            time: item.time1
+            time: item.startdate
           }
           this.list.push(new_item)
         }

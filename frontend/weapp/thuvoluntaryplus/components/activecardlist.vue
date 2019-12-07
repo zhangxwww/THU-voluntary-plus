@@ -97,6 +97,7 @@ export default {
         }
       })
     },
+
     getActivityList: function () {
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/activities/list',
@@ -117,7 +118,7 @@ export default {
                 leader: item.organizer,
                 startTime: item.startdate,
                 endTime: item.enddate,
-                curnum: item.remainAmount,
+                curnum: item.totalAmount - item.remainAmount,
                 totalnum: item.totalAmount,
                 type: item.tag,
                 likes: 0,
