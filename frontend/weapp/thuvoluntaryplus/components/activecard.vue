@@ -1,4 +1,4 @@
-<template>
+/<template>
   <view class="cu-list menu card-menu margin-top">
     <view class="cu-item noneBottom"
           @tap="showDetail"
