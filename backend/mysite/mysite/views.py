@@ -82,6 +82,7 @@ def checkSessionValid(request):
                     return True, THUID # 已登录，已绑定
                 except:
                     # return JsonResponse({"THUID":"Not binded"})
+                    traceback.print_exc()
                     return True, None # 已登录，未绑定
             else:
                 return True, int(s[THUID_CONST])

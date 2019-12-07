@@ -13,7 +13,8 @@ class Activity(models.Model):
     活动信息
     """
     ActivityName = models.CharField(max_length=255, verbose_name='活动名称')
-    ActivityPlace = models.CharField(max_length=255,verbose_name='活动地点')
+    ActivityCity = models.CharField(max_length=255,verbose_name='活动城市')
+    ActivityLocation = models.CharField(max_length=255,verbose_name='活动地点')
     ActivityStartDate = models.CharField(max_length=255,verbose_name='活动开始日期')
     ActivityEndDate = models.CharField(max_length=255,verbose_name='活动结束日期')
     ActivityTime = models.CharField(max_length=255,verbose_name='活动时间')
@@ -41,6 +42,14 @@ class Membership(models.Model):
     volunteer = models.ForeignKey(VOLUNTEER, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     state = models.IntegerField(default=ENROLL_STATE_CONST["UNCENSORED"])
+
+class checkin(models.Model):
+    membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
+    latitude = models.FloatField()
+    longtitude = models.FloatField()
+    address = models.TextField()
+    checkinTime = models.CharField(max_length=255, verbose_name="签到时间")
+
 
 class Message(models.Model):
     """

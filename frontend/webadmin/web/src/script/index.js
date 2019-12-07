@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export function getActivity(success, fail) {
-    axios.get('/api/api/activities/list', {
+    axios.get('/api/activities/list', {
 
     }).then(res => {
         if (res.status === 200) {
@@ -17,7 +17,7 @@ export function getActivity(success, fail) {
 }
 
 export function addNewActivity(form, success, fail) {
-    axios.post('/api/api/activities/postactivity', {
+    axios.post('/api/activities/postactivity', {
         name: form.name,
         location: form.location,
         city: form.city,
@@ -41,7 +41,7 @@ export function addNewActivity(form, success, fail) {
 }
 
 export function login(form, success, fail) {
-    axios.post('/api/api/manager/login', {
+    axios.post('/api/manager/login', {
         username: form.username,
         password: form.password
     }).then(res => {
