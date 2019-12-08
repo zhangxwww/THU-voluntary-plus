@@ -1,12 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/views/Login'
+import Signup from "@/views/Signup"
 import AddActivity from '@/views/AddActivity'
 import ActivityCenter from '@/views/ActivityCenter'
 import ConfigActivity from '@/views/ConfigActivity'
 import GroupCenter from "@/views/GroupCenter"
 import Layout from '@/layout/Index.vue'
-//import Layout from '@/layout/index'
+import Setup from "@/views/Setup"
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -16,6 +18,14 @@ const routes = [
         component: Login,
         meta: {
             title: '登录'
+        }
+    },
+    {
+        path: '/sigunp',
+        name: 'signup',
+        component: Signup,
+        meta: {
+            title: '注册'
         }
     },
     {
@@ -66,6 +76,14 @@ const routes = [
                 component: GroupCenter,
                 meta: {
                     title: '团体信息'
+                }
+            },
+            {
+                path: 'setup',
+                name: 'Setup',
+                component: Setup,
+                meta: {
+                    title: '建团申请'
                 }
             }
         ]
