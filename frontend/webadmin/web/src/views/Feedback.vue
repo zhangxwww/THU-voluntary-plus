@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-table :data="list.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))">
+        <el-table :data="updateList.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))">
             <el-table-column type="expand">
                 <template slot-scope="props">
                     <el-form label-position="left" inline class="demo-table-expand">
@@ -126,6 +126,10 @@
         computed: {
             total: function () {
                 return this.rawlist.length
+            },
+            updateList: function () {
+                this.getList()
+                return this.list
             }
         },
         methods: {
@@ -143,6 +147,9 @@
             filterStatus(value, row) {
                 return row.status === value;
             },
+            getList: function () {
+                this.list = this.rawlist.slice((this.page - 1) * this.pagesize, this.page * this.pagesize)
+            }
         },
         created() {
             this.list = this.rawlist.slice(0, this.pagesize)

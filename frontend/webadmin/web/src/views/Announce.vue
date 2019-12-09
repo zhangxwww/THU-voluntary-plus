@@ -33,7 +33,7 @@
                        @click="onClickAddButton"
                        :circle="!hover"> {{ buttontext }}
             </el-button>
-            <el-table :data="list.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))">
+            <el-table :data="updateList.filter(data => !search || data.title.toLowerCase().includes(search.toLowerCase()))">
                 <el-table-column type="expand">
                     <template slot-scope="props">
                         <el-form label-position="left" inline class="demo-table-expand">
@@ -170,6 +170,10 @@
             },
             total: function () {
                 return this.rawlist.length
+            },
+            updateList: function () {
+                this.getList()
+                return this.list
             }
         },
         methods: {

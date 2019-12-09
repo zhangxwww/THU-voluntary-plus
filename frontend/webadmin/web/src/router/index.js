@@ -8,6 +8,7 @@ import ConfigActivity from '@/views/ConfigActivity'
 import GroupCenter from "@/views/GroupCenter"
 import Layout from '@/layout/Index.vue'
 import Setup from "@/views/Setup"
+import Administration from "@/views/Administration"
 
 Vue.use(VueRouter)
 
@@ -60,6 +61,25 @@ const routes = [
             name: 'ConfigActivity',
             component: ConfigActivity
         }]
+    },
+    {
+        path: '/admin',
+        component: Layout,
+        redirect: '/admin/administration',
+        name: 'Admin',
+        meta: {
+            title: '管理中心'
+        },
+        children: [
+            {
+                path: '/administration',
+                name: 'Administration',
+                component: Administration,
+                meta: {
+                    title: '管理中心'
+                }
+            }
+        ]
     },
     {
         path: '/group',
