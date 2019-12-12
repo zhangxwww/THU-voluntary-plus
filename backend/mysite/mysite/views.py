@@ -1,15 +1,18 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth import login
 from django.contrib.auth import  authenticate
+from django.contrib.auth.models import User
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
     WX_APPID, WX_SECRET, REDIRECT_TO_LOGIN
-from .models import WX_OPENID_TO_THUID, VOLUNTEER, User, UserManager
+from .models import WX_OPENID_TO_THUID, VOLUNTEER, UserIdentity, VerificationCode
+#User, UserManager
 import requests
 import json
 from django.contrib.sessions.backends.db import SessionStore
 import datetime 
 from django.utils.timezone import utc
 import hashlib
+import traceback
 
 
 THUID_CONST="THUID"
@@ -73,12 +76,13 @@ def checkSessionValid(request):
         if utcnow<expiry_date:
             if "MicroMessenger" in client_type:
                 try:
-                    record = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"])
+                    record = WX_OPENID_TO_THUID.objects.get(OPENID = s[OPENID_CONST])
                     THUID = record.THUID
                     # return JsonResponse({"THUID":THUID})
                     return True, THUID # 已登录，已绑定
                 except:
                     # return JsonResponse({"THUID":"Not binded"})
+                    traceback.print_exc()
                     return True, None # 已登录，未绑定
             else:
                 return True, int(s[THUID_CONST])
@@ -93,7 +97,7 @@ def checkSessionValid(request):
 def getStudentID(request):
     
     #获取学号，调用此函数前应调用checkSessionValid函数检查登录状态
-    #若获取成功则返回学号，否则返回False
+    #若获取成功则返回学号，否则返回None
     
     client_type = request.META['HTTP_USER_AGENT']
     if "MicroMessenger" in client_type:
@@ -104,12 +108,12 @@ def getStudentID(request):
             THUID = record.THUID
             return THUID
         except:
-            return False
+            return None
     else:
         if THUID_CONST in request.session.keys():
             return request.session[THUID_CONST]
         else:
-            return False
+            return None
 '''
 
 def loginApi(request):
@@ -118,6 +122,7 @@ def loginApi(request):
     '''
     client_type = request.META['HTTP_USER_AGENT']
     sessionValidInfo = checkSessionValid(request)
+    print(sessionValidInfo)
     if sessionValidInfo[0]:
         return HttpResponse("No need to login repeatedly", status=403)
     if "MicroMessenger" in client_type: # Case 1: 微信端，POST请求
@@ -126,14 +131,34 @@ def loginApi(request):
             code = jsonBody[WX_CODE_HEADER]
             r = requests.post(WX_HTTP_API,data={"appid":WX_APPID, "secret":WX_SECRET, "js_code":code, "grant_type":"authorization_code"})
             res = json.loads(r.text)
+            print(res)
             if ("errcode" not in res.keys()) or (res["errcode"] == 0):
                 request.session[OPENID_CONST]=res["openid"]
                 request.session[LOGGED_IN_CONST] = True
+                THUID = None
+                try:
+                    THUID = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"]).THUID
+                except:
+                    THUID = None
+                print(THUID)
                 # 检查有没有绑定
-                if sessionValidInfo[1] is not None:
-                    return JsonResponse({"THUID":sessionValidInfo[1]})
+                if THUID is not None:
+                    volunteer = VOLUNTEER.objects.get(THUID=THUID)
+                    jsonData = {
+                        "THUID":volunteer.THUID,
+                        "NAME": volunteer.NAME,
+                        "DEPARTMENT": volunteer.DEPARTMENT,
+                        "NICKNAME": volunteer.NICKNAME,
+                        "SIGNATURE": volunteer.SIGNATURE,
+                        "PHONE": volunteer.PHONE,
+                        "VOLUNTEER_TIME": volunteer.VOLUNTEER_TIME,
+                        "EMAIL": volunteer.EMAIL,
+                        "BINDED": True
+                    }
+                    print(jsonData)
+                    return JsonResponse(jsonData)
                 else:
-                    return JsonResponse({"THUID":"Not binded"})
+                    return JsonResponse({"BINDED":False})
             else:
                 return HttpResponse(status=404)
         else:
@@ -152,6 +177,28 @@ def loginApi(request):
             volunteer = VOLUNTEER(THUID = THUID, NAME = r["xm"], DEPARTMENT=r["dw"], EMAIL=r["email"], NICKNAME = r["xm"])
             volunteer.save()
         return JsonResponse(json.dumps(r), safe=False)
+
+def managerLoginApi(request):
+    '''
+    志愿中心老师/公益团体的登录接口，网页端。
+    '''
+    jsonBody = json.loads(request.body)
+    username = jsonBody["username"]
+    passwd = jsonBody["password"]
+    try:
+        print(passwd)
+        print(username)
+        user = authenticate(username=username, password=passwd)
+        print("xixi")
+        if user is not None:
+            login(request, user)
+        else:
+            return HttpResponse("LOGIN FAILED", status=404)
+        return HttpResponse("LOGIN SUCCESS")
+    except:
+        traceback.print_exc()
+        return HttpResponse("LOGIN FAILED", status=404)
+
 
 def bindApi(request):
     if not checkSessionValid(request)[0]:
@@ -185,44 +232,91 @@ def bindApi(request):
             wxuser.save()
         # 更新VOLUNTEER表
         try:
-            VOLUNTEER.objects.get(THUID=THUID)
+            volunteer = VOLUNTEER.objects.get(THUID=THUID)
         except:
             volunteer = VOLUNTEER(THUID = THUID, NAME = thuuser["name"], DEPARTMENT=thuuser["department"], EMAIL=thuuser["mail"], NICKNAME = thuuser["name"])
             volunteer.save()
-        return HttpResponse(str(THUID),status=200)
+        jsonData = {
+            "THUID":volunteer.THUID,
+            "NAME": volunteer.NAME,
+            "DEPARTMENT": volunteer.DEPARTMENT,
+            "NICKNAME": volunteer.NICKNAME,
+            "SIGNATURE": volunteer.SIGNATURE,
+            "PHONE": volunteer.PHONE,
+            "VOLUNTEER_TIME": volunteer.VOLUNTEER_TIME,
+            "EMAIL": volunteer.EMAIL
+        }
+
+        return JsonResponse(jsonData)
     else:
         return HttpResponse("Unable to bind for PC client", status=401)
 
 def volunteerChangeInfo(request):
     sessionValidInfo = checkSessionValid(request)
-    if sessionValidInfo[0]:
+    print(sessionValidInfo)
+    if not sessionValidInfo[0]:
         return HttpResponse("You need to login!", status=401)
     THUID = sessionValidInfo[1]
     if THUID is None:
         return HttpResponse("Failed to get THUID!", status=404)
-    MODIFIABLE_PROPS = ["NICKNAME","SIGNATURE","PHONE"]
+    MODIFIABLE_PROPS = ["NICKNAME","SIGNATURE","PHONE","EMAIL"]
     try:
+        print("xixixi")
         info = VOLUNTEER.objects.get(THUID=THUID)
         body = json.loads(request.body)
-        for key in body.keys():
-            if key in MODIFIABLE_PROPS:
-                setattr(info, key, body[key])
-        info.save()
+        print("hhh")
+        print(body)
+        client_type = request.META['HTTP_USER_AGENT']
+        if "MicroMessenger" in client_type:
+            key = body["key"]
+            if key.upper() in MODIFIABLE_PROPS:
+                setattr(info, key.upper(), body["value"])
+            info.save()
+        else:
+            for key in body.keys():
+                if key.upper() in MODIFIABLE_PROPS:
+                    setattr(info, key.upper(), body[key])
+            info.save()
         return HttpResponse("OPERATION SUCCESS", status=200)
     except:
         return HttpResponse("OPERATION FAILED", status=404)
 
 def createUser(request):
+    # setuptime = json.loads(request.body)["setuptime"]
     login_name = json.loads(request.body)["username"]
     pwd = json.loads(request.body)["password"]
+    code = json.loads(request.body)["verificationcode"]
     pwd = get_hash(pwd)
     # identity = json.loads(request.body)["identity"] # identity = 0 or 1
     identity = 1
+    if VerificationCode.objects.get(VerificationCode=code) != null:
+        try:
+            user = User.objects.create_user(username = login_name, password = pwd)
+            user.save()
+            #userIdentity = UserIdentity(isTeacher = 0,)
+            return HttpResponse("CREATE USER SUCCESS",status = 200)
+        except:
+            return HttpResponse("CREATE USER FAIL", status = 404)
+
+def createGroup(request):
+    name = json.loads(request.body)["name"]              #账户名
+    groupname = json.loads(request.body)["groupname"]    #团队名
+    time = json.loads(request.body)["setuptime"]
+    phonenumber = json.loads(request.body)["phone"]
+    email = json.loads(request.body)["email"]
+    about = json.loads(request.body)["about"]
+    membersname = json.dumps(json.loads(request.body)["membersname"])
+    subjects = json.dumps(json.loads(request.body)["subjects"])
+
     try:
-        user = User.objects.create_user(Identity = identity, username = login_name, password = pwd)
-        return HttpResponse("CREATE USER SUCCESS",status = 200)
+        user = User.objects.get(username = name)
+        userIdentity = UserIdentity(isTeacher = 0, setuptime = time, user = user, groupname = groupname,\
+            email = email, phone = phone, about = about, membersname = membersname, subjects = subjects, status = 0)
+        userIdentity.save()
+        return HttpResponse("Create group success",status = 200)
     except:
-        return HttpResponse("CREATE USER FAIL", status = 404)
+        return HttpResponse("Create group fail", status = 404)
+
 
 def weblogin(request):
     login_name = json.loads(request.body)["username"]
@@ -236,3 +330,47 @@ def weblogin(request):
     except:
         request.session[LOGGED_IN_CONST] = False
         return HttpResponse("LOGIN FAILED", status = 404)
+
+
+def generateVerificationCode(request):
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
+        str_list = [random.choice(string.digits + string.ascii_letters) for i in range(20)]
+        random_str = ''.join(str_list)
+        VerificationCode = mysite_models.VerificationCode(VerificationCode = random_str)
+        VerificationCode.save()
+        return HttpResponse("Generate verification code successful", status = 200)
+    else:
+        return HttpResponse("You have no access", status = 401)
+
+#志愿中心选择待审核的志愿团体账号
+def selectGroup(request):
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
+        groupid = json.loads(request.body)["id"]
+
+        rtn = {}
+        group = UserIdentity.objects.get(id = groupid)
+        rtn["groupname"] = group.groupname              #团队名
+        rtn["setuptime"] = group.setuptime
+        rtn["phone"] = group.phone
+        rtn["email"] = group.email
+        rtn["about"] = group.about
+        rtn["membersname"] = group.membersname
+        rtn["subjects"] = group.subjects
+
+        return JsonResponse(rtn)
+    else:
+        return HttpResponse("You have no access", status = 401)
+
+#志愿中心决定某个志愿团体的注册是否通过
+def auditGroup(request):
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
+
+        groupid = json.loads(request.body)["id"]
+        result = json.loads(request.body)["result"] #审核结果,0表示不通过,1表示通过
+         
+        group = UserIdentity.objects.get(id = groupid)
+        group.update(status =result)
+        group.save()
+        return HttpResponse("Audit group successful", status = 200)
+    else:
+        return HttpResponse("You have no access", status = 401)
