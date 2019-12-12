@@ -50,44 +50,7 @@ export default {
       listTouchStart: 0,
       listTouchDirection: null,
       modalName: null,
-      rawlist: [
-        {
-          id: 0,
-          sender: '特奖得主张欣炜',
-          avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg',
-          title: '特奖得主邀您加入清华首家线上赌场',
-          time: '22:20',
-          read: false,
-          content: '特奖得主张欣炜邀请您加入清华首家线上赌，同花顺，扎金花，24点，统统赚大钱，美元澳元港元带回家，不用学习，明年直接特奖！'
-        },
-        {
-          id: 1,
-          sender: '特奖得主张欣炜',
-          avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg',
-          title: '特奖得主邀您加入清华首家线上赌场',
-          time: '22:20',
-          read: false,
-          content: '特奖得主张欣炜邀请您加入清华首家线上赌，同花顺，扎金花，24点，统统赚大钱，美元澳元港元带回家，不用学习，明年直接特奖！'
-        },
-        {
-          id: 2,
-          sender: '特奖得主张欣炜',
-          avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg',
-          title: '特奖得主邀您加入清华首家线上赌场',
-          time: '22:20',
-          read: true,
-          content: '特奖得主张欣炜邀请您加入清华首家线上赌，同花顺，扎金花，24点，统统赚大钱，美元澳元港元带回家，不用学习，明年直接特奖！'
-        },
-        {
-          id: 3,
-          sender: '特奖得主张欣炜',
-          avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg',
-          title: '特奖得主邀您加入清华首家线上赌场',
-          time: '22:20',
-          read: true,
-          content: '特奖得主张欣炜邀请您加入清华首家线上赌，同花顺，扎金花，24点，统统赚大钱，美元澳元港元带回家，不用学习，明年直接特奖！'
-        }
-      ],
+      rawlist: [],
     }
   },
   computed: {
@@ -113,17 +76,17 @@ export default {
         },
         success: (res) => {
           if (res.statusCode === 200) {
-            console.log(res)
             let list = res.data.messages
-            this.rawlist.slice(0, this.rawlist.length)
-            for (let it in list) {
-              new_item = {
+            this.rawlist.splice(0, this.rawlist.length)
+            for (let it of list) {
+              let new_item = {
                 id: it.id,
                 sender: it.sender,
                 title: it.title,
                 time: it.time,
-                read: false,
-                content: it.content
+                read: it.read,
+                content: it.content,
+                avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg',
               }
               this.rawlist.push(new_item)
             }
@@ -138,14 +101,54 @@ export default {
     },
     ViewMessage: function (msg, e) {
       this.setCurmsg(msg)
-      uni.navigateTo({
-        url: '/pages/usercenter/messages/messagedetail/messagedetail'
+      uni.request({
+        url: 'https://thuvplus.iterator-traits.com/api/messages/read',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          "Set-Cookie": "sessionid=" + this.sessionid
+        },
+        data: {
+          id: msg.id
+        },
+        success: (res) => {
+          if (res.statusCode === 200) {
+            msg.read = true
+            uni.navigateTo({
+              url: '/pages/usercenter/messages/messagedetail/messagedetail'
+            })
+          } else {
+            console.log(res)
+          }
+        },
+        fail: (e) => {
+          console.log(e)
+        }
       })
-      /* todo: 向服务器请求更改此消息为已读 */
     },
     DeleteMessage: function (id) {
       console.log(id)
-      /* todo: 向服务器请求删除此消息 */
+      uni.request({
+        url: 'https://thuvplus.iterator-traits.com/api/messages/delete',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          "Set-Cookie": "sessionid=" + this.sessionid
+        },
+        data: {
+          id: id
+        },
+        success: (res) => {
+          if (res.statusCode === 200) {
+            this.UpdateList()
+          } else {
+            console.log(res)
+          }
+        },
+        fail: (e) => {
+          console.log(e)
+        }
+      })
     },
     // ListTouch触摸开始
     ListTouchStart: function (e) {
@@ -171,6 +174,9 @@ export default {
     uni.setNavigationBarTitle({
       title: '消息中心'
     })
+    this.UpdateList()
+  },
+  onShow () {
     this.UpdateList()
   }
 }
