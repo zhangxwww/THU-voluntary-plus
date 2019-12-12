@@ -15,6 +15,7 @@ from mysite.models import VOLUNTEER
 
 import datetime 
 from django.utils.timezone import utc
+import requests
 
 PERMISSION_CONST = {
     'TEACHER': 233,
@@ -22,6 +23,8 @@ PERMISSION_CONST = {
     'VOLUNTEER': 258,
     'UNAUTHENTICATED': 266
 }
+
+BAIDU_MAP_AK = "H5LGjLHfy731eaPCZAUKfAnZH6eiql9M"
 
 def checkUserType(request):
     try:
@@ -277,8 +280,21 @@ def checkinApi(request):
     try:
         utcnow = "{}-{}-{} {}:{}".format(year, month, day, hour, minute)
         membership = Membership.objects.get(volunteer=volunteer, activity=activity, state=ENROLL_STATE_CONST['ACCEPTED'])
-        checkin(membership=membership, latitude=jsonBody["latitude"], longtitude=jsonBody["longitude"], \
-            address=json.dumps(jsonBody["address"]), checkinTime=utcnow).save()
+        latitude = jsonBody["latitude"]
+        longitude = jsonBody["longitude"]
+        try:
+            print(jsonBody)
+            address = json.loads(requests.get("http://api.map.baidu.com/reverse_geocoding/v3/?ak={}&output=json&coordtype=wgs84ll&location={},{}".format(BAIDU_MAP_AK, latitude, longitude)).text)
+            print(address["status"])
+            if address["status"] == 0:
+                address = address["result"]["formatted_address"]
+            else:
+                address = "UNKNOWN"
+        except:
+            traceback.print_exc()
+            address = "UNKNOWN"
+        checkin(membership=membership, latitude=jsonBody["latitude"], longtitude=jsonBody["longitude"], checkinTime=utcnow, address=address).save()
+        return JsonResponse({"success": True})
     except:
         traceback.print_exc()
         return JsonResponse({"success": False, FAIL_INFO_KEY: "You have not been accepted by the activity organizer"})
