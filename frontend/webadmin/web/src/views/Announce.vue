@@ -126,6 +126,7 @@ import {
   newAnnounce,
   editAnnounce,
   getAnnounceList,
+  deleteAnnounce,
 } from '../script/index'
 
 export default {
@@ -214,11 +215,11 @@ export default {
     },
     onSubmit: function () {
       let form = {
-        activity_id: this.modifyAcitivityId,
+        activity_id: this.modifyActivityId,
         title: this.form.title,
         content: this.form.content,
       }
-      newAnnounce(form, this.modifyAcitivityId, () => {
+      newAnnounce(form, () => {
         alert('success')
         this.isAdding = false
         this.hover = false
@@ -238,7 +239,12 @@ export default {
     },
     handleDelete (index, row) {
       alert(index, row)
-      this.update()
+      deleteAnnounce(this.editform.id, () => {
+        alert('succes')
+        this.update()
+      }, () => {
+        alert('fail')
+      })
     },
     filterStatus (value, row) {
       return row.status === value;
@@ -267,7 +273,7 @@ export default {
       })
     },
     update () {
-      getAnnounceList((list) => {
+      getAnnounceList(this.modifyActivityId, (list) => {
         this.rawlist.splice(0, this.rawlist.length)
         for (let item of list) {
           let new_item = {

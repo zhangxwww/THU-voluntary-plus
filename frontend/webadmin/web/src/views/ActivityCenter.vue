@@ -165,7 +165,7 @@ export default {
       alert(index, row)
     },
     handleDetail (index, row) {
-      alert(index, row)
+      alert(row.id)
       this.$store.commit('setModifyAcitvityId', row.id)
       this.$router.push('/dashboard/config/')
     },
