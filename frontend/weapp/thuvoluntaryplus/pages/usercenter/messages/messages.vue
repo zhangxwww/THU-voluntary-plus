@@ -50,7 +50,7 @@ export default {
       listTouchStart: 0,
       listTouchDirection: null,
       modalName: null,
-      rawlist =[
+      rawlist: [
         {
           id: 0,
           sender: '特奖得主张欣炜',
@@ -91,7 +91,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['curmsg']),
+    ...mapState(['curmsg', 'sessionid']),
     messagelist: function () {
       return this.rawlist
     }
@@ -105,11 +105,28 @@ export default {
     ...mapMutations(['setCurmsg']),
     UpdateList: function () {
       uni.request({
-        url: '',
-        method: 'GET',
+        url: 'https://thuvplus.iterator-traits.com/api/messages/list',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          "Set-Cookie": "sessionid=" + this.sessionid
+        },
         success: (res) => {
           if (res.statusCode === 200) {
-            //
+            console.log(res)
+            let list = res.data.messages
+            this.rawlist.slice(0, this.rawlist.length)
+            for (let it in list) {
+              new_item = {
+                id: it.id,
+                sender: it.sender,
+                title: it.title,
+                time: it.time,
+                read: false,
+                content: it.content
+              }
+              this.rawlist.push(new_item)
+            }
           } else {
 
           }
@@ -154,6 +171,7 @@ export default {
     uni.setNavigationBarTitle({
       title: '消息中心'
     })
+    this.UpdateList()
   }
 }
 </script>
