@@ -339,13 +339,15 @@ def message_catalog_grid(request):
         volunteer = VOLUNTEER(THUID = THUID)
         res = []
         for info in MessageReadOrNot.objects.filter(VolunteerID=volunteer):
-              msgInfo = []
+              msgInfo = {}
               msg = info.MessageID
               msgInfo["id"] = msg.id
               msgInfo["content"] = msg.MessageDetailContent
               msgInfo["title"] = msg.MessageTitle
               msgInfo["time"] = msg.PostTime
               msgInfo["sender"] = msg.ActivityNumber.ActivityOrganizer.username
+              msgInfo["read"] = info.ReadOrNot
+              res.append(msgInfo)
         return JsonResponse({"messages":res})
     elif usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         activity_id = json.loads(request.body)["activity_id"]
@@ -361,8 +363,8 @@ def message_catalog_grid(request):
         return JsonResponse({"messages": res}, safe=False)
     else:
         return HttpResponse("NOT AUTHENTICATED", status=401)
-# 读消息
 '''
+# 读消息
 def read_message(request):
     if not checkSessionValid(request):
         return HttpResponse("You need to login!", status = 401)
@@ -384,29 +386,35 @@ def read_message(request):
 '''
 # 将消息标记为已读
 def mark_read(request):
-    if not checkSessionValid(request):
-        return HttpResponse("You need to login!", status = 401)
-    THUID = getStudentID(request)
-    if THUID == False:
-        return HttpResponse("Fail to get THUID!", status = 404)
-    message_id = json.loads(request.body)["message_id"]
-    # THUID = 
-    message = showactivity_models.Message.objects.get(id=messaage_id)
-    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.filter(THUId=THUID)
-    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.get(MessageId=message_id)
-    message_ReadOrNot.update(ReadOrNot = 1)
-    message_ReadOrNot.save()
-    return HttpResponse("Succeed to mark as read already", status = 200)
+    if checkUserType(request) == PERMISSION_CONST["VOLUNTEER"]:
+        THUID = checkSessionValid(request)[1]
+        volunteer = VOLUNTEER(THUID=THUID)
+        messaage_id = json.loads(request.body)["id"]
+        message = Message.objects.get(id=messaage_id)
+        info = MessageReadOrNot.objects.get(VolunteerID=volunteer, MessageID=message)
+        info.ReadOrNot = True
+        info.save()
+        return HttpResponse("SUCCESS", status = 200)
+    else:
+        return HttpResponse("Only volunteer can read the message", status = 401)
 
 # 删除一条消息
 def delete_message(request):
-    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+    usertype = checkUserType(request)
+    if usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         message_id = json.loads(request.body)["id"]
         message = showactivity_models.Message.objects.get(id = message_id)
         activity = message.ActivityNumber
         if activity.ActivityOrganizer != request.user:
             return HttpResponse("Not your message!", status=401)
         message.delete()
+        return HttpResponse("SUCCESS", status=200)
+    elif usertype == PERMISSION_CONST["VOLUNTEER"]:
+        messaage_id = json.loads(request.body)["id"]
+        THUID = checkSessionValid(request)[1]
+        volunteer = VOLUNTEER(THUID=THUID)
+        message = Message(id=messaage_id)
+        MessageReadOrNot.objects.get(VolunteerID=volunteer, MessageID=message).delete()
         return HttpResponse("SUCCESS", status=200)
     else:
         return HttpResponse("Failed to delete message", status = 401)
@@ -477,7 +485,7 @@ def post_message(request):
         for volunteer in volunteers.all():
             membership = Membership.objects.get(volunteer = volunteer, activity = activity)
             if membership.state == ENROLL_STATE_CONST['ACCEPTED']:
-                message.members.add(volunteer)
+                message.volunteers.add(volunteer)
         message.save()
         return HttpResponse("Post messages successful", status = 200)
     else:
