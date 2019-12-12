@@ -74,8 +74,8 @@ export function newAnnounce(announce, success, fail) {
 }
 
 export function editAnnounce(announce, success, fail) {
-    axios.post('', {
-        announce_id: announce.id,
+    axios.post('/api/messages/edit', {
+        id: announce.id,
         title: announce.title,
         content: announce.content
     }).then(res => {
@@ -91,11 +91,11 @@ export function editAnnounce(announce, success, fail) {
 }
 
 export function getAnnounceList(id, success, fail) {
-    axios.post('', {
+    axios.post('/api/messages/list', {
         activity_id: id
     }).then(res => {
         if (res.status === 200) {
-            let list = res.data.annouceList
+            let list = res.data.messages
             success(list)
         } else {
             fail()
@@ -106,9 +106,9 @@ export function getAnnounceList(id, success, fail) {
     })
 }
 
-export function deleteAnnounce(id, success, fail) {
-    axios.post('', {
-        id: id
+export function deleteAnnounce(id_, success, fail) {
+    axios.post('/api/messages/delete', {
+        id: id_
     }).then(res => {
         if (res.status === 200) {
             success()

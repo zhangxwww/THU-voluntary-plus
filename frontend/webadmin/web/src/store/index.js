@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        modifyActivityId: 0,
+        modifyActivityId: -1,
     },
     mutations: {
         setModifyAcitvityId(state, id) {

@@ -32,7 +32,7 @@
            class="dialog-footer">
         <el-button @click="dialogFormVisible=false">取消</el-button>
         <el-button type="success"
-                   @click="handleSubmitEdit">编辑</el-button>
+                   @click="handleSubmitEdit">确认</el-button>
       </div>
     </el-dialog>
     <div v-if="!isAdding">
@@ -67,18 +67,6 @@
           <template slot-scope="scope">
             <i class="el-icon-time" />
             <span>{{ scope.row.time }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status"
-                         class-name="status-col"
-                         label="状态"
-                         width="80"
-                         align="center"
-                         :filters="[{ text: '已发布', value: '已发布' }, { text: '草稿', value: '草稿' }, { text: '已删除', value: '已删除'}]"
-                         :filter-method="filterStatus"
-                         filter-placement="bottom-end">
-          <template slot-scope="scope">
-            <el-tag :type="scope.row.status | statusMapper">{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column align="right"
@@ -131,18 +119,10 @@ import {
 
 export default {
   name: "Announce",
-  filters: {
-    statusMapper (status) {
-      const statusMap = {
-        '已发布': 'success',
-        '草稿': 'warning',
-        '已删除': 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+
   data () {
     return {
+      invalid: false,
       form: {
         title: '',
         content: ''
@@ -159,25 +139,21 @@ export default {
         title: '注意保暖',
         detail: '全体成员请注意带好自己的衣物，一定要注意保暖。全体成员请注意带好自己的衣物，一定要注意保暖。全体成员请注意带好自己的衣物，一定要注意保暖。全体成员请注意带好自己的衣物，一定要注意保暖。全体成员请注意带好自己的衣物，一定要注意保暖。全体成员请注意带好自己的衣物，一定要注意保暖。全体成员请注意带好自己的衣物，一定要注意保暖。全体成员请注意带好自己的衣物，一定要注意保暖。',
         time: '2019-10-1',
-        status: '已发布'
       }, {
         id: 2,
         title: '注意口臭',
         detail: '大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！',
         time: '2019-10-1',
-        status: '草稿'
       }, {
         id: 3,
         title: '注意口臭',
         detail: '大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！',
         time: '2019-10-1',
-        status: '已删除'
       }, {
         id: 4,
         title: '注意口臭',
         detail: '大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！',
         time: '2019-10-1',
-        status: '已发布'
       },
       ],
       search: '',
@@ -239,15 +215,12 @@ export default {
     },
     handleDelete (index, row) {
       alert(index, row)
-      deleteAnnounce(this.editform.id, () => {
-        alert('succes')
+      deleteAnnounce(row.id, () => {
+        alert('success')
         this.update()
       }, () => {
         alert('fail')
       })
-    },
-    filterStatus (value, row) {
-      return row.status === value;
     },
     handleSizeChange (val) {
       this.pagesize = val
@@ -258,7 +231,6 @@ export default {
       this.getList()
     },
     handleSubmitEdit () {
-      alert(this.editform.content)
       let form = {
         id: this.editform.id,
         title: this.editform.title,
@@ -281,7 +253,6 @@ export default {
             title: item.title,
             detail: item.content,
             time: item.time,
-            status: item.status
           }
           this.rawlist.push(new_item)
         }
@@ -291,7 +262,11 @@ export default {
     }
   },
   created () {
-    this.list = this.rawlist.slice(0, this.pagesize)
+    if (this.modifyActivityId === -1) {
+      this.index = true
+    } else {
+      this.update()
+    }
   }
 }
 </script>
