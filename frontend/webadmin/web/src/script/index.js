@@ -120,3 +120,19 @@ export function deleteAnnounce(id_, success, fail) {
         fail()
     })
 }
+
+export function getParticipant(id_, success, fail) {
+    axios.post('', {
+        id: id_
+    }).then(res => {
+        if (res.status === 200) {
+            let list = res.data.list
+            success(list)
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
