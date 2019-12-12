@@ -55,3 +55,68 @@ export function login(form, success, fail) {
         fail()
     })
 }
+
+export function newAnnounce(announce, success, fail) {
+    axios.post('api/messages/post', {
+        activity_id: announce.activity_id,
+        title: announce.title,
+        content: announce.content
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function editAnnounce(announce, success, fail) {
+    axios.post('/api/messages/edit', {
+        id: announce.id,
+        title: announce.title,
+        content: announce.content
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function getAnnounceList(id, success, fail) {
+    axios.post('/api/messages/list', {
+        activity_id: id
+    }).then(res => {
+        if (res.status === 200) {
+            let list = res.data.messages
+            success(list)
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function deleteAnnounce(id_, success, fail) {
+    axios.post('/api/messages/delete', {
+        id: id_
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
