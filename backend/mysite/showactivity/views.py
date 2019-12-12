@@ -104,11 +104,14 @@ def catalog_grid(request):
     #    request.session.flush()
     #   return redirect('/login/')
     # user = check_login(request)
-
-    if checkUserType(request) == PERMISSION_CONST['UNAUTHENTICATED']:
+    usertype = checkUserType(request)
+    if usertype == PERMISSION_CONST['UNAUTHENTICATED']:
         return HttpResponse("You need to login or bind wxID to THUID!", status = 401)
 
-    rtn_list = showactivity_models.Activity.objects.all()
+    if usertype == PERMISSION_CONST['VOLUNTEER']:
+        rtn_list = showactivity_models.Activity.objects.all()
+    else:
+        rtn_list = showactivity_models.Activity.objects.filter(ActivityOrganizer = request.user)
 
     rtn_pic = []
     result = []
@@ -325,23 +328,39 @@ def search(request):
     #return render(request, "showactivity/search.html", locals())
     return JsonResponse(rtn_list)
 
-# 消息列表
+# 获取消息列表
 def message_catalog_grid(request):
     
     # user = User.objects.get(pk = request.session.get('THUID'))
     # message = showactivity_models.Message.objects.get(MessageId=messaage_id)
-    message_list = showactivity_models.MessageReadOrNot.objects.filter(THUID=request.session.get('THUID'))
-    rtn_list = []
-    for i in range(len(message_list)):
-        message_id = message_list[i].MessageId
-        message = showactivity_models.Message.objects.get(id=messaage_id)
-        rtn = {}
-        rtn["ReadOrNot"] = message_list[i].ReadOrNot
-        rtn["Title"] = message.MessageTitle
-        rtn["BriefContent"] = message.MessageBriefContent
-        rtn_list.append(rtn)    
-    return JsonResponse({"message_list":rtn_list})
-
+    usertype = checkUserType(request)
+    if usertype == PERMISSION_CONST["VOLUNTEER"]:
+        THUID = checkSessionValid(request)[1]
+        volunteer = VOLUNTEER(THUID = THUID)
+        res = []
+        for info in MessageReadOrNot.objects.filter(VolunteerID=volunteer):
+              msgInfo = []
+              msg = info.MessageID
+              msgInfo["id"] = msg.id
+              msgInfo["content"] = msg.MessageDetailContent
+              msgInfo["title"] = msg.MessageTitle
+              msgInfo["time"] = msg.PostTime
+              msgInfo["sender"] = msg.ActivityNumber.ActivityOrganizer.username
+        return JsonResponse({"messages":res})
+    elif usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        activity_id = json.loads(request.body)["activity_id"]
+        activity = Activity.objects.get(id=activity_id)
+        res = []
+        for msg in Message.objects.filter(ActivityNumber=activity):
+            msgInfo = {}
+            msgInfo["id"] = msg.id
+            msgInfo["title"] = msg.MessageTitle
+            msgInfo["content"] = msg.MessageDetailContent
+            msgInfo['time'] = msg.PostTime
+            res.append(msgInfo)
+        return JsonResponse({"messages": res}, safe=False)
+    else:
+        return HttpResponse("NOT AUTHENTICATED", status=401)
 # 读消息
 '''
 def read_message(request):
@@ -381,21 +400,16 @@ def mark_read(request):
 
 # 删除一条消息
 def delete_message(request):
-    if not checkSessionValid(request):
-        return HttpResponse("You need to login!", status = 401)
-    THUID = getStudentID(request)
-    if THUID == False:
-        return HttpResponse("Fail to get THUID!", status = 404)
-    message_id = json.loads(request.body)["message_id"]
-    # THUID = 
-    # message = showactivity_models.Message.objects.get(MessageId=messaage_id)
-    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.filter(THUId=THUID)
-    message_ReadOrNot = showactivity_models.MessageReadOrNot.objects.get(MessageId=message_id)
-    message_ReadOrNot.delete()
-    # message_ReadOrNot.update(ReadOrNot = 1)
-    # message_ReadOrNot.save()
-
-    return HttpResponse("Succeed to delete message", status = 200)
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        message_id = json.loads(request.body)["id"]
+        message = showactivity_models.Message.objects.get(id = message_id)
+        activity = message.ActivityNumber
+        if activity.ActivityOrganizer != request.user:
+            return HttpResponse("Not your message!", status=401)
+        message.delete()
+        return HttpResponse("SUCCESS", status=200)
+    else:
+        return HttpResponse("Failed to delete message", status = 401)
 
 # 报名活动
 def register_activity(request):
@@ -450,20 +464,38 @@ def cancel_registration(request):
 
 def post_message(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
-        activity_id = json.loads(request.body)["id"]
+        print(json.loads(request.body))
+        activity_id = json.loads(request.body)["activity_id"]
         activity = showactivity_models.Activity.objects.get(id=activity_id)
-        volunteers = activity.Participants
-
         title = json.loads(request.body)["title"]
         content = json.loads(request.body)["content"]
-        
-
-        message = Message(MessageTitle = title, MessageDetailContent = content,ActivityNumber = activity_id, volunteers = volunteers)
+        date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        date = "{}-{}-{}".format(date.year, date.month, date.day)
+        message = Message(MessageTitle = title, MessageDetailContent = content,ActivityNumber = activity, PostTime = date)
         message.save()
-
-        message_ReadOrNot = MessageReadOrNot(MessageID = message.id, VolunteerID = volunteers, ReadOrNot = 0)
-        message_ReadOrNot.save()
-        
+        volunteers = activity.members
+        for volunteer in volunteers.all():
+            membership = Membership.objects.get(volunteer = volunteer, activity = activity)
+            if membership.state == ENROLL_STATE_CONST['ACCEPTED']:
+                message.members.add(volunteer)
+        message.save()
         return HttpResponse("Post messages successful", status = 200)
     else:
         return HttpResponse("You have no access", status = 401)
+
+def edit_message(request):
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        message_id = json.loads(request.body)["id"]
+        message = showactivity_models.Message.objects.get(id = message_id)
+        activity = message.ActivityNumber
+        if activity.ActivityOrganizer != request.user:
+            return HttpResponse("Not your message!", status=401)
+        message.MessageTitle = json.loads(request.body)["title"]
+        message.MessageDetailContent = json.loads(request.body)["content"]
+        date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        date = "{}-{}-{}".format(date.year, date.month, date.day)
+        message.PostTime = date
+        message.save()
+        return HttpResponse("SUCCESS", status=200)
+    else:
+        return HttpResponse("Not authenticated!", status=401)    

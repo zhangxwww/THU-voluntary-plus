@@ -57,8 +57,9 @@ class Message(models.Model):
     """
     #MessageId = models.AutoField(primary_key=True, verbose_name='消息ID')
     MessageTitle = models.TextField(null = True, blank = True, verbose_name="消息标题")
-    MessageBriefContent = models.TextField(null = True, blank = True, verbose_name="消息简略内容")
+    #MessageBriefContent = models.TextField(null = True, blank = True, verbose_name="消息简略内容")
     MessageDetailContent = models.TextField(null = True, blank = True, verbose_name="消息详细内容")
+    PostTime = models.TextField(verbose_name="发布时间")
     #ReadOrNot = models.ManyToManyField(WX_OPENID_TO_THUID)
     ActivityNumber = models.ForeignKey(Activity, verbose_name='活动编号', on_delete=models.CASCADE)
     volunteers = models.ManyToManyField(VOLUNTEER, through='MessageReadOrNot', verbose_name='消息接受者')
