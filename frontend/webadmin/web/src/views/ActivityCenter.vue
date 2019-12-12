@@ -75,8 +75,7 @@
         <template slot-scope="scope">
           <el-button size="mini"
                      type="info"
-                     @click="handleDetail(scope.$index, scope.row)">
-            <router-link to="/dashboard/config">设置</router-link>
+                     @click="handleDetail(scope.$index, scope.row)">设置
           </el-button>
           <el-button size="mini"
                      @click="handleEdit(scope.$index, scope.row)">编辑
@@ -167,6 +166,8 @@ export default {
     },
     handleDetail (index, row) {
       alert(index, row)
+      this.$store.commit('setModifyAcitvityId', row.id)
+      this.$router.push('/dashboard/config/')
     },
     filterStatus (value, row) {
       return row.status === value
