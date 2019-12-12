@@ -49,7 +49,7 @@ urlpatterns = [
     path(r'api/messages/list', showactivity_views.message_catalog_grid),
     path(r'api/messages/edit', showactivity_views.edit_message),
     #path(r'api/messages/detail',showactivity_views.read_message),
-    #path(r'api/messages/mark',showactivity_views.mark_read),
+    path(r'api/messages/read',showactivity_views.mark_read),
     path(r'api/messages/delete',showactivity_views.delete_message),
     path(r'api/messages/post', showactivity_views.post_message)
 ]
