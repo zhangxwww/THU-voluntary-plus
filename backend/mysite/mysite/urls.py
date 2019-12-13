@@ -52,4 +52,9 @@ urlpatterns = [
     path(r'api/messages/read',showactivity_views.mark_read),
     path(r'api/messages/delete',showactivity_views.delete_message),
     path(r'api/messages/post', showactivity_views.post_message)
+
+    path(r'api/code/generate, views.generateVerificationCode'),
+    path(r'api/group/create, views.createGroup'),
+    path(r'api/group/select, views.selectGroup'),
+    path(r'api/group/audit, views.auditGroup'),
 ]
