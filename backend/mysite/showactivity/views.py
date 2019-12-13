@@ -586,3 +586,26 @@ def get_ranking():
         ranking_top_100_list = new_top_100_list
         ranking_last_update_time = datetime.datetime.utcnow()
     return JsonResponse({"ranking_top_100":ranking_top_100_list, "last_update_time":str(ranking_last_update_time)}, safe=False)
+# 分配志愿工时（志愿中心/志愿团体）
+def allocate_volunteerhours(request):
+    # raiseNotImplementedError("Not implemented!")
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        # hours = json.loads(request.body)["hours"]
+        activity_id = json.loads(request.body)["activity_id"]
+        # volunteer_id = json.loads(request.body)["volunteer_id"]
+        info = json.loads(request.body)["info"]
+        activity = showactivity_models.Activity.objects.get(id = activity_id)
+        for obj in info:
+            student_id = obj["student_id"]
+            student = VOLUNTEER.objects.get(id = student_id)  # 不确定传过来的是id还是THUID，先这样写吧orz
+            if showactivity_models.Activity.objects.get(members=student) != null:
+                time = obj["time"]
+                totalTime = student.VOLUNTEER_TIME + time
+                student.update(VOLUNTEER_TIME=totalTime)
+                student.save()
+                return HttpResponse("Allocate volunteer hours successful!", status=200)
+            else:
+                return HttpResponse("Can't allocate to this student!", status=401)   
+    else:
+        return HttpResponse("Not authenticated!", status=401)    
+        

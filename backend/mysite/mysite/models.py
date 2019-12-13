@@ -15,7 +15,7 @@ class VOLUNTEER(models.Model):
     PHONE = models.TextField()
     VOLUNTEER_TIME = models.FloatField(default=0)
     EMAIL = models.TextField()
-    #AVATAR = 
+
 
 '''
 class UserManager(BaseUserManager):

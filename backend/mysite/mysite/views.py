@@ -374,3 +374,15 @@ def auditGroup(request):
         return HttpResponse("Audit group successful", status = 200)
     else:
         return HttpResponse("You have no access", status = 401)
+
+# 查看志愿工时（志愿者）
+def check_volunteerhours(request):
+    if checkUserType(request) != PERMISSION_CONST['VOLUNTEER']:
+        return JsonResponse({"success": False, FAIL_INFO_KEY: "Only logged-in volunteer can check volunteer hours!"})
+    THUID = checkSessionValid(request)[1]
+    if THUID is None:
+        return JsonResponse({"success": False, FAIL_INFO_KEY: "Fail to get THUID!"})
+    user = VOLUNTEER.objects.get(pk = THUID)
+    hours = user.VOLUNTEER_TIME
+
+    return JsonResponse({"hours": hours})
