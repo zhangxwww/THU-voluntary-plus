@@ -97,15 +97,16 @@
       <view class="cu-item sm">
         <view class="content">
           <text class="cuIcon-roundcheck"
-                :class="hasJoin?'text-green':'text-gray'"></text>
+                :class="hasJoinFunc?'text-green':'text-gray'"></text>
           <text class="text-grey text-sm">{{ joinInstructionText }}</text>
         </view>
         <view class="action">
-          <button v-if="hasJoin"
+          <button v-if="hasJoinFunc"
+                  @tap="signin"
                   class="cu-btn sm shadow bg-blue margin-right">
             <text class="cuIcon-location"></text>定位打卡</button>
           <button class="cu-btn sm shadow"
-                  :class="hasJoin?'bg-gray':'bg-green'"
+                  :class="hasJoinFunc?'bg-gray':'bg-green'"
                   @tap="join">
             <text class="cuIcon-write"></text>{{ joinButtonText }}</button>
         </view>
@@ -115,21 +116,31 @@
 </template>
 
 <script>
+import {
+  mapState,
+  mapMutations
+} from 'vuex'
+
 export default {
   Name: 'ActiveInfo',
   props: {
     itemprop: {
       type: Object,
       required: true
+    },
+    hasJoin: {
+      type: Boolean,
+      required: true
     }
   },
   data () {
     return {
       created: false,
-      hasJoin: false
+      //hasJoin: false
     }
   },
   computed: {
+    ...mapState(['sessionid']),
     joinInstructionText: function () {
       if (this.hasJoin) {
         return '您已报名参加此活动'
@@ -143,17 +154,116 @@ export default {
       } else {
         return '加入'
       }
+    },
+    hasJoinFunc: function () {
+      return this.hasJoin
     }
   },
+
   methods: {
     join: function () {
       if (this.hasJoin) {
-        // POST
-        this.hasJoin = false
+        uni.request({
+          url: 'https://thuvplus.iterator-traits.com/api/activities/cancelregistration',
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            "Set-Cookie": "sessionid=" + this.sessionid
+          },
+          data: {
+            id: this.itemprop.id
+          },
+          success: (res) => {
+            if (res.statusCode === 200) {
+              if (res.data.success) {
+                this.hasJoin = false
+              } else {
+                console.log(res.data.failinfo)
+              }
+            } else {
+              console.log(res)
+            }
+          },
+          fail: (res) => {
+            console.log(res)
+          }
+        })
       } else {
-        // POST
-        this.hasJoin = true
+        uni.request({
+          url: 'https://thuvplus.iterator-traits.com/api/activities/register',
+          method: 'POST',
+          header: {
+            'Content-Type': 'application/json',
+            "Set-Cookie": "sessionid=" + this.sessionid
+          },
+          data: {
+            id: this.itemprop.id
+          },
+          success: (res) => {
+            if (res.statusCode === 200) {
+              if (res.data.success) {
+                this.hasJoin = true
+              } else {
+                console.log(res.data.failinfo)
+              }
+            } else {
+              console.log(res)
+            }
+          },
+          fail: (res) => {
+            console.log(res)
+          }
+        })
       }
+    },
+    signin: function () {
+      uni.authorize({
+        scope: 'scope.userLocation',
+        success: () => {
+          uni.getLocation({
+            success: (res) => {
+              console.log('GPS')
+              console.log(res)
+              uni.request({
+                url: 'https://thuvplus.iterator-traits.com/api/activities/checkin',
+                method: 'POST',
+                header: {
+                  'Content-Type': 'application/json',
+                  "Set-Cookie": "sessionid=" + this.sessionid
+                },
+                data: {
+                  id: this.itemprop.id,
+                  latitude: res.latitude,
+                  longitude: res.longitude,
+                  address: res.address
+                },
+                success: (res) => {
+                  if (res.statusCode === 200) {
+                    if (res.data.success) {
+                      console.log('sign up!')
+                    } else {
+                      console.log('sign up fail')
+                      console.log(res.data.failinfo)
+                    }
+                  } else {
+                    console.log('fail')
+                  }
+                },
+                fail: (res) => {
+                  console.log('fail')
+                }
+              })
+            },
+            fail: (res) => {
+              console.log('fail to get location')
+              console.log(res)
+            }
+          })
+        },
+        fail: (res) => {
+          console.log(res)
+        }
+      })
     }
   }
 }

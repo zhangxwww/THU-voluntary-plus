@@ -1,67 +1,45 @@
 <template>
   <div class="login-container bg-purple">
-    <el-form
-      :model="loginForm"
-      :rules="loginRules"
-      class="login-form"
-      auto-complete="on"
-      label-position="left"
-    >
+    <el-form :model="loginForm"
+             :rules="loginRules"
+             class="login-form"
+             auto-complete="on"
+             label-position="left">
       <div class="title-container">
         <h3 class="title">登录到THU志愿+</h3>
       </div>
 
       <el-form-item prop="username">
-        <i class="icon-container el-icon-user" />
-        <el-input
-          ref="username"
-          size="large"
-          v-model="loginForm.username"
-          placeholder="用户名"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
+        <el-input placeholder="用户名"
+                  v-model="loginForm.username">
+          <i slot="prefix"
+             class="el-input__icon el-icon-user"></i>
+        </el-input>
       </el-form-item>
 
       <el-form-item prop="password">
-        <i class="icon-container el-icon-lock" />
-        <el-input
-          :key="passwordType"
-          ref="password"
-          size="large"
-          v-model="loginForm.password"
-          placeholder="用户名"
-          name="password"
-          :type="passwordType"
-          showPassword
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon
-            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-          />
-        </span>
+        <el-input placeholder="密码"
+                  v-model="loginForm.password"
+                  show-password>
+          <i slot="prefix"
+             class="el-input__icon el-icon-lock"></i>
+        </el-input>
       </el-form-item>
-      <el-button
-        :loading="loading"
-        type="primary"
-        @click.native.prevent="handleLogin"
-        >登录</el-button
-      >
+      <el-button :loading="loading"
+                 type="primary"
+                 @click.native.prevent="handleLogin">登录
+      </el-button>
     </el-form>
   </div>
 </template>
 
 <script>
 import { login } from '../script/index'
+
 export default {
   name: 'login',
   components: {},
-  data: function() {
+  data: function () {
     return {
       loginForm: {
         username: 'admin',
@@ -87,14 +65,12 @@ export default {
     }
   },
   methods: {
-    showPassword: function() {},
-    handleLogin: function() {
-      alert(this.loginForm.username)
-      alert(this.loginForm.password)
+    showPassword: function () {
+    },
+    handleLogin: function () {
       login(
         this.loginForm,
         () => {
-          this.loginForm.resetFields()
           alert('login!')
           this.$router.push('/dashboard/activity')
         },
@@ -116,6 +92,7 @@ export default {
   left: 80px;
   top: 20px;
 }
+
 .login-container .el-input {
   display: inline-block;
   border: 0px;
@@ -129,9 +106,10 @@ export default {
   -webkit-appearance: none;
   border-radius: 0px;
   padding: 12px 5px 12px 15px;
+  margin-left: 20px;
   height: 47px;
 
-  &:-webkit-autofill {
+  & :-webkit-autofill {
     box-shadow: 0 0 0px 1000px #283443 inset !important;
     -webkit-text-fill-color: #fff !important;
   }
@@ -204,6 +182,7 @@ export default {
 .login-container .title-container {
   position: relative;
 }
+
 .login-container .title-container .title {
   font-size: 28px;
   color: $fff;

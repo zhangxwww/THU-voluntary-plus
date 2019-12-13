@@ -1,44 +1,44 @@
 <template>
-	<view>
-		<active-info :itemprop="activitydata"></active-info>
-	</view>
+  <view>
+    <active-info :itemprop="activitydata"
+                 :hasJoin="activitydata.hasJoin"></active-info>
+  </view>
 </template>
 
 <script>
-	import ActiveInfo from '@/components/activeinfo.vue'
-	import {
-		mapState,
-		mapMutations
-	} from 'vuex'
-	
-	export default {
-		components: {
-			'active-info': ActiveInfo
-		},
-		data() {
-			return {
-				
-			}
-		},
-		onload: function() {
-			uni.setNavigationBarTitle({
-				title: '活动详情'
-			})
-		},
-		computed: {
-			...mapState(['activitydata']),
-		},
-		methods: {
-			...mapMutations(['setTitle'])
-		},
-		beforeMount() {
-			uni.setNavigationBarTitle({
-				title: '活动详情'
-			})
-		}
-	}
+import ActiveInfo from '@/components/activeinfo.vue'
+import {
+  mapState,
+  mapMutations
+} from 'vuex'
+
+export default {
+  components: {
+    'active-info': ActiveInfo
+  },
+  data () {
+    return {
+
+    }
+  },
+  onload: function () {
+    uni.setNavigationBarTitle({
+      title: '活动详情'
+    })
+  },
+  computed: {
+    ...mapState(['activitydata']),
+  },
+  methods: {
+    ...mapMutations(['setTitle'])
+  },
+  beforeMount () {
+    uni.setNavigationBarTitle({
+      title: '活动详情'
+    })
+  }
+}
 </script>
 
 <style>
-
 </style>

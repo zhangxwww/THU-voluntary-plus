@@ -5,7 +5,7 @@ export function getActivity(success, fail) {
 
     }).then(res => {
         if (res.status === 200) {
-            let list = res.activity_list
+            let list = res.data.ActivityList
             success(list)
         } else {
             fail()
@@ -17,12 +17,15 @@ export function getActivity(success, fail) {
 }
 
 export function addNewActivity(form, success, fail) {
-    axios.post('/api/api/activities/postactivity', {
+    axios.post('/api/activities/postactivity', {
         name: form.name,
-        region: form.region,
+        location: form.location,
+        city: form.city,
         totalNum: form.totalNum,
-        date1: form.date1,
-        date2: form.date2,
+        startdate: form.startdate,
+        starttime: form.starttime,
+        enddate: form.enddate,
+        endtime: form.endtime,
         tag: form.tag,
         desc: form.desc
     }).then(res => {
@@ -38,7 +41,7 @@ export function addNewActivity(form, success, fail) {
 }
 
 export function login(form, success, fail) {
-    axios.post('', {
+    axios.post('/api/manager/login', {
         username: form.username,
         password: form.password
     }).then(res => {
@@ -48,6 +51,71 @@ export function login(form, success, fail) {
             fail()
         }
     }).catch(function (e) {
+        alert(e)
+        fail()
+    })
+}
+
+export function newAnnounce(announce, success, fail) {
+    axios.post('api/messages/post', {
+        activity_id: announce.activity_id,
+        title: announce.title,
+        content: announce.content
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function editAnnounce(announce, success, fail) {
+    axios.post('/api/messages/edit', {
+        id: announce.id,
+        title: announce.title,
+        content: announce.content
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function getAnnounceList(id, success, fail) {
+    axios.post('/api/messages/list', {
+        activity_id: id
+    }).then(res => {
+        if (res.status === 200) {
+            let list = res.data.messages
+            success(list)
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function deleteAnnounce(id_, success, fail) {
+    axios.post('/api/messages/delete', {
+        id: id_
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
         alert(e)
         fail()
     })
