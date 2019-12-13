@@ -40,3 +40,11 @@ sudo service nginx start
 cd /home/ubuntu/jxq_tmp/THU-voluntary-plus/backend/mysite
 uwsgi --socket mysite.sock --wsgi-file mysite/wsgi.py
 ```
+
+---
+ 
+# 创建志愿老师账号
+
+```
+insert into auth_user (password, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) VALUES ('123',False, 'zxw', 'tejiang', 'zhang', 'tejaing@zhang.com', True, True, '20160202');
+```

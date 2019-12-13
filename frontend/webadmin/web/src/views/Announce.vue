@@ -237,11 +237,10 @@ export default {
         content: this.editform.content,
       }
       editAnnounce(form, () => {
-        // TODO
         this.dialogFormVisible = false
         this.update()
       }, () => {
-        // TODO
+        alert('fail')
       })
     },
     update () {
