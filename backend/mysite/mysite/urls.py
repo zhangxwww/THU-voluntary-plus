@@ -53,8 +53,11 @@ urlpatterns = [
     path(r'api/messages/delete',showactivity_views.delete_message),
     path(r'api/messages/post', showactivity_views.post_message),
 
-    path(r'api/code/generate, views.generateVerificationCode'),
-    path(r'api/group/create, views.createGroup'),
-    path(r'api/group/select, views.selectGroup'),
-    path(r'api/group/audit, views.auditGroup'),
+    path(r'api/code/generate', views.generateVerificationCode),
+    path(r'api/group/create', views.createGroup),
+    path(r'api/group/select', views.selectGroup),
+    path(r'api/group/audit', views.auditGroup),
+
+    path(r'api/volunteerhours/allocate', showactivity_views.allocate_volunteerhours),
+    path(r'api/volunteerhpurs/check',views.check_volunteerhours)
 ]
