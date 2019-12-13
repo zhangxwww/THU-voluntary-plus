@@ -17,6 +17,9 @@ import datetime
 from django.utils.timezone import utc
 import requests
 
+ranking_last_update_time = datetime.datetime.utcnow() # 排行榜上次更新的时间
+ranking_top_100_list = []
+
 PERMISSION_CONST = {
     'TEACHER': 233,
     'ORGANIZATION': 255,
@@ -523,4 +526,63 @@ def edit_message(request):
         return HttpResponse("SUCCESS", status=200)
     else:
         return HttpResponse("Not authenticated!", status=401)    
-        
+
+# 获取用户参加活动的历史
+def get_volunteer_history(request):
+    usertype = checkUserType(request)
+    if usertype == PERMISSION_CONST['VOLUNTEER']:
+        THUID = checkSessionValid(request)[1]
+        volunteer = VOLUNTEER(THUID=THUID)
+        resList = []
+        for record in Membership.objects.filter(volunteer=volunteer):
+            activity = record.activity
+            rtn = {}
+            rtn["id"] = activity.id
+            rtn["title"] = activity.ActivityName
+            rtn["city"] = activity.ActivityCity
+            rtn["location"] = activity.ActivityLocation
+            rtn["tag"] = activity.Tag
+            rtn["status"] = activity.ActivityStatus
+            rtn["startdate"] = activity.ActivityStartDate.split(" ")[0]
+            rtn["starttime"] = activity.ActivityStartDate.split(" ")[1]
+            rtn["enddate"] = activity.ActivityEndDate.split(" ")[0]
+            rtn["endtime"] = activity.ActivityEndDate.split(" ")[1]
+            rtn["totalAmount"] = activity.ActivityTotalAmount
+            rtn["remainAmount"] = activity.ActivityRemain
+            rtn["desc"] = activity.ActivityIntro
+            try:
+                rtn["organizer"] = activity.ActivityOrganizer.username
+            except:
+                rtn["organizer"] = "Unable to get"
+            state = record.state
+            rtn["state"] = 'UNCENSORED'
+            for state_key in ['ACCEPTED', 'UNCENSORED', 'REJECTED']:
+                if state == ENROLL_STATE_CONST[state_key]:
+                    rtn["state"] = state_key
+                    break
+            resList.append(rtn)
+        return JsonResponse({"res": resList}, safe=False)
+    else:
+        return HttpResponse("NOT A VOLUNTEER!", status=401)
+
+def get_ranking():
+    usertype = checkUserType(request)
+    if usertype == PERMISSION_CONST["UNAUTHENTICATED"]:
+        return HttpResponse("UNAUTHENTICATED", status=401)
+    outdated =  (datetime.datetime.utcnow()-ranking_last_update_time).total_seconds() > (24*3600) # 每24小时更新一次排行榜
+    if outdated or (len(ranking_top_100_list) == 0):
+        new_top_100_list = []
+        for volunteer in VOLUNTEER.objects.all().order_by('-VOLUNTEER_TIME'):
+            info = {}
+            info["THUID"] = volunteer.THUID
+            info["NAME"] = volunteer.NAME
+            info["DEPARTMENT"] = volunteer.DEPARTMENT
+            info["NICKNAME"] = volunteer.NICKNAME
+            info["SIGNATURE"] = volunteer.SIGNATURE
+            info["PHONE"] = volunteer.PHONE
+            info["VOLUNTEER_TIME"] = volunteer.VOLUNTEER_TIME
+            info["EMAIL"] = volunteer.EMAIL
+            new_top_100_list.append(info)
+        ranking_top_100_list = new_top_100_list
+        ranking_last_update_time = datetime.datetime.utcnow()
+    return JsonResponse({"ranking_top_100":ranking_top_100_list, "last_update_time":str(ranking_last_update_time)}, safe=False)
