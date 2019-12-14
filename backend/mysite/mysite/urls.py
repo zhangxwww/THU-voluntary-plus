@@ -45,6 +45,8 @@ urlpatterns = [
     path(r'api/activities/register', showactivity_views.register_activity),
     path(r'api/activities/cancelregistration', showactivity_views.cancel_registration),
     path(r'api/activities/checkin', showactivity_views.checkinApi),
+    path(r'api/activities/participants', showactivity_views.get_unallocated_participants),
+    path(r'api/activities/allocate', showactivity_views.allocate_volunteerhours),
 
     path(r'api/messages/list', showactivity_views.message_catalog_grid),
     path(r'api/messages/edit', showactivity_views.edit_message),
@@ -58,6 +60,5 @@ urlpatterns = [
     path(r'api/group/select', views.selectGroup),
     path(r'api/group/audit', views.auditGroup),
 
-    path(r'api/volunteerhours/allocate', showactivity_views.allocate_volunteerhours),
     path(r'api/volunteerhpurs/check',views.check_volunteerhours)
 ]
