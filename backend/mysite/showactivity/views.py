@@ -99,7 +99,34 @@ def post_activity(request): # name, place, date, time, tag, description, amount
         return HttpResponse("POST ACTIVITY SUCCESS", status=200)
     else:
         return HttpResponse("NOT AUTHENTICATED", status=401)
+   
 
+# 编辑活动
+def edit_activity(request): # name, place, date, time, tag, description, amount
+    # print(request.COOKIES)
+    # print(checkUserType(request))
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        activity_id = json.loads(request.body)["id"]
+        activity = showactivity_models.Message.objects.get(id = activity_id)
+        if activity.ActivityOrganizer != request.user:
+            return HttpResponse("Not your activity!", status=401)
+
+        activity.ActivityName = json.loads(request.body)["name"]
+        activity.AcitivityCity = json.loads(request.body)["city"]
+        activity.ActivityLocation = json.loads(request.body)["location"]
+        activity.ActivityTotalAmount = json.loads(request.body)["totalNum"]
+        startDate = json.loads(request.body)["startdate"]
+        endDate = json.loads(request.body)["enddate"]
+        activity.ActivityStartDate = startDate.split('T')[0] + " " + startTime.split('T')[1][:5]
+        activity.ActivityEndDate = endDate.split('T')[0] + " " + endTime.split('T')[1][:5]
+        activity.Tag = json.loads(request.body)["tag"]
+        activity.ActivityIntro = json.loads(request.body)["desc"]
+
+        activity.save()
+        print("POST ACTIVITY SUCCESS")
+        return HttpResponse("EDIT ACTIVITY SUCCESS", status=200)
+    else:
+        return HttpResponse("NOT AUTHENTICATED", status=401)
 
 #显示活动列表
 def catalog_grid(request):
@@ -488,7 +515,7 @@ def cancel_registration(request):
     activity.save()
     return JsonResponse({"success": True})
 
-
+# 发布消息
 def post_message(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         print(json.loads(request.body))
@@ -510,6 +537,7 @@ def post_message(request):
     else:
         return HttpResponse("You have no access", status = 401)
 
+# 编辑消息
 def edit_message(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         message_id = json.loads(request.body)["id"]
@@ -565,6 +593,7 @@ def get_volunteer_history(request):
     else:
         return HttpResponse("NOT A VOLUNTEER!", status=401)
 
+# 排名
 def get_ranking():
     usertype = checkUserType(request)
     if usertype == PERMISSION_CONST["UNAUTHENTICATED"]:
@@ -586,6 +615,7 @@ def get_ranking():
         ranking_top_100_list = new_top_100_list
         ranking_last_update_time = datetime.datetime.utcnow()
     return JsonResponse({"ranking_top_100":ranking_top_100_list, "last_update_time":str(ranking_last_update_time)}, safe=False)
+
 # 分配志愿工时（志愿中心/志愿团体）
 def allocate_volunteerhours(request):
     # raiseNotImplementedError("Not implemented!")
