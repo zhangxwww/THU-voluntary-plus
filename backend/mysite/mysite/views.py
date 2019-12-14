@@ -298,6 +298,7 @@ def createUser(request):
         except:
             return HttpResponse("CREATE USER FAIL", status = 404)
 
+# 创建团队
 def createGroup(request):
     name = json.loads(request.body)["name"]              #账户名
     groupname = json.loads(request.body)["groupname"]    #团队名
@@ -316,6 +317,27 @@ def createGroup(request):
         return HttpResponse("Create group success",status = 200)
     except:
         return HttpResponse("Create group fail", status = 404)
+
+# 修改团队信息
+def editGroup(request):
+    if checkUserType(request) == PERMISSION_CONST['ORGANIZATION']:
+        try:
+            group = mysite_models.User.objects.get(username = request.user.username)
+        except:
+            group = None
+        # name = json.loads(request.body)["name"]              #账户名
+        group.groupname = json.loads(request.body)["groupname"]    #团队名
+        group.setuptime = json.loads(request.body)["setuptime"]
+        group.phone = json.loads(request.body)["phone"]
+        group.email = json.loads(request.body)["email"]
+        group.about = json.loads(request.body)["about"]
+        group.membersname = json.dumps(json.loads(request.body)["membersname"])
+        group.subjects = json.dumps(json.loads(request.body)["subjects"])
+
+        userIdentity.save()
+        return HttpResponse("Edit group success",status = 200)
+    except:
+        return HttpResponse("Edit group fail", status = 404)
 
 
 def weblogin(request):
