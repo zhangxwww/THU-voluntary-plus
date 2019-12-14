@@ -78,7 +78,7 @@ def checkUserType(request):
         if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
             print("authenticated")
             print(request.user.username)
-            print("?????",UserIdentity(request.user).isTeacher)
+            print("?????",UserIdentity.objects.get(user=request.user).isTeacher)
             if UserIdentity.objects.get(user=request.user).isTeacher == 1:
                 return PERMISSION_CONST['TEACHER']
             elif UserIdentity.objects.get(user=request.user).isTeacher == 2:
@@ -336,6 +336,7 @@ def createUser(request):
             user.save()
             UserIdentity(isTeacher = identity,user=user).save()
             #userIdentity = UserIdentity(isTeacher = 0,)
+            login(request, user)
             return HttpResponse("CREATE USER SUCCESS",status = 200)
         except:
             traceback.print_exc()
@@ -359,9 +360,16 @@ def createGroup(request):
     try:
         #user = User.objects.get(username = name)
         user = request.user
-        userIdentity = UserIdentity(isTeacher = 2, setuptime = time, user = user, groupname = groupname,\
-            email = email, phone = phonenumber, about = about, members = members, status = 0)
-        userIdentity.save()
+        user_identity = UserIdentity.objects.get(user=user)
+        user_identity.isTeacher = 2
+        user_identity.setuptime = time
+        user_identity.groupname = groupname
+        user_identity.email = email
+        user_identity.phone = phonenumber
+        user_identity.about = about
+        user_identity.members = members
+        user_identity.status = 1
+        user_identity.save()
         return HttpResponse("Create group success",status = 200)
     except:
         traceback.print_exc()
@@ -382,7 +390,7 @@ def editGroup(request):
         group.about = json.loads(request.body)["about"]
         group.membersname = json.dumps(json.loads(request.body)["membersname"])
         group.subjects = json.dumps(json.loads(request.body)["subjects"])
-        group.status = 0
+        group.status = 1
 
         group.save()
         return HttpResponse("Edit group success",status = 200)
@@ -419,7 +427,7 @@ def generateVerificationCode(request):
 def selectfromGroup(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
         rtn_list = []
-        for group in UserIdentity.objects.filter(status = 0):
+        for group in UserIdentity.objects.filter(status = 1):
             rtn = {}
             # group = UserIdentity.objects.get(id = groupid)
             rtn["groupname"] = group.groupname              #团队名
