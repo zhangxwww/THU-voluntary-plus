@@ -11,7 +11,7 @@ from . import models as showactivity_models
 import mysite.models as mysite_models
 from .models import Message, MessageReadOrNot, Activity, ActivityPic, ENROLL_STATE_CONST, Membership, checkin
 from mysite.views import checkSessionValid, LOGGED_IN_CONST
-from mysite.models import VOLUNTEER
+from mysite.models import VOLUNTEER, UserIdentity
 
 from django.db import transaction
 
@@ -54,36 +54,12 @@ def checkUserType(request):
 
 # Create your views here.
 #检查登录
-<<<<<<< HEAD
-
-=======
-"""
-@transaction.atomic
-def check_login(request):
-    is_login = request.session.get('is_login', None)
-    if is_login :
-        client_type = request.session.get('MicroMessenger')
-        if client_type == '':
-            #id = request.session.get('sessionid')
-            user = WX_OPENID_TO_THUID.objects.select_for_update().get(pk=request.session.get('THUID'))
-            if not request.session.get('THUID'):
-                request.session.flush()
-                return redirect('/login/')
-        else :
-            #TODO
-            user = WX_OPENID_TO_THUID.objects.select_for_update().get(pk=request.session.get('OPENID'))
-            if not request.session.get('OPENID'):
-                request.session.flush()
-                return redirect('/login/')
-    return user
-"""
->>>>>>> 82fef4c41be9c8dee851ddcf2dd33a388b577fd4
 
 # 发布活动
 @transaction.atomic
 def post_activity(request): # name, place, date, time, tag, description, amount
-    print(request.COOKIES)
-    print(checkUserType(request))
+    #print(request.COOKIES)
+    print("!!!!!!",checkUserType(request))
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         name = json.loads(request.body)["name"]
         city = json.loads(request.body)["city"]
@@ -281,33 +257,36 @@ def get_unallocated_participants(request):
         activity = Activity(id=activity_id)
         res = []
         for info in Membership.objects.select_for_update().filter(activity=activity):
-            if info.state != PERMISSION_CONST["ACCEPTED"]: # 只返回已报名通过的志愿者
+            if info.state != ENROLL_STATE_CONST["ACCEPTED"]: # 只返回已报名通过的志愿者
                 continue
             if info.alreadyAssignedVolunteerHour: # 只返回尚未分配工时的志愿者
                 continue
+            volunteer = info.volunteer
+            record = {
+                "THUID".lower(): volunteer.THUID,
+                "NAME".lower(): volunteer.NAME,
+                "DEPARTMENT".lower(): volunteer.DEPARTMENT,
+                "NICKNAME".lower(): volunteer.NICKNAME,
+                "SIGNATURE".lower(): volunteer.SIGNATURE,
+                "PHONE".lower(): volunteer.PHONE,
+                "VOLUNTEER_TIME".lower(): volunteer.VOLUNTEER_TIME,
+                "EMAIL".lower(): volunteer.EMAIL,
+                "checked": False
+            }
             try:
-                checkin_record = checkin.objects.select_for_update().get(membership=info) # 只返回有打卡记录的志愿者
-                volunteer = info.volunteer
-                info = {
-                    "THUID".lower(): volunteer.THUID,
-                    "NAME".lower(): volunteer.NAME,
-                    "DEPARTMENT".lower(): volunteer.DEPARTMENT,
-                    "NICKNAME".lower(): volunteer.NICKNAME,
-                    "SIGNATURE".lower(): volunteer.SIGNATURE,
-                    "PHONE".lower(): volunteer.PHONE,
-                    "VOLUNTEER_TIME".lower(): volunteer.VOLUNTEER_TIME,
-                    "EMAIL".lower(): volunteer.EMAIL,
-                    "checkin_record":{
-                        "latitude": checkin_record.latitude,
-                        "longitude": checkin_record.longtitude,
-                        "address": checkin_record.address,
-                        "checkinTime": checkin_record.checkinTime
-                    }
+                checkin_record = checkin.objects.get(membership=info) # 只返回有打卡记录的志愿者
+                record["checked"] = True
+                record["checkin_record"]={
+                    "latitude": checkin_record.latitude,
+                    "longitude": checkin_record.longtitude,
+                    "address": checkin_record.address,
+                    "checkinTime": checkin_record.checkinTime
                 }
-                res.append(info)
             except:
+                traceback.print_exc()
                 pass
-        return JsonResponse(res, safe=False)
+            res.append(record)
+        return JsonResponse({"list":res}, safe=False)
     else:
         return HttpResponse("NOT TEACHER OR ORGANIZATION!", status=401)
 
@@ -697,15 +676,39 @@ def allocate_volunteerhours(request):
         activity = showactivity_models.Activity.objects.select_for_update().get(id = activity_id)
         for obj in info:
             student_id = obj["student_id"]
-            student = VOLUNTEER.objects.select_for_update().get(id = student_id)  # 不确定传过来的是id还是THUID，先这样写吧orz
-            if showactivity_models.Activity.objects.select_for_update().get(members=student) != null:
+            student = VOLUNTEER.objects.select_for_update().get(pk = student_id)  # 不确定传过来的是id还是THUID，先这样写吧orz
+            
+            try:
+                showactivity_models.Activity.objects.select_for_update().get(members=student)
                 time = obj["time"]
                 totalTime = student.VOLUNTEER_TIME + time
                 student.VOLUNTEER_TIME = totalTime
                 student.save()
                 return HttpResponse("Allocate volunteer hours successful!", status=200)
-            else:
+            except:
+                traceback.print_exc()
                 return HttpResponse("Can't allocate to this student!", status=401)   
     else:
         return HttpResponse("Not authenticated!", status=401)    
         
+# 发布反馈
+@transaction.atomic
+def post_feedback(request):
+    usertype = checkUserType(request)
+    if usertype != PERMISSION_CONST["VOLUNTEER"]:
+        return HttpResponse("NOT VOLUNTEER", status=401)
+    else:
+        THUID = checkSessionValid(request)[1]
+        volunteer = VOLUNTEER.objects.get(THUID=THUID)
+        activity_id = json.loads(request.body)["id"]
+        activity = Activity.objects.get(id=activity_id)
+        info = Membership.objects.get(volunteer=volunteer, activity = activity)
+        if info.already_feedback_provided:
+            return HttpResponse("You've already provided feedback", status=400)
+        else:
+            info.feedback = json.loads(request.body)["feedback"]
+            info.already_feedback_provided = True
+            info.save()
+            return HttpResponse("SUCCESS")
+
+
