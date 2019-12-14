@@ -42,9 +42,12 @@ urlpatterns = [
     path(r'api/activities/detail',showactivity_views.activity_detail),
     #path(r'api/activities/search', showactivity_views.search),
     path(r'api/activities/post', showactivity_views.post_activity),
+    path(r'api/activities/edit',showactivity_views.edit_activity),
     path(r'api/activities/register', showactivity_views.register_activity),
     path(r'api/activities/cancelregistration', showactivity_views.cancel_registration),
     path(r'api/activities/checkin', showactivity_views.checkinApi),
+    path(r'api/activities/participants', showactivity_views.get_unallocated_participants),
+    path(r'api/activities/allocate', showactivity_views.allocate_volunteerhours),
 
     path(r'api/messages/list', showactivity_views.message_catalog_grid),
     path(r'api/messages/edit', showactivity_views.edit_message),
@@ -55,9 +58,11 @@ urlpatterns = [
 
     path(r'api/code/generate', views.generateVerificationCode),
     path(r'api/group/create', views.createGroup),
+    path(r'api/group/edit', views.editGroup),
+    path(r'api/group/selectfrom',views.selectfromGroup),
     path(r'api/group/select', views.selectGroup),
     path(r'api/group/audit', views.auditGroup),
 
-    path(r'api/volunteerhours/allocate', showactivity_views.allocate_volunteerhours),
-    path(r'api/volunteerhpurs/check',views.check_volunteerhours)
+    path(r'api/volunteerhours/check',views.check_volunteerhours),
+    path(r'api/volunteerhours/rank', showactivity_views.get_ranking)
 ]

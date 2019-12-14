@@ -13,11 +13,11 @@ class Activity(models.Model):
     活动信息
     """
     ActivityName = models.CharField(max_length=255, verbose_name='活动名称')
-    ActivityCity = models.CharField(max_length=255,verbose_name='活动城市')
+    ActivityCity = models.CharField(max_length=255,verbose_name='活动城市',default = 'beijing')
     ActivityLocation = models.CharField(max_length=255,verbose_name='活动地点')
     ActivityStartDate = models.CharField(max_length=255,verbose_name='活动开始日期')
     ActivityEndDate = models.CharField(max_length=255,verbose_name='活动结束日期')
-    ActivityTime = models.CharField(max_length=255,verbose_name='活动时间')
+    #ActivityTime = models.CharField(max_length=255,verbose_name='活动时间')
     ActivityOrganizer = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='发起者')
     ActivityIntro = models.TextField(null=True, blank=True, verbose_name='活动介绍')
     ActivityTotalAmount = models.IntegerField(default=0, verbose_name='总名额')
@@ -42,6 +42,9 @@ class Membership(models.Model):
     volunteer = models.ForeignKey(VOLUNTEER, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     state = models.IntegerField(default=ENROLL_STATE_CONST["UNCENSORED"])
+    alreadyAssignedVolunteerHour = models.BooleanField(default=False)
+    feedback = models.TextField()
+    already_feedback_provided = models.BooleanField(default=False)
 
 class checkin(models.Model):
     membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
