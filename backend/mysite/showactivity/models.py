@@ -13,7 +13,7 @@ class Activity(models.Model):
     活动信息
     """
     ActivityName = models.CharField(max_length=255, verbose_name='活动名称')
-    ActivityCity = models.CharField(max_length=255,verbose_name='活动城市')
+    ActivityCity = models.CharField(max_length=255,verbose_name='活动城市',default = 'beijing')
     ActivityLocation = models.CharField(max_length=255,verbose_name='活动地点')
     ActivityStartDate = models.CharField(max_length=255,verbose_name='活动开始日期')
     ActivityEndDate = models.CharField(max_length=255,verbose_name='活动结束日期')

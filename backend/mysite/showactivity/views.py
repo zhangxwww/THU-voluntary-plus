@@ -24,19 +24,21 @@ PERMISSION_CONST = {
     'TEACHER': 233,
     'ORGANIZATION': 255,
     'VOLUNTEER': 258,
-    'UNAUTHENTICATED': 266
+    'UNAUTHENTICATED': 266,
+    'UNREGISTERED':277
 }
-
 BAIDU_MAP_AK = "H5LGjLHfy731eaPCZAUKfAnZH6eiql9M"
 
 def checkUserType(request):
     try:
         if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
             print("authenticated")
-            if mysite_models.UserIdentity(request.user).isTeacher:
+            if mysite_models.UserIdentity(request.user).isTeacher == 1:
                 return PERMISSION_CONST['TEACHER']
-            else:
+            elif UserIdentity.objects.get(user=request.user).isTeacher == 2:
                 return PERMISSION_CONST['ORGANIZATION']
+            else:
+                return PERMISSION_CONST['UNREGISTERED']
         else:
             res = checkSessionValid(request)[1]
             if res is not None:
@@ -49,25 +51,7 @@ def checkUserType(request):
 
 # Create your views here.
 #检查登录
-"""
-def check_login(request):
-    is_login = request.session.get('is_login', None)
-    if is_login :
-        client_type = request.session.get('MicroMessenger')
-        if client_type == '':
-            #id = request.session.get('sessionid')
-            user = WX_OPENID_TO_THUID.objects.get(pk=request.session.get('THUID'))
-            if not request.session.get('THUID'):
-                request.session.flush()
-                return redirect('/login/')
-        else :
-            #TODO
-            user = WX_OPENID_TO_THUID.objects.get(pk=request.session.get('OPENID'))
-            if not request.session.get('OPENID'):
-                request.session.flush()
-                return redirect('/login/')
-    return user
-"""
+
 
 # 发布活动
 def post_activity(request): # name, place, date, time, tag, description, amount

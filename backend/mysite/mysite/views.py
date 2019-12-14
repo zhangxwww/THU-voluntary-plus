@@ -4,7 +4,7 @@ from django.contrib.auth import  authenticate
 from django.contrib.auth.models import User
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
     WX_APPID, WX_SECRET, REDIRECT_TO_LOGIN
-from .models import WX_OPENID_TO_THUID, VOLUNTEER, UserIdentity, VerificationCode
+from .models import WX_OPENID_TO_THUID, VOLUNTEER, UserIdentity, VerificationCode, UserIdentity
 #User, UserManager
 import requests
 import json
@@ -13,6 +13,16 @@ import datetime
 from django.utils.timezone import utc
 import hashlib
 import traceback
+import random
+import string
+
+from showactivity.models import *
+# import mysite.models as mysite_models
+
+
+import datetime 
+from django.utils.timezone import utc
+import requests
 
 
 THUID_CONST="THUID"
@@ -20,6 +30,14 @@ TOKEN_CONST="TOKEN"
 OPENID_CONST="OPENID"
 SUCCESS_CONST="SUCCESS"
 LOGGED_IN_CONST="LOGGED_IN"
+
+PERMISSION_CONST = {
+    'TEACHER': 233,
+    'ORGANIZATION': 255,
+    'VOLUNTEER': 258,
+    'UNAUTHENTICATED': 266,
+    'UNREGISTERED':277
+}
 
 def get_hash(s):
     hash = hashlib.sha256()
@@ -54,6 +72,28 @@ def getOpenID(request):
 def validateToken(token, openid):
     raise NotImplementedError
     return {SUCCESS_CONST:True, THUID_CONST:"2016110011"}   
+
+def checkUserType(request):
+    try:
+        if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
+            print("authenticated")
+            print(request.user.username)
+            print("?????",UserIdentity(request.user).isTeacher)
+            if UserIdentity.objects.get(user=request.user).isTeacher == 1:
+                return PERMISSION_CONST['TEACHER']
+            elif UserIdentity.objects.get(user=request.user).isTeacher == 2:
+                return PERMISSION_CONST['ORGANIZATION']
+            else:
+                return PERMISSION_CONST['UNREGISTERED']
+        else:
+            res = checkSessionValid(request)[1]
+            if res is not None:
+                return PERMISSION_CONST['VOLUNTEER']
+            else:
+                return PERMISSION_CONST['UNAUTHENTICATED']
+    except:
+        traceback.print_exc()
+        return PERMISSION_CONST['UNAUTHENTICATED']
 
 def checkSessionValid(request):
     '''
@@ -285,44 +325,53 @@ def createUser(request):
     # setuptime = json.loads(request.body)["setuptime"]
     login_name = json.loads(request.body)["username"]
     pwd = json.loads(request.body)["password"]
-    code = json.loads(request.body)["verificationcode"]
-    pwd = get_hash(pwd)
+    code = json.loads(request.body)["code"]
+    # pwd = get_hash(pwd)
     # identity = json.loads(request.body)["identity"] # identity = 0 or 1
-    identity = 1
-    if VerificationCode.objects.get(VerificationCode=code) != null:
+    identity = 0
+    try:
+        VerificationCode.objects.get(VerificationCode=code)
         try:
             user = User.objects.create_user(username = login_name, password = pwd)
             user.save()
+            UserIdentity(isTeacher = identity,user=user).save()
             #userIdentity = UserIdentity(isTeacher = 0,)
             return HttpResponse("CREATE USER SUCCESS",status = 200)
         except:
+            traceback.print_exc()
             return HttpResponse("CREATE USER FAIL", status = 404)
+    except:
+        return HttpResponse("Unvalid code!", status = 404)
 
 # 创建团队
 def createGroup(request):
-    name = json.loads(request.body)["name"]              #账户名
-    groupname = json.loads(request.body)["groupname"]    #团队名
+    # name = json.loads(request.body)["name"]              #账户名
+    groupname = json.loads(request.body)["name"]    #团队名
     time = json.loads(request.body)["setuptime"]
     phonenumber = json.loads(request.body)["phone"]
     email = json.loads(request.body)["email"]
     about = json.loads(request.body)["about"]
-    membersname = json.dumps(json.loads(request.body)["membersname"])
-    subjects = json.dumps(json.loads(request.body)["subjects"])
+    members = request.POST.getlist("members")
+    
+    #membersname = json.dumps(json.loads(request.body)["membersname"])
+    #subjects = json.dumps(json.loads(request.body)["subjects"])
 
     try:
-        user = User.objects.get(username = name)
-        userIdentity = UserIdentity(isTeacher = 0, setuptime = time, user = user, groupname = groupname,\
-            email = email, phone = phone, about = about, membersname = membersname, subjects = subjects, status = 0)
+        #user = User.objects.get(username = name)
+        user = request.user
+        userIdentity = UserIdentity(isTeacher = 2, setuptime = time, user = user, groupname = groupname,\
+            email = email, phone = phonenumber, about = about, members = members, status = 0)
         userIdentity.save()
         return HttpResponse("Create group success",status = 200)
     except:
+        traceback.print_exc()
         return HttpResponse("Create group fail", status = 404)
 
 # 修改团队信息
 def editGroup(request):
     if checkUserType(request) == PERMISSION_CONST['ORGANIZATION']:
         try:
-            group = mysite_models.User.objects.get(username = request.user.username)
+            group = UserIdentity.objects.get(username = request.user.username)
         except:
             group = None
         # name = json.loads(request.body)["name"]              #账户名
@@ -333,10 +382,11 @@ def editGroup(request):
         group.about = json.loads(request.body)["about"]
         group.membersname = json.dumps(json.loads(request.body)["membersname"])
         group.subjects = json.dumps(json.loads(request.body)["subjects"])
+        group.status = 0
 
-        userIdentity.save()
+        group.save()
         return HttpResponse("Edit group success",status = 200)
-    except:
+    else:
         return HttpResponse("Edit group fail", status = 404)
 
 
@@ -358,9 +408,28 @@ def generateVerificationCode(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
         str_list = [random.choice(string.digits + string.ascii_letters) for i in range(20)]
         random_str = ''.join(str_list)
-        VerificationCode = mysite_models.VerificationCode(VerificationCode = random_str)
-        VerificationCode.save()
-        return HttpResponse("Generate verification code successful", status = 200)
+        code = VerificationCode(VerificationCode = random_str)
+        print("code:",random_str)
+        code.save()
+        return JsonResponse({"code":random_str})
+    else:
+        print("type",checkUserType(request))
+        return HttpResponse("You have no access", status = 401)
+
+def selectfromGroup(request):
+    if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
+        rtn_list = []
+        for group in UserIdentity.objects.filter(status = 0):
+            rtn = {}
+            # group = UserIdentity.objects.get(id = groupid)
+            rtn["groupname"] = group.groupname              #团队名
+            rtn["setuptime"] = group.setuptime
+            rtn["phone"] = group.phone
+            rtn["email"] = group.email
+            rtn["about"] = group.about
+            rtn["members"] = group.members
+            rtn_list.append(rtn)
+        return JsonResponse({"groups":rtn_list})
     else:
         return HttpResponse("You have no access", status = 401)
 
@@ -386,12 +455,11 @@ def selectGroup(request):
 #志愿中心决定某个志愿团体的注册是否通过
 def auditGroup(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
-
         groupid = json.loads(request.body)["id"]
-        result = json.loads(request.body)["result"] #审核结果,0表示不通过,1表示通过
+        result = json.loads(request.body)["result"] #审核结果,-1表示不通过,1表示通过
          
         group = UserIdentity.objects.get(id = groupid)
-        group.update(status =result)
+        group.update(status = result)
         group.save()
         return HttpResponse("Audit group successful", status = 200)
     else:

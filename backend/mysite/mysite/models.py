@@ -51,7 +51,8 @@ class User(AbstractBaseUser):  # 老师或志愿团体
 
 
 class UserIdentity(models.Model):
-    isTeacher = models.BooleanField(verbose_name='身份', default=False)
+    # isTeacher = models.BooleanField(verbose_name='身份', default=False)
+    isTeacher = models.IntegerField(verbose_name = '身份',default=0)  # 0未分配身份,1老师,2志愿团体
     setuptime = models.CharField(max_length=255, verbose_name='创立时间')
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
     # user = models.OneToOneField(to=User, on_delete=models.CASCADE)
@@ -61,10 +62,11 @@ class UserIdentity(models.Model):
     phone = models.CharField(max_length=255, verbose_name='电话')
     about = models.CharField(max_length=2000,verbose_name='团队简介')
 
-    membersname = models.CharField(max_length=255, verbose_name='团队成员名字')
-    subjects = models.CharField(max_length=255, verbose_name='团队成员院系')
+    members = models.CharField(max_length=2000,verbose_name='团队成员')
+    #membersname = models.CharField(max_length=255, verbose_name='团队成员名字')
+    #subjects = models.CharField(max_length=255, verbose_name='团队成员院系')
 
-    status = models.BooleanField(verbose_name='是否通过审核', default=False) # 0没通过，1通过
+    status = models.IntegerField(verbose_name='是否通过审核', default=0) # 0待审核，1通过,-1没通过
 
 class VerificationCode(models.Model):
     VerificationCode = models.CharField(max_length=255,verbose_name='邀请码')
