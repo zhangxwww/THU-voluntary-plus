@@ -43,7 +43,8 @@ class Membership(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     state = models.IntegerField(default=ENROLL_STATE_CONST["UNCENSORED"])
     alreadyAssignedVolunteerHour = models.BooleanField(default=False)
-    comment = models.TextField()
+    feedback = models.TextField()
+    already_feedback_provided = models.BooleanField(default=False)
 
 class checkin(models.Model):
     membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
