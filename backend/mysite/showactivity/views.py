@@ -642,27 +642,31 @@ def get_volunteer_history(request):
 
 # 获取排行榜
 @transaction.atomic
-def get_ranking():
+def get_ranking(request):
+    global ranking_last_update_time, ranking_top_100_list
     usertype = checkUserType(request)
     if usertype == PERMISSION_CONST["UNAUTHENTICATED"]:
         return HttpResponse("UNAUTHENTICATED", status=401)
-    outdated =  (datetime.datetime.utcnow()-ranking_last_update_time).total_seconds() > (5*60) # 每5min更新一次排行榜
+    outdated =  (datetime.datetime.utcnow()-ranking_last_update_time).total_seconds() > (1*10) # 每5min更新一次排行榜
     if outdated or (len(ranking_top_100_list) == 0):
         new_top_100_list = []
+        order = 1
         for volunteer in VOLUNTEER.objects.select_for_update().all().order_by('-VOLUNTEER_TIME'):
             info = {}
-            info["THUID"] = volunteer.THUID
-            info["NAME"] = volunteer.NAME
-            info["DEPARTMENT"] = volunteer.DEPARTMENT
-            info["NICKNAME"] = volunteer.NICKNAME
-            info["SIGNATURE"] = volunteer.SIGNATURE
-            info["PHONE"] = volunteer.PHONE
-            info["VOLUNTEER_TIME"] = volunteer.VOLUNTEER_TIME
-            info["EMAIL"] = volunteer.EMAIL
+            info["thuid"] = volunteer.THUID
+            info["name"] = volunteer.NAME
+            info["DEPARTMENT".lower()] = volunteer.DEPARTMENT
+            info["NICKNAME".lower()] = volunteer.NICKNAME
+            info["SIGNATURE".lower()] = volunteer.SIGNATURE
+            info["PHONE".lower()] = volunteer.PHONE
+            info["VOLUNTEER_TIME".lower()] = volunteer.VOLUNTEER_TIME
+            info["EMAIL".lower()] = volunteer.EMAIL
+            info["rank"] = order
+            order += 1
             new_top_100_list.append(info)
         ranking_top_100_list = new_top_100_list
         ranking_last_update_time = datetime.datetime.utcnow()
-    return JsonResponse({"ranking_top_100":ranking_top_100_list, "last_update_time":str(ranking_last_update_time)}, safe=False)
+    return JsonResponse({"list":ranking_top_100_list, "last_update_time":str(ranking_last_update_time)}, safe=False)
 
 # 分配志愿工时（志愿中心/志愿团体）
 @transaction.atomic
@@ -676,18 +680,19 @@ def allocate_volunteerhours(request):
         activity = showactivity_models.Activity.objects.select_for_update().get(id = activity_id)
         for obj in info:
             student_id = obj["student_id"]
-            student = VOLUNTEER.objects.select_for_update().get(pk = student_id)  # 不确定传过来的是id还是THUID，先这样写吧orz
-            
+            student = VOLUNTEER.objects.select_for_update().get(pk = student_id)  # 不确定传过来的是id还是THUID，先这样写吧orz 
             try:
-                showactivity_models.Activity.objects.select_for_update().get(members=student)
+                membership = Membership.objects.get(volunteer=student, activity=activity, state=ENROLL_STATE_CONST["ACCEPTED"], alreadyAssignedVolunteerHour=False)
                 time = obj["time"]
                 totalTime = student.VOLUNTEER_TIME + time
                 student.VOLUNTEER_TIME = totalTime
                 student.save()
-                return HttpResponse("Allocate volunteer hours successful!", status=200)
+                membership.alreadyAssignedVolunteerHour=True
+                membership.save()
             except:
                 traceback.print_exc()
                 return HttpResponse("Can't allocate to this student!", status=401)   
+        return HttpResponse("Allocate volunteer hours successful!", status=200)
     else:
         return HttpResponse("Not authenticated!", status=401)    
         

@@ -63,5 +63,6 @@ urlpatterns = [
     path(r'api/group/select', views.selectGroup),
     path(r'api/group/audit', views.auditGroup),
 
-    path(r'api/volunteerhpurs/check',views.check_volunteerhours)
+    path(r'api/volunteerhours/check',views.check_volunteerhours),
+    path(r'api/volunteerhours/rank', showactivity_views.get_ranking)
 ]
