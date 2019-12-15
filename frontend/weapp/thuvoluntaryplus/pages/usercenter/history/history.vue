@@ -83,7 +83,7 @@ export default {
                 id: it.id,
                 location: it.city,
                 name: it.title,
-                status: it.state
+                status: it.status
               }
               this.list.push(new_item)
             }

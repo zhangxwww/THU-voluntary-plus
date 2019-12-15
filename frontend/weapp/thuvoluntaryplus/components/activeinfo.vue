@@ -10,9 +10,10 @@
           <text class="text-white">{{ itemprop.city }}</text>
         </view>
         <view class="content">
-          <text class="text-black text-lg text-bold margin-left">{{ itemprop.title }}</text>
-		  <view class="cu-tag badge" :class="statusClass"></view>
+          <text class="text-black text-lg text-bold margin-left">{{ itemprop.name }}</text>
+
         </view>
+        <view class="action"><text class="text-sm margin-left">{{itemprop.status}}</text></view>
       </view>
       <view class="cu-item shadow">
         <!--时间-->
@@ -133,10 +134,10 @@ export default {
       type: Boolean,
       required: true
     },
-	status: {
-	  type: String,
-	  required: true
-	}
+    status: {
+      type: String,
+      required: true
+    }
   },
   data () {
     return {
@@ -146,17 +147,17 @@ export default {
   },
   computed: {
     ...mapState(['sessionid']),
-	statusClass(status) {
-		if (this.status === '进行中') {
-		  return "cuIcon-hot bg-mauve"
-		}		
-		if (status === '未开始') {
-			return "cuIcon-warn bg-orange"
-		}
-		if (status === '已完成') {
-			return "cuIcon-check bg-green"
-		}
-	},
+    statusClass: function () {
+      if (this.status === '进行中') {
+        return "cuIcon-hot bg-mauve text-sm"
+      }
+      if (this.status === '未开始') {
+        return "cuIcon-warn bg-orange text-sm"
+      }
+      if (this.status === '已完成') {
+        return "cuIcon-check bg-green text-sm"
+      }
+    },
     joinInstructionText: function () {
       if (this.hasJoin) {
         return '您已报名参加此活动'

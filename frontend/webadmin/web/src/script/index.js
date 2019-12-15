@@ -40,6 +40,35 @@ export function addNewActivity(form, success, fail) {
     })
 }
 
+export function editActivity(id, form, success, fail) {
+    form.id = id
+    axios.post('/api/activities/edit', form).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function deleteActivity(id, success, fail) {
+    axios.post('/api/activities/delete', {
+        id: id
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
 export function login(form, success, fail) {
     axios.post('/api/manager/login', {
         username: form.username,

@@ -40,9 +40,9 @@
                        width="80"
                        align="center"
                        :filters="[
-          { text: '已发布', value: '已发布' },
-          { text: '审核中', value: '审核中' },
-          { text: '已删除', value: '已删除' }
+          { text: '未开始', value: '未开始' },
+          { text: '进行中', value: '进行中' },
+          { text: '已结束', value: '已结束' }
         ]"
                        :filter-method="filterStatus"
                        filter-placement="bottom-end">
@@ -85,7 +85,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog :title="编辑活动" :visible-sync="editVisible">
+    <el-dialog title="编辑活动"
+               :visible.sync="editVisible">
       <el-form :model="editForm"
                :rules="rules"
                ref="editForm"
@@ -183,7 +184,8 @@
           <el-button type="success"
                      @click="submitEdit">确认
           </el-button>
-          <el-button type="info" @click="cancelEdit">取消</el-button>
+          <el-button type="info"
+                     @click="cancelEdit">取消</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -202,15 +204,15 @@
 </template>
 
 <script>
-import { getActivity } from '../script/index'
+import { getActivity, deleteActivity, editActivity } from '../script/index'
 
 export default {
   filters: {
     statusMapper (status) {
       const statusMap = {
-        已发布: 'success',
-        审核中: 'warning',
-        已删除: 'danger'
+        未开始: 'success',
+        进行中: 'warning',
+        已结束: 'danger'
       }
       return statusMap[status]
     }
@@ -227,6 +229,18 @@ export default {
       inputValue: '',
       editVisible: false,
       currentEditRow: null,
+      editForm: {
+        name: '',
+        city: '',
+        location: '',
+        totalNum: '',
+        startdate: '',
+        starttime: '',
+        enddate: '',
+        endtime: '',
+        tag: '',
+        desc: '',
+      },
       provinces: [
         {
           id: 0,
@@ -304,42 +318,56 @@ export default {
       return this.list.length
     },
     updateList: function () {
+      this.getList()
       return this.list
     }
   },
   created () {
-    getActivity(
-      li => {
-        this.rawlist.splice(0, this.rawlist.length)
-        for (let item of li) {
-          let new_item = {
-            id: item.id,
-            title: item.title,
-            assembler: item.organizer,
-            location: item.location,
-            tag: item.tag,
-            status: item.status,
-            time: item.startdate
-          }
-          this.rawlist.push(new_item)
-          this.getList()
-        }
-      },
-      () => {
-        alert('Fail to get activity list')
-        //this.list = this.rawlist.slice(0, this.pagesize)
-      }
-    )
+    this.updateActivities()
   },
 
   methods: {
     handleDelete (index, row) {
       alert(index, row)
+      deleteActivity(row.id, () => {
+        alert('success')
+        this.updateActivities()
+      }, () => {
+        alert('fail')
+      })
+    },
+    updateActivities () {
+      getActivity(
+        li => {
+          this.rawlist.splice(0, this.rawlist.length)
+          for (let item of li) {
+            let new_item = {
+              id: item.id,
+              title: item.title,
+              assembler: item.organizer,
+              location: item.location,
+              tag: item.tag,
+              status: item.status,
+              time: item.startdate
+            }
+            this.rawlist.push(new_item)
+            this.getList()
+          }
+        },
+        () => {
+          alert('Fail to get activity list')
+          //this.list = this.rawlist.slice(0, this.pagesize)
+        }
+      )
     },
     // eslint-disable-next-line no-unused-vars
     handleEdit (index, row) {
       this.editVisible = true
       this.currentEditRow = row
+      this.editForm.name = row.title
+      this.editForm.location = row.location
+      this.editForm.tag = row.tag
+      this.editForm.desc = row.desc
     },
     handleDetail (index, row) {
       alert(row.id)
@@ -350,10 +378,8 @@ export default {
       return row.status === value
     },
     getList: function () {
-      this.list = this.rawlist.slice(
-        (this.page - 1) * this.pagesize,
-        this.page * this.pagesize
-      )
+      this.list.splice(0, this.list.length, ...this.rawlist.slice((this.page - 1) * this.pagesize, this.page * this.pagesize))
+      window.console.log(this.list)
     },
     handleSizeChange (val) {
       this.pagesize = val
@@ -364,9 +390,14 @@ export default {
       this.getList()
     },
     submitEdit () {
-      this.editVisible = false
+      editActivity(this.currentEditRow.id, this.editForm, () => {
+        this.editVisible = false
+        this.updateActivities()
+      }, () => {
+        alert('fail')
+      })
     },
-    cancelEdit() {
+    cancelEdit () {
       this.editVisible = false
     },
     handleClose (tag) {
@@ -378,6 +409,18 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus()
       })
     },
+    clearEditForm () {
+      this.editForm.name = ''
+      this.editForm.location = ''
+      this.editForm.city = ''
+      this.editForm.totalNum = ''
+      this.editForm.startdate = ''
+      this.editForm.starttime = ''
+      this.editForm.enddate = ''
+      this.editForm.endtime = ''
+      this.editForm.tag = ''
+      this.editForm.desc = ''
+    }
   }
 }
 </script>
