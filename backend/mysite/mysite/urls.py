@@ -33,6 +33,10 @@ urlpatterns = [
 
     path(r'api/bind', views.bindApi),
     path(r'api/volunteer/changeInfo', views.volunteerChangeInfo),
+    path(r'api/volunteer/info', views.volunteerGetInfo),
+    path(r'api/volunteer/history', showactivity_views.get_volunteer_history),
+    path(r'api/volunteer/checkinRecord', showactivity_views.getVolunteerCheckinRecord),
+    path(r'api/volunteer/feedbackRecord', showactivity_views.getVolunteerFeedbackRecord),
 
     path(r'api/activities/postactivity', showactivity_views.post_activity),
     
@@ -48,6 +52,10 @@ urlpatterns = [
     path(r'api/activities/checkin', showactivity_views.checkinApi),
     path(r'api/activities/participants', showactivity_views.get_unallocated_participants),
     path(r'api/activities/allocate', showactivity_views.allocate_volunteerhours),
+    path(r'api/activities/delete', showactivity_views.delete_activity),
+
+    path(r'api/feedback/post', showactivity_views.post_feedback),
+    path(r'api/feedback/query', showactivity_views.query_feedback),
 
     path(r'api/messages/list', showactivity_views.message_catalog_grid),
     path(r'api/messages/edit', showactivity_views.edit_message),

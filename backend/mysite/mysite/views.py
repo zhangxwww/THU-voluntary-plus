@@ -128,6 +128,12 @@ def checkSessionValid(request):
     except:
         return False, None
 
+# 志愿者获取个人信息
+def volunteerGetInfo(request):
+    usertype = checkUserType(request)
+    if usertype != PERMISSION_CONST["VOLUNTEER"]:
+        return HttpResponse("Not a volunteer!", status=401)
+    raise NotImplementedError
 
 '''
 def getStudentID(request):
@@ -291,6 +297,9 @@ def bindApi(request):
         return HttpResponse("Unable to bind for PC client", status=401)
 
 def volunteerChangeInfo(request):
+    '''
+    志愿者修改个人信息
+    '''
     sessionValidInfo = checkSessionValid(request)
     print(sessionValidInfo)
     if not sessionValidInfo[0]:
@@ -402,7 +411,7 @@ def weblogin(request):
         request.session[LOGGED_IN_CONST] = False
         return HttpResponse("LOGIN FAILED", status = 404)
 
-
+# 生成注册团体账号的邀请码
 def generateVerificationCode(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
         str_list = [random.choice(string.digits + string.ascii_letters) for i in range(20)]
