@@ -2,7 +2,9 @@
   <view>
     <active-info :itemprop="activitydata"
                  :hasJoin="activitydata.hasJoin"
-				 :status="activitydata.status"></active-info>
+                 :hasCheckedIn="activitydata.hasCheckedIn"
+                 :hasFeedback="activitydata.hasFeedback"
+                 :status="activitydata.status"></active-info>
   </view>
 </template>
 

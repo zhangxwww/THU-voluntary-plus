@@ -27,7 +27,8 @@ const store = new Vuex.Store({
       read: false,
       content: '特奖得主金昕祺邀请您加入清华首家线上赌场，同花顺，扎金花，24点，统统赚大钱，美元澳元港元带回家！'
     },
-    currentModified: null
+    currentModified: null,
+    hasSendFeedback: false
   },
   mutations: {
     setBind (state, bind) {
@@ -60,6 +61,9 @@ const store = new Vuex.Store({
     },
     setCurrentModified (state, obj) {
       state.currentModified = obj
+    },
+    setFeedback (state, s) {
+      state.hasSendFeedback = s
     }
   }
 })

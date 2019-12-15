@@ -123,6 +123,8 @@ export default {
               detail: data.desc,
               participantList: [],
               hasJoin: data.registered,
+              hasCheckedIn: data.hasCheckedIn,
+              hasFeedback: data.hasFeedback,
               status: data.status
             }
             for (let part of data.participants) {
