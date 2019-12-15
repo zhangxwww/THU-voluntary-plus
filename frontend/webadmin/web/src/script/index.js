@@ -304,3 +304,34 @@ export function getGroupTimeline(success, fail) {
         fail()
     })
 }
+
+export function getFeedback(id, success, fail) {
+    axios.post('', {
+        id: id
+    }).then(res => {
+        if (res.status === 200) {
+            let list = res.data.list
+            success(list)
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function checkFeedback(id, success, fail) {
+    axios.post('', {
+        id: id
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
