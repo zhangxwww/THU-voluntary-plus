@@ -11,6 +11,7 @@
         </view>
         <view class="content">
           <text class="text-black text-lg text-bold margin-left">{{ itemprop.title }}</text>
+		  <view class="cu-tag badge" :class="statusClass"></view>
         </view>
       </view>
       <view class="cu-item shadow">
@@ -131,7 +132,11 @@ export default {
     hasJoin: {
       type: Boolean,
       required: true
-    }
+    },
+	status: {
+	  type: String,
+	  required: true
+	}
   },
   data () {
     return {
@@ -141,6 +146,17 @@ export default {
   },
   computed: {
     ...mapState(['sessionid']),
+	statusClass(status) {
+		if (this.status === '进行中') {
+		  return "cuIcon-hot bg-mauve"
+		}		
+		if (status === '未开始') {
+			return "cuIcon-warn bg-orange"
+		}
+		if (status === '已完成') {
+			return "cuIcon-check bg-green"
+		}
+	}
     joinInstructionText: function () {
       if (this.hasJoin) {
         return '您已报名参加此活动'
