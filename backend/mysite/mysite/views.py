@@ -50,6 +50,7 @@ def redirectToTHUAuthentication(request):
         raise NotImplementedError
     return HttpResponseRedirect(REDIRECT_TO_LOGIN)
 
+# 获取客户端的ip地址
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -58,6 +59,7 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+# 解析清华大学用户电子身份服务系统的返回内容
 def parseUserInfoFromTHUAuthentication(text):
     parsed = {}
     for r in text.split(':'):
@@ -66,13 +68,7 @@ def parseUserInfoFromTHUAuthentication(text):
         parsed[prop] = value
     return parsed
 
-def getOpenID(request):
-    raise NotImplementedError
-
-def validateToken(token, openid):
-    raise NotImplementedError
-    return {SUCCESS_CONST:True, THUID_CONST:"2016110011"}   
-
+# 检查用户类型
 def checkUserType(request):
     try:
         if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
@@ -241,6 +237,9 @@ def managerLoginApi(request):
 
 
 def bindApi(request):
+    '''
+    绑定微信的openid与学号
+    '''
     if not checkSessionValid(request)[0]:
         return HttpResponse("You need to login!", status=401)
     client_type = request.META['HTTP_USER_AGENT']
@@ -321,6 +320,7 @@ def volunteerChangeInfo(request):
     except:
         return HttpResponse("OPERATION FAILED", status=404)
 
+# 注册团体账号
 def createUser(request):
     # setuptime = json.loads(request.body)["setuptime"]
     login_name = json.loads(request.body)["username"]
@@ -352,7 +352,7 @@ def createGroup(request):
     phonenumber = json.loads(request.body)["phone"]
     email = json.loads(request.body)["email"]
     about = json.loads(request.body)["about"]
-    members = request.POST.getlist("members")
+    members = json.loads(request.body)["members"]
     
     #membersname = json.dumps(json.loads(request.body)["membersname"])
     #subjects = json.dumps(json.loads(request.body)["subjects"])
@@ -367,7 +367,7 @@ def createGroup(request):
         user_identity.email = email
         user_identity.phone = phonenumber
         user_identity.about = about
-        user_identity.members = members
+        user_identity.members = json.dumps(members)
         user_identity.status = 1
         user_identity.save()
         return HttpResponse("Create group success",status = 200)
@@ -378,20 +378,11 @@ def createGroup(request):
 # 修改团队信息
 def editGroup(request):
     if checkUserType(request) == PERMISSION_CONST['ORGANIZATION']:
-        try:
-            group = UserIdentity.objects.get(username = request.user.username)
-        except:
-            group = None
-        # name = json.loads(request.body)["name"]              #账户名
-        group.groupname = json.loads(request.body)["groupname"]    #团队名
-        group.setuptime = json.loads(request.body)["setuptime"]
+        group = UserIdentity.objects.get(user = request.user)
         group.phone = json.loads(request.body)["phone"]
         group.email = json.loads(request.body)["email"]
         group.about = json.loads(request.body)["about"]
-        group.membersname = json.dumps(json.loads(request.body)["membersname"])
-        group.subjects = json.dumps(json.loads(request.body)["subjects"])
         group.status = 1
-
         group.save()
         return HttpResponse("Edit group success",status = 200)
     else:
@@ -424,6 +415,7 @@ def generateVerificationCode(request):
         print("type",checkUserType(request))
         return HttpResponse("You have no access", status = 401)
 
+# 志愿中心账号获取团体账号列表
 def selectfromGroup(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
         rtn_list = []
@@ -431,11 +423,19 @@ def selectfromGroup(request):
             rtn = {}
             # group = UserIdentity.objects.get(id = groupid)
             rtn["groupname"] = group.groupname              #团队名
-            rtn["setuptime"] = group.setuptime
+            setuptime = group.setuptime
+            if 'T' in setuptime:
+                setuptime = setuptime.split('T')[0]
+            else:
+                setuptime = setuptime[:10]
+            rtn["setuptime"] = setuptime
             rtn["phone"] = group.phone
             rtn["email"] = group.email
             rtn["about"] = group.about
-            rtn["members"] = group.members
+            members = group.members
+            if not members:
+                members = '[]'
+            rtn["members"] = json.loads(members)
             rtn_list.append(rtn)
         return JsonResponse({"groups":rtn_list})
     else:
@@ -484,3 +484,28 @@ def check_volunteerhours(request):
     hours = user.VOLUNTEER_TIME
 
     return JsonResponse({"hours": hours})
+
+
+def getGroupInfo(request):
+    '''
+    志愿团体获取团体账号信息
+    '''
+    usertype = checkUserType(request)
+    if usertype != PERMISSION_CONST["ORGANIZATION"]:
+        return HttpResponse("NOT ORGANIZATION", status=401)
+    else:
+        user = request.user
+        info = UserIdentity.objects.get(user=user)
+        res = {}
+        setuptime = info.setuptime
+        if 'T' in setuptime:
+            setuptime = setuptime.split('T')[0]
+        else:
+            setuptime = setuptime[:10]
+        res["setuptime"] = setuptime
+        res["groupname"] = info.groupname
+        res["email"] = info.email
+        res["phone"] = info.phone
+        res["about"] = info.about
+        res["members"] = json.loads(info.members)
+        return JsonResponse(res)

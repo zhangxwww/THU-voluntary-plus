@@ -46,5 +46,5 @@ uwsgi --socket mysite.sock --wsgi-file mysite/wsgi.py
 # 创建志愿老师账号
 
 ```
-insert into mysite_useridentity (user_id, isTeacher, setuptime, groupname, email , phone,  about, status, members) VALUES (3, 2,  '','','','','',True,'');
+insert into mysite_useridentity (user_id, isTeacher, setuptime, groupname, email , phone,  about, status, members) VALUES (13,1,  '','','','','',True,'');
 ```

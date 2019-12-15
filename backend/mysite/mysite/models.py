@@ -66,7 +66,7 @@ class UserIdentity(models.Model):
     #membersname = models.CharField(max_length=255, verbose_name='团队成员名字')
     #subjects = models.CharField(max_length=255, verbose_name='团队成员院系')
 
-    status = models.IntegerField(verbose_name='是否通过审核', default=0) # 0待审核，1通过,-1没通过
+    status = models.IntegerField(verbose_name='是否通过审核', default=0) # 0未填写团队信息，1填写过团队信息
 
 class VerificationCode(models.Model):
     VerificationCode = models.CharField(max_length=255,verbose_name='邀请码')
