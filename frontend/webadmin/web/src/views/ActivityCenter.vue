@@ -47,9 +47,7 @@
                        :filter-method="filterStatus"
                        filter-placement="bottom-end">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusMapper">{{
-                        scope.row.status
-                        }}
+          <el-tag :type="scope.row.status | statusMapper">{{ scope.row.status }}
           </el-tag>
         </template>
       </el-table-column>
@@ -75,7 +73,7 @@
         <template slot-scope="scope">
           <el-button size="mini"
                      type="info"
-                     @click="handleDetail(scope.$index, scope.row)">设置
+                     @click="handleDetail(scope.$index, scope.row)">管理
           </el-button>
           <el-button size="mini"
                      @click="handleEdit(scope.$index, scope.row)">编辑
@@ -135,8 +133,8 @@ export default {
   },
   created () {
     getActivity(
-      (li) => {
-        this.list.splice(0, this.list.length)
+      li => {
+        this.rawlist.splice(0, this.rawlist.length)
         for (let item of li) {
           let new_item = {
             id: item.id,
@@ -147,7 +145,8 @@ export default {
             status: item.status,
             time: item.startdate
           }
-          this.list.push(new_item)
+          this.rawlist.push(new_item)
+          this.getList()
         }
       },
       () => {
@@ -158,10 +157,10 @@ export default {
   },
 
   methods: {
-    handleEdit (index, row) {
+    handleDelete (index, row) {
       alert(index, row)
     },
-    handleDelete (index, row) {
+    handleEdit (index, row) {
       alert(index, row)
     },
     handleDetail (index, row) {
@@ -188,7 +187,6 @@ export default {
     }
   }
 }
-
 </script>
 
 <style scope>

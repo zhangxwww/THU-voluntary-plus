@@ -1,37 +1,37 @@
 <template>
   <view class="cu-list menu-avatar sm-border card-menu margin-top">
-    <view v-for="(msg, index) in messagelist"
-          :key="msg.id"
-          :index="index"
-          class="cu-item cur"
-          :class="modalName=='move-box-'+ index?'move-cur':''"
-          @touchstart="ListTouchStart"
-          @touchmove="ListTouchMove"
-          @touchend="ListTouchEnd"
-          :data-target="'move-box-' + index"
-          @tap="ViewMessage(msg, $event)">
-      <view class="cu-avatar radius lg"
-            :style="{'background-image':'url('+msg.avatar+')'}">
-        <view v-if="!msg.read"
-              class="cu-tag badge"></view>
+    <view
+      v-for="(msg, index) in messagelist"
+      :key="msg.id"
+      :index="index"
+      class="cu-item cur"
+      :class="modalName == 'move-box-' + index ? 'move-cur' : ''"
+      @touchstart="ListTouchStart"
+      @touchmove="ListTouchMove"
+      @touchend="ListTouchEnd"
+      :data-target="'move-box-' + index"
+      @tap="ViewMessage(msg, $event)"
+    >
+      <view
+        class="cu-avatar radius lg"
+        :style="{ 'background-image': 'url(' + msg.avatar + ')' }"
+      >
+        <view v-if="!msg.read" class="cu-tag badge"></view>
       </view>
       <view class="content">
         <view>
-          <view class="text-cut">{{msg.sender}}</view>
+          <view class="text-cut">{{ msg.sender }}</view>
         </view>
         <view class="text-gray text-sm flex">
-          <view class="text-cut">{{msg.title}}</view>
+          <view class="text-cut">{{ msg.title }}</view>
         </view>
       </view>
       <view class="action">
-        <view class="text-grey text-xs">{{msg.time}}</view>
-        <view v-if="!msg.read"
-              class="cu-tag round bg-red sm">未读</view>
-        <view v-if="msg.read"
-              class="cu-tag round bg-green sm">已读</view>
+        <view class="text-grey text-xs">{{ msg.time }}</view>
+        <view v-if="!msg.read" class="cu-tag round bg-red sm">未读</view>
+        <view v-if="msg.read" class="cu-tag round bg-green sm">已读</view>
       </view>
-      <view class="move"
-            @tap.native.stop="DeleteMessage(msg.id)">
+      <view class="move" @tap.native.stop="DeleteMessage(msg.id)">
         <view class="bg-red">删除</view>
       </view>
     </view>
@@ -39,42 +39,39 @@
 </template>
 
 <script>
-import {
-  mapState,
-  mapMutations
-} from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 
 export default {
-  data () {
+  data() {
     return {
       listTouchStart: 0,
       listTouchDirection: null,
       modalName: null,
-      rawlist: [],
+      rawlist: []
     }
   },
   computed: {
     ...mapState(['curmsg', 'sessionid']),
-    messagelist: function () {
+    messagelist: function() {
       return this.rawlist
     }
   },
-  onload () {
+  onload() {
     uni.setNavigationBarTitle({
       title: '消息中心'
     })
   },
   methods: {
     ...mapMutations(['setCurmsg']),
-    UpdateList: function () {
+    UpdateList: function() {
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/messages/list',
         method: 'POST',
         header: {
           'Content-Type': 'application/json',
-          "Set-Cookie": "sessionid=" + this.sessionid
+          'Set-Cookie': 'sessionid=' + this.sessionid
         },
-        success: (res) => {
+        success: res => {
           if (res.statusCode === 200) {
             let list = res.data.messages
             this.rawlist.splice(0, this.rawlist.length)
@@ -86,32 +83,33 @@ export default {
                 time: it.time,
                 read: it.read,
                 content: it.content,
-                avatar: 'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg',
+                avatar:
+                  'https://ossweb-img.qq.com/images/lol/web201310/skin/big81020.jpg'
               }
               this.rawlist.push(new_item)
             }
           } else {
-
+            console.log(res)
           }
         },
-        fail: (e) => {
+        fail: e => {
           console.log(e)
         }
       })
     },
-    ViewMessage: function (msg, e) {
+    ViewMessage: function(msg, e) {
       this.setCurmsg(msg)
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/messages/read',
         method: 'POST',
         header: {
           'Content-Type': 'application/json',
-          "Set-Cookie": "sessionid=" + this.sessionid
+          'Set-Cookie': 'sessionid=' + this.sessionid
         },
         data: {
           id: msg.id
         },
-        success: (res) => {
+        success: res => {
           if (res.statusCode === 200) {
             msg.read = true
             uni.navigateTo({
@@ -121,47 +119,48 @@ export default {
             console.log(res)
           }
         },
-        fail: (e) => {
+        fail: e => {
           console.log(e)
         }
       })
     },
-    DeleteMessage: function (id) {
+    DeleteMessage: function(id) {
       console.log(id)
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/messages/delete',
         method: 'POST',
         header: {
           'Content-Type': 'application/json',
-          "Set-Cookie": "sessionid=" + this.sessionid
+          'Set-Cookie': 'sessionid=' + this.sessionid
         },
         data: {
           id: id
         },
-        success: (res) => {
+        success: res => {
           if (res.statusCode === 200) {
             this.UpdateList()
           } else {
             console.log(res)
           }
         },
-        fail: (e) => {
+        fail: e => {
           console.log(e)
         }
       })
     },
     // ListTouch触摸开始
-    ListTouchStart: function (e) {
+    ListTouchStart: function(e) {
       this.listTouchStart = e.touches[0].pageX
     },
 
     // ListTouch计算方向
-    ListTouchMove: function (e) {
-      this.listTouchDirection = e.touches[0].pageX - this.listTouchStart > 0 ? 'right' : 'left'
+    ListTouchMove: function(e) {
+      this.listTouchDirection =
+        e.touches[0].pageX - this.listTouchStart > 0 ? 'right' : 'left'
     },
 
     // ListTouch计算滚动
-    ListTouchEnd: function (e) {
+    ListTouchEnd: function(e) {
       if (this.listTouchDirection == 'left') {
         this.modalName = e.currentTarget.dataset.target
       } else {
@@ -170,17 +169,16 @@ export default {
       this.listTouchDirection = null
     }
   },
-  beforeMount () {
+  beforeMount() {
     uni.setNavigationBarTitle({
       title: '消息中心'
     })
     this.UpdateList()
   },
-  onShow () {
+  onShow() {
     this.UpdateList()
   }
 }
 </script>
 
-<style>
-</style>
+<style></style>
