@@ -65,7 +65,6 @@ export default {
               if (res.statusCode === 200) {
                 console.log(res);
                 let sessionid = res["header"]["Set-Cookie"].split(";")[0].split("=")[1];
-                console.log(sessionid)
                 that.$store.commit('setSessionId', sessionid);
                 if (res.data.BINDED) {
                   let info = {

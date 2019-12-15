@@ -60,7 +60,7 @@
 		computed: {
 		},
 		methods: {
-			...mapMutations(['setTitle'])
+			...mapMutations(['setTitle']),
 		},
 	}
 </script>
