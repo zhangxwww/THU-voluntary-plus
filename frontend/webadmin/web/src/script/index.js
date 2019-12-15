@@ -230,3 +230,48 @@ export function checkGroupSetup(gid, check, success, fail) {
         fail()
     })
 }
+
+export function getGroupInfo(success, fail) {
+    axios.get('/api/group/info').then(res => {
+        if (res.status === 200) {
+            let data = res.data
+            success(data)
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function editGroupInfo(form, success, fail) {
+    axios.post('/api/group/edit', {
+        phone: form.phone,
+        email: form.email,
+        about: form.about
+    }).then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
+
+export function getGroupTimeline(success, fail) {
+    axios.get('/api/activities/list').then(res => {
+        if (res.status === 200) {
+            let list = res.data.ActivityList
+            success(list)
+        } else {
+            fail()
+        }
+    }).catch(e => {
+        alert(e)
+        fail()
+    })
+}
