@@ -19,15 +19,18 @@ import datetime
 from django.utils.timezone import utc
 import requests
 
+
+FAIL_INFO_KEY = "failinfo"
+
 ranking_last_update_time = datetime.datetime.utcnow() # 排行榜上次更新的时间
 ranking_top_100_list = []
 
 BAIDU_MAP_AK = "H5LGjLHfy731eaPCZAUKfAnZH6eiql9M"
 
-    
-
-# Create your views here.
-#检查登录
+# 活动状态
+ACTIVITY_STATUS_CONST_NOT_STARTED = "未开始"
+ACTIVITY_STATUS_CONST_ALREADY_ENDED = "已结束"
+ACTIVITY_STATUS_IN_PROGRESS = "进行中"
 
 # 发布活动
 @transaction.atomic
@@ -76,7 +79,9 @@ def edit_activity(request): # name, place, date, time, tag, description, amount
         activity.AcitivityCity = json.loads(request.body)["city"]
         activity.ActivityLocation = json.loads(request.body)["location"]
         startDate = json.loads(request.body)["startdate"]
+        startTime = json.loads(request.body)["starttime"]
         endDate = json.loads(request.body)["enddate"]
+        endTime = json.loads(request.body)["endtime"]
         activity.ActivityStartDate = startDate.split('T')[0] + " " + startTime.split('T')[1][:5]
         activity.ActivityEndDate = endDate.split('T')[0] + " " + endTime.split('T')[1][:5]
         activity.Tag = json.loads(request.body)["tag"]
@@ -122,7 +127,6 @@ def catalog_grid(request):
         rtn["city"] = rtn_list[i].ActivityCity
         rtn["location"] = rtn_list[i].ActivityLocation
         rtn["tag"] = rtn_list[i].Tag
-        rtn["status"] = rtn_list[i].ActivityStatus
         rtn["startdate"] = rtn_list[i].ActivityStartDate.split(" ")[0]
         rtn["starttime"] = rtn_list[i].ActivityStartDate.split(" ")[1]
         rtn["enddate"] = rtn_list[i].ActivityEndDate.split(" ")[0]
@@ -136,6 +140,7 @@ def catalog_grid(request):
         rtn["finished"] = compareTime(currentTime.year, currentTime.month, currentTime.day, currentTime.hour, \
             currentTime.minute, int(endDate.split("-")[0]), int(endDate.split("-")[1]), int(endDate.split("-")[2]), \
             int(endTime.split(":")[0]), int(endTime.split(":")[1]))
+        rtn["status"] = getActivityStatus(rtn_list[i])
         try:
             rtn["organizer"] = rtn_list[i].ActivityOrganizer.username
         except:
@@ -174,7 +179,6 @@ def activity_detail(request):
         rtn["city"] = activity.ActivityCity
         rtn["location"] = activity.ActivityLocation
         rtn["tag"] = activity.Tag
-        rtn["status"] = activity.ActivityStatus
         rtn["startdate"] = activity.ActivityStartDate.split(" ")[0]
         rtn["starttime"] = activity.ActivityStartDate.split(" ")[1]
         rtn["enddate"] = activity.ActivityEndDate.split(" ")[0]
@@ -182,6 +186,7 @@ def activity_detail(request):
         rtn["totalAmount"] = activity.ActivityTotalAmount
         rtn["remainAmount"] = activity.ActivityRemain
         rtn["desc"] = activity.ActivityIntro
+        rtn["status"] = getActivityStatus(activity)
         try:
             rtn["organizer"] = activity.ActivityOrganizer.username
         except:
@@ -203,9 +208,16 @@ def activity_detail(request):
                     "SIGNATURE".lower(): volunteer.SIGNATURE,
                     "PHONE".lower(): volunteer.PHONE,
                     "VOLUNTEER_TIME".lower(): volunteer.VOLUNTEER_TIME,
-                    "EMAIL".lower(): volunteer.EMAIL
+                    "EMAIL".lower(): volunteer.EMAIL,
+                    "already_feedback_provided": m.already_feedback_provided
                 }
+                try:
+                    checkin.objects.get(membership = m)
+                    info["already_checked"] = True
+                except:
+                    info["already_checked"] = False
                 rtn["participants"].append(info)
+                
 
     #Activity_recommend = showactivity_models.Activity.objects.select_for_update().filter(IsOverDeadline=0)
     #Number_set = set()
@@ -285,24 +297,8 @@ def compareTime(year1, month1, day1, hour1, minute1, year2, month2, day2, hour2,
         return minute1<minute2
     return True
 
-@transaction.atomic
-# 签到
-def checkinApi(request):
-    FAIL_INFO_KEY = "failinfo"
-    if checkUserType(request) != PERMISSION_CONST['VOLUNTEER']:
-        JsonResponse({"success": False, FAIL_INFO_KEY: "Only logged-in volunteer can checkin!"})
-    THUID = checkSessionValid(request)[1]
-    if THUID is None:
-        return JsonResponse({"success": False, FAIL_INFO_KEY: "Fail to get THUID!"})
-    jsonBody = json.loads(request.body)
-    volunteer = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
-    activity = Activity.objects.select_for_update().get(id=jsonBody["id"])
-    try:
-        membership = Membership.objects.select_for_update().get(volunteer=volunteer, activity=activity)
-        checkin.objects.select_for_update().get(membership=membership)
-        return HttpResponse({"success": False, FAIL_INFO_KEY: "You have already checked in!"})
-    except:
-        pass
+# 获取活动状态（未开始/进行中/已结束）
+def getActivityStatus(activity:Activity):
     utcnow = datetime.datetime.utcnow().replace(tzinfo=utc)
     year = utcnow.year
     month = utcnow.month
@@ -322,9 +318,32 @@ def checkinApi(request):
     hour2 = int(time2.split(" ")[1].split(":")[0])
     minute2 = int(time2.split(" ")[1].split(":")[1])
     if not compareTime(year1, month1, day1, hour1, minute1, year, month, day, hour, minute):
-        return JsonResponse({"success": False, FAIL_INFO_KEY: "You cannot check in before the activity start date!"})
-    if not compareTime(year, month, day, hour, minute, year2, month2, day2, hour2, minute2):
-        return JsonResponse({"success": False, FAIL_INFO_KEY: "You cannot check in after the activity end date!"})
+        return ACTIVITY_STATUS_CONST_NOT_STARTED
+    elif not compareTime(year, month, day, hour, minute, year2, month2, day2, hour2, minute2):
+        return ACTIVITY_STATUS_CONST_ALREADY_ENDED
+    else:
+        return ACTIVITY_STATUS_IN_PROGRESS
+
+@transaction.atomic
+# 签到
+def checkinApi(request):
+    if checkUserType(request) != PERMISSION_CONST['VOLUNTEER']:
+        JsonResponse({"success": False, FAIL_INFO_KEY: "Only logged-in volunteer can checkin!"})
+    THUID = checkSessionValid(request)[1]
+    if THUID is None:
+        return JsonResponse({"success": False, FAIL_INFO_KEY: "Fail to get THUID!"})
+    jsonBody = json.loads(request.body)
+    volunteer = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
+    activity = Activity.objects.select_for_update().get(id=jsonBody["id"])
+    try:
+        membership = Membership.objects.select_for_update().get(volunteer=volunteer, activity=activity)
+        checkin.objects.select_for_update().get(membership=membership)
+        return HttpResponse({"success": False, FAIL_INFO_KEY: "You have already checked in!"})
+    except:
+        pass
+    compareTimeResult = getActivityStatus(activity)
+    if compareTimeResult != ACTIVITY_STATUS_IN_PROGRESS:
+        return JsonResponse({"success": False, FAIL_INFO_KEY: compareTimeResult})
     try:
         utcnow = "{}-{}-{} {}:{}".format(year, month, day, hour, minute)
         membership = Membership.objects.select_for_update().get(volunteer=volunteer, activity=activity, state=ENROLL_STATE_CONST['ACCEPTED'])
@@ -380,7 +399,6 @@ def search(request):
         rtn["title"] = rtn_activity.ActivityName
         rtn["location"] = rtn_activity.ActivityPlace
         rtn["tag"] = rtn_activity.Tag
-        rtn["status"] = rtn_activity.ActivityStatus
         rtn["time1"] = rtn_activity.ActivityStartDate
         rtn["time2"] = rtn_activity.ActivityEndDate
         try:
@@ -596,7 +614,6 @@ def get_volunteer_history(request):
             rtn["city"] = activity.ActivityCity
             rtn["location"] = activity.ActivityLocation
             rtn["tag"] = activity.Tag
-            rtn["status"] = activity.ActivityStatus
             rtn["startdate"] = activity.ActivityStartDate.split(" ")[0]
             rtn["starttime"] = activity.ActivityStartDate.split(" ")[1]
             rtn["enddate"] = activity.ActivityEndDate.split(" ")[0]
@@ -615,7 +632,7 @@ def get_volunteer_history(request):
                     rtn["state"] = state_key
                     break
             resList.append(rtn)
-        return JsonResponse({"res": resList}, safe=False)
+        return JsonResponse({"history": resList}, safe=False)
     else:
         return HttpResponse("NOT A VOLUNTEER!", status=401)
 
@@ -686,13 +703,99 @@ def post_feedback(request):
         volunteer = VOLUNTEER.objects.get(THUID=THUID)
         activity_id = json.loads(request.body)["id"]
         activity = Activity.objects.get(id=activity_id)
-        info = Membership.objects.get(volunteer=volunteer, activity = activity)
-        if info.already_feedback_provided:
-            return HttpResponse("You've already provided feedback", status=400)
+        try:
+            membership = Membership.objects.get(activity=activity, volunteer=volunteer)
+            checkin.obejcts.get(membership=membership)
+        except:
+            return JsonResponse({"success":False, FAIL_INFO_KEY:"You've not checked in!"}, status=400) # 签到之后才可以进行反馈
+        if membership.already_feedback_provided:
+            return JsonResponse({"success":False, FAIL_INFO_KEY:"You've already provided feedback!"}, status=400)
         else:
-            info.feedback = json.loads(request.body)["feedback"]
-            info.already_feedback_provided = True
-            info.save()
+            membership.feedback = json.dumps({"title":json.loads(request.body)["title"], "detail":json.loads(request.body)["detail"]})
+            membership.already_feedback_provided = True
+            membership.feedback_time = str(datetime.datetime.utcnow().replace(tzinfo=utc)).split('.')[0]
+            membership.save()
             return HttpResponse("SUCCESS")
 
+# 志愿团体或志愿中心查看活动反馈
+@transaction.atomic
+def query_feedback(request):
+    usertype = checkUserType(request)
+    if not (usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]):
+        return HttpResponse("NOT TEACHER OR ORGANIZATION!", status=401)
+    else:
+        activity_id = json.loads(request.body)["id"]
+        activity = Activity.objects.get(id=activity_id)
+        if activity.ActivityOrganizer != request.user:
+            return JsonResponse({"success":False, FAIL_INFO_KEY:"Not your activity!"}, status=401)
+        resList = []
+        for membership in Membership.objects.filter(activity=activity):
+            if membership.already_feedback_provided:
+                volunteer = membership.volunteer
+                res = {}
+                res["id"] = membership.id
+                res["title"] = json.loads(membership.feedback)["title"]
+                res["detail"] = json.loads(membership.feedback)["detail"]
+                res["time"] = membership.feedback_time
+                res["author"] = volunteer.THUID
+                res["status"] = membership.already_feedback_read
 
+
+# 志愿团体或志愿中心标记活动反馈为已读
+def read_feedback(request):
+    usertype = checkUserType(request)
+    if not (usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]):
+        return HttpResponse("NOT TEACHER OR ORGANIZATION!", status=401)
+    else:
+        feedback_id = json.loads(request.body)["id"]
+        record = Membership.obejcts.get(id=feedback_id)
+        if record.activity.ActivityOrganizer != request.user:
+            return JsonResponse({"success":False, FAIL_INFO_KEY:"Not your activity!"}, status=401)
+        record.already_feedback_read = True
+        record.save()
+        return HttpResponse("SUCCESS")
+
+
+# 志愿团体或志愿中心删除活动
+@transaction.atomic
+def delete_activity(request):
+    usertype = checkUserType(request)
+    if usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        activity_id = json.loads(request.body)["id"]
+        activity = Activity.objects.get(id=activity_id)
+        if activity.ActivityOrganizer != request.user:
+            return HttpResponse("Not your activity!", status=401)
+        activity.delete()
+        return HttpResponse("SUCCESS", status=200)
+    else:
+        return HttpResponse("Failed to delete activity", status = 401)
+
+# 返回志愿者对某个活动的签到记录
+def getVolunteerCheckinRecord(request):
+    usertype = checkUserType(request)
+    if usertype == PERMISSION_CONST['VOLUNTEER']:
+        THUID = checkSessionValid(request)[1]
+        volunteer = VOLUNTEER.objects.get(THUID=THUID)
+        activity_id = json.loads(request.body)["id"]
+        activity = Activity.objects.get(id=activity_id)
+        record = Membership(activity=activity, volunteer=volunteer)
+        try:
+            checkin.objects.get(membership=record)
+            return JsonResponse({"checked": True})
+        except:
+            return JsonResponse({"checked": False})
+    else:
+        return HttpResponse("Not a volunteer", status = 401)
+
+# 返回志愿者对某个活动的反馈记录
+def getVolunteerFeedbackRecord(request):
+    usertype = checkUserType(request)
+    if usertype == PERMISSION_CONST['VOLUNTEER']:
+        THUID = checkSessionValid(request)[1]
+        volunteer = VOLUNTEER.objects.get(THUID=THUID)
+        activity_id = json.loads(request.body)["id"]
+        activity = Activity.objects.get(id=activity_id)
+        record = Membership(activity=activity, volunteer=volunteer)
+        return JsonResponse({"finished": record.already_feedback_provided})
+    else:
+        return HttpResponse("Not a volunteer", status = 401)
