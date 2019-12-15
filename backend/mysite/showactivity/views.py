@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from . import models as showactivity_models
 import mysite.models as mysite_models
 from .models import Message, MessageReadOrNot, Activity, ActivityPic, ENROLL_STATE_CONST, Membership, checkin
-from mysite.views import checkSessionValid, LOGGED_IN_CONST
+from mysite.views import checkSessionValid, LOGGED_IN_CONST, PERMISSION_CONST, checkUserType
 from mysite.models import VOLUNTEER, UserIdentity
 
 from django.db import transaction
@@ -22,35 +22,9 @@ import requests
 ranking_last_update_time = datetime.datetime.utcnow() # 排行榜上次更新的时间
 ranking_top_100_list = []
 
-PERMISSION_CONST = {
-    'TEACHER': 233,
-    'ORGANIZATION': 255,
-    'VOLUNTEER': 258,
-    'UNAUTHENTICATED': 266,
-    'UNREGISTERED':277
-}
 BAIDU_MAP_AK = "H5LGjLHfy731eaPCZAUKfAnZH6eiql9M"
 
-@transaction.atomic
-def checkUserType(request):
-    try:
-        if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
-            print("authenticated")
-            if mysite_models.UserIdentity(request.user).isTeacher == 1:
-                return PERMISSION_CONST['TEACHER']
-            elif UserIdentity.objects.get(user=request.user).isTeacher == 2:
-                return PERMISSION_CONST['ORGANIZATION']
-            else:
-                return PERMISSION_CONST['UNREGISTERED']
-        else:
-            res = checkSessionValid(request)[1]
-            if res is not None:
-                return PERMISSION_CONST['VOLUNTEER']
-            else:
-                return PERMISSION_CONST['UNAUTHENTICATED']
-    except:
-        return PERMISSION_CONST['UNAUTHENTICATED']
-            
+    
 
 # Create your views here.
 #检查登录
@@ -94,14 +68,13 @@ def edit_activity(request): # name, place, date, time, tag, description, amount
     # print(checkUserType(request))
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         activity_id = json.loads(request.body)["id"]
-        activity = showactivity_models.Message.objects.get(id = activity_id)
+        activity = showactivity_models.Activity.objects.get(id = activity_id)
         if activity.ActivityOrganizer != request.user:
             return HttpResponse("Not your activity!", status=401)
 
         activity.ActivityName = json.loads(request.body)["name"]
         activity.AcitivityCity = json.loads(request.body)["city"]
         activity.ActivityLocation = json.loads(request.body)["location"]
-        activity.ActivityTotalAmount = json.loads(request.body)["totalNum"]
         startDate = json.loads(request.body)["startdate"]
         endDate = json.loads(request.body)["enddate"]
         activity.ActivityStartDate = startDate.split('T')[0] + " " + startTime.split('T')[1][:5]
@@ -157,6 +130,12 @@ def catalog_grid(request):
         rtn["totalAmount"] = rtn_list[i].ActivityTotalAmount
         rtn["remainAmount"] = rtn_list[i].ActivityRemain
         rtn["desc"] = rtn_list[i].ActivityIntro
+        currentTime = datetime.datetime.utcnow()
+        endDate = rtn["enddate"]
+        endTime = rtn["endtime"]
+        rtn["finished"] = compareTime(currentTime.year, currentTime.month, currentTime.day, currentTime.hour, \
+            currentTime.minute, int(endDate.split("-")[0]), int(endDate.split("-")[1]), int(endDate.split("-")[2]), \
+            int(endTime.split(":")[0]), int(endTime.split(":")[1]))
         try:
             rtn["organizer"] = rtn_list[i].ActivityOrganizer.username
         except:
