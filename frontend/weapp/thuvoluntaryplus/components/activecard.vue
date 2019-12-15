@@ -114,6 +114,7 @@ export default {
             this.activitydata = {
               id: data.id,
               location: data.location,
+              name: data.title,
               time: data.startdate + '-' + data.enddate,
               organizer: data.organizer,
               tag: data.tag,
@@ -121,7 +122,8 @@ export default {
               location: data.location,
               detail: data.desc,
               participantList: [],
-              hasJoin: data.registered
+              hasJoin: data.registered,
+              status: data.status
             }
             for (let part of data.participants) {
               this.activitydata.participantList.push({

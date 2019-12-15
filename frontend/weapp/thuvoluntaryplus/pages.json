@@ -39,6 +39,10 @@
             "path" : "pages/usercenter/account/modify/modify",
             "style" : {}
         }
+        ,{
+            "path" : "pages/index/feedback/feedback",
+            "style" : {}
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

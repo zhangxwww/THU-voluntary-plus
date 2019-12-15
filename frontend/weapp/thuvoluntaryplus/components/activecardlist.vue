@@ -65,7 +65,6 @@ export default {
               if (res.statusCode === 200) {
                 console.log(res);
                 let sessionid = res["header"]["Set-Cookie"].split(";")[0].split("=")[1];
-                console.log(sessionid)
                 that.$store.commit('setSessionId', sessionid);
                 if (res.data.BINDED) {
                   let info = {
@@ -74,7 +73,8 @@ export default {
                     subject: res.data.DEPARTMENT,
                     studentId: res.data.THUID,
                     phone: res.data.PHONE,
-                    signature: res.data.SIGNATURE
+                    signature: res.data.SIGNATURE,
+                    status: res.data.status
                   }
                   that.$store.commit('setPersonalInfo', info)
                   that.$store.commit('setBind', true)

@@ -1,7 +1,8 @@
 <template>
   <view>
     <active-info :itemprop="activitydata"
-                 :hasJoin="activitydata.hasJoin"></active-info>
+                 :hasJoin="activitydata.hasJoin"
+				 :status="activitydata.status"></active-info>
   </view>
 </template>
 

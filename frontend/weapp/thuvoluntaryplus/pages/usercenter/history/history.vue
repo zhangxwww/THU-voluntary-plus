@@ -1,10 +1,10 @@
 <template>
   <view class="cu-list menu card-menu margin-top">
-    <view
-      v-for="item in historylist"
-      :key="item.id"
-      class="cu-item noneBottom arrow"
-    >
+    <view v-for="item in historyList"
+          :key="item.id"
+          @click="handleClick($event)"
+          :id="'active' + item.id"
+          class="cu-item noneBottom arrow">
       <view class="content grid justify-around">
         <view>
           <view class="cu-tag bg-mauve round margin-right">
@@ -13,7 +13,6 @@
           </view>
         </view>
         <text class="content margin-right">{{ item.name }} </text>
-        <text class="action text-grey">{{ item.workingTime }}h</text>
       </view>
     </view>
   </view>
@@ -22,7 +21,7 @@
 <script>
 import { mapState } from 'vuex'
 export default {
-  data() {
+  data () {
     return {
       list: [
         {
@@ -54,19 +53,22 @@ export default {
   },
   computed: {
     ...mapState(['sessionid']),
-    historyList: function() {
+    historyList: function () {
       return this.list
     }
   },
-  beforeMount() {
+  beforeMount () {
     uni.setNavigationBarTitle({
       title: '志愿历史'
     })
   },
+  onShow () {
+    this.getHistoryList()
+  },
   methods: {
-    getHistoryList() {
+    getHistoryList () {
       uni.request({
-        url: '',
+        url: 'https://thuvplus.iterator-traits.com/api/volunteer/history',
         method: 'GET',
         header: {
           'Content-Type': 'application/json',
@@ -80,8 +82,8 @@ export default {
               let new_item = {
                 id: it.id,
                 location: it.city,
-                name: it.name,
-                workingTime: it.time
+                name: it.title,
+                status: it.status
               }
               this.list.push(new_item)
             }
@@ -91,6 +93,52 @@ export default {
         },
         fail: e => {
           console.log(e)
+        }
+      })
+    },
+    handleClick (e) {
+      uni.request({
+        url: 'https://thuvplus.iterator-traits.com/api/activities/detail',
+        method: 'POST',
+        header: {
+          'Content-Type': 'application/json',
+          "Set-Cookie": "sessionid=" + this.sessionid
+        },
+        data: {
+          activity_id: e.currentTarget.id.substring(6)
+        },
+        success: (res) => {
+          if (res.statusCode === 200) {
+            let data = res.data
+            this.activitydata = {
+              id: data.id,
+              location: data.location,
+              time: data.startdate + '-' + data.enddate,
+              organizer: data.organizer,
+              tag: data.tag,
+              city: data.city,
+              location: data.location,
+              detail: data.desc,
+              participantList: [],
+              hasJoin: data.registered
+            }
+            for (let part of data.participants) {
+              this.activitydata.participantList.push({
+                id: part.thuid,
+                username: part.name,
+                studentID: part.thuid,
+                gender: 'male',
+                avatarUrl: 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
+              })
+            }
+            this.$store.commit('setActivityData', this.activitydata)
+            uni.navigateTo({
+              url: '/pages/index/detail/detail'
+            })
+          }
+        },
+        fail: (res) => {
+          console.log(res)
         }
       })
     }
