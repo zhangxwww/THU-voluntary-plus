@@ -156,7 +156,7 @@ export default {
 		if (status === '已完成') {
 			return "cuIcon-check bg-green"
 		}
-	}
+	},
     joinInstructionText: function () {
       if (this.hasJoin) {
         return '您已报名参加此活动'
