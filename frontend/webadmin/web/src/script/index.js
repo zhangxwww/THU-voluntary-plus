@@ -306,7 +306,7 @@ export function getGroupTimeline(success, fail) {
 }
 
 export function getFeedback(id, success, fail) {
-    axios.post('', {
+    axios.post('/api/feedback/query', {
         id: id
     }).then(res => {
         if (res.status === 200) {
@@ -322,7 +322,7 @@ export function getFeedback(id, success, fail) {
 }
 
 export function checkFeedback(id, success, fail) {
-    axios.post('', {
+    axios.post('/api/feedback/read', {
         id: id
     }).then(res => {
         if (res.status === 200) {

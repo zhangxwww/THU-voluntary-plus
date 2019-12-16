@@ -97,36 +97,7 @@ export default {
   },
   data () {
     return {
-      rawlist: [{
-        id: 1,
-        title: '垃圾微沙龙',
-        detail: '垃圾微沙龙不能喝咖啡垃圾微沙龙不能喝咖啡垃圾微沙龙不能喝咖啡垃圾微沙龙不能喝咖啡垃圾微沙龙不能喝咖啡垃圾微沙龙不能喝咖啡垃圾微沙龙不能喝咖啡垃圾微沙龙不能喝咖啡',
-        time: '2019-10-1',
-        status: '已读',
-        author: '张大头'
-      }, {
-        id: 2,
-        title: '注意口臭',
-        detail: '大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！',
-        time: '2019-10-1',
-        author: '张大头',
-        status: '未读'
-      }, {
-        id: 3,
-        title: '注意口臭',
-        detail: '大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！',
-        time: '2019-10-1',
-        author: '张大头',
-        status: '未读'
-      }, {
-        id: 4,
-        title: '注意口臭',
-        detail: '大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！大家一定要管好自己的嘴，不要随便口吐莲花，不要嘴臭臭哦！',
-        time: '2019-10-1',
-        author: '张大头',
-        status: '已读'
-      },
-      ],
+      rawlist: [],
       hover: false,
       search: '',
       pagesize: 10,
@@ -155,7 +126,7 @@ export default {
             detail: li.detail,
             time: li.time,
             author: li.author,
-            status: li.status
+            status: li.already_feedback_read
           }
           this.rawlist.push(new_item)
           this.getList()
@@ -173,8 +144,9 @@ export default {
       this.getList()
     },
     handleCheck: function (row) {
+      alert('click')
       checkFeedback(row.id, () => {
-        this.getFeedback()
+        this.updateFeedback()
       }, () => {
         alert('fail')
       })
@@ -187,7 +159,7 @@ export default {
     }
   },
   created () {
-    this.getFeedback()
+    this.updateFeedback()
     this.list = this.rawlist.slice(0, this.pagesize)
   }
 }

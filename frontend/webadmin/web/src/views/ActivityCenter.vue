@@ -393,6 +393,7 @@ export default {
       editActivity(this.currentEditRow.id, this.editForm, () => {
         this.editVisible = false
         this.updateActivities()
+        this.clearEditForm()
       }, () => {
         alert('fail')
       })
