@@ -769,7 +769,7 @@ def read_feedback(request):
         return HttpResponse("NOT TEACHER OR ORGANIZATION!", status=401)
     else:
         feedback_id = json.loads(request.body)["id"]
-        record = Membership.obejcts.get(id=feedback_id)
+        record = Membership.objects.get(id=feedback_id)
         if record.activity.ActivityOrganizer != request.user:
             return JsonResponse({"success":False, FAIL_INFO_KEY:"Not your activity!"}, status=401)
         record.already_feedback_read = True
