@@ -56,6 +56,7 @@ urlpatterns = [
 
     path(r'api/feedback/post', showactivity_views.post_feedback),
     path(r'api/feedback/query', showactivity_views.query_feedback),
+    path(r'api/feedback/read', showactivity_views.read_feedback),
 
     path(r'api/messages/list', showactivity_views.message_catalog_grid),
     path(r'api/messages/edit', showactivity_views.edit_message),

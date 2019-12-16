@@ -192,11 +192,23 @@ def activity_detail(request):
         except:
             rtn["organizer"] = "Unable to get"
         rtn["participants"] = []
+        rtn["checked"] = False
+        rtn["already_feedback_provided"] = False
+        rtn["registered"] = False
         try:
-            Membership.objects.select_for_update().get(activity=activity, volunteer=user)
+            membership = Membership.objects.select_for_update().get(activity=activity, volunteer=user)
             rtn["registered"] = True
+            rtn["already_feedback_provided"] = membership.already_feedback_provided
+            try:
+                checkin.objects.get(membership = membership)
+                rtn["checked"] = True
+            except:
+                traceback.print_exc()
+                pass
         except:
-            rtn["registered"] = False
+            traceback.print_exc()
+            pass
+
         for m in Membership.objects.select_for_update().filter(activity=activity):
             if m.state == ENROLL_STATE_CONST['ACCEPTED']:
                 volunteer = m.volunteer
@@ -208,16 +220,16 @@ def activity_detail(request):
                     "SIGNATURE".lower(): volunteer.SIGNATURE,
                     "PHONE".lower(): volunteer.PHONE,
                     "VOLUNTEER_TIME".lower(): volunteer.VOLUNTEER_TIME,
-                    "EMAIL".lower(): volunteer.EMAIL,
-                    "already_feedback_provided": m.already_feedback_provided
+                    "EMAIL".lower(): volunteer.EMAIL
                 }
+                '''
                 try:
                     checkin.objects.get(membership = m)
                     info["already_checked"] = True
                 except:
                     info["already_checked"] = False
+                '''
                 rtn["participants"].append(info)
-                
 
     #Activity_recommend = showactivity_models.Activity.objects.select_for_update().filter(IsOverDeadline=0)
     #Number_set = set()
@@ -345,7 +357,8 @@ def checkinApi(request):
     if compareTimeResult != ACTIVITY_STATUS_IN_PROGRESS:
         return JsonResponse({"success": False, FAIL_INFO_KEY: compareTimeResult})
     try:
-        utcnow = "{}-{}-{} {}:{}".format(year, month, day, hour, minute)
+        date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        utcnow = "{}-{}-{} {}:{}".format(date.year, date.month, date.day, date.hour, date.minute)
         membership = Membership.objects.select_for_update().get(volunteer=volunteer, activity=activity, state=ENROLL_STATE_CONST['ACCEPTED'])
         latitude = jsonBody["latitude"]
         longitude = jsonBody["longitude"]
@@ -699,23 +712,28 @@ def post_feedback(request):
     if usertype != PERMISSION_CONST["VOLUNTEER"]:
         return HttpResponse("NOT VOLUNTEER", status=401)
     else:
-        THUID = checkSessionValid(request)[1]
-        volunteer = VOLUNTEER.objects.get(THUID=THUID)
-        activity_id = json.loads(request.body)["id"]
-        activity = Activity.objects.get(id=activity_id)
         try:
-            membership = Membership.objects.get(activity=activity, volunteer=volunteer)
-            checkin.obejcts.get(membership=membership)
+            THUID = checkSessionValid(request)[1]
+            volunteer = VOLUNTEER.objects.get(THUID=THUID)
+            activity_id = json.loads(request.body)["id"]
+            activity = Activity.objects.get(id=activity_id)
+            try:
+                membership = Membership.objects.get(activity=activity, volunteer=volunteer)
+                checkin.objects.get(membership=membership)
+            except:
+                traceback.print_exc()
+                return JsonResponse({"success":False, FAIL_INFO_KEY:"You've not checked in!"}, status=400) # 签到之后才可以进行反馈
+            if membership.already_feedback_provided:
+                return JsonResponse({"success":False, FAIL_INFO_KEY:"You've already provided feedback!"}, status=400)
+            else:
+                membership.feedback = json.dumps({"title":json.loads(request.body)["title"], "detail":json.loads(request.body)["detail"]})
+                membership.already_feedback_provided = True
+                membership.feedback_time = str(datetime.datetime.utcnow().replace(tzinfo=utc)).split('.')[0]
+                membership.save()
+                return HttpResponse("SUCCESS")
         except:
-            return JsonResponse({"success":False, FAIL_INFO_KEY:"You've not checked in!"}, status=400) # 签到之后才可以进行反馈
-        if membership.already_feedback_provided:
-            return JsonResponse({"success":False, FAIL_INFO_KEY:"You've already provided feedback!"}, status=400)
-        else:
-            membership.feedback = json.dumps({"title":json.loads(request.body)["title"], "detail":json.loads(request.body)["detail"]})
-            membership.already_feedback_provided = True
-            membership.feedback_time = str(datetime.datetime.utcnow().replace(tzinfo=utc)).split('.')[0]
-            membership.save()
-            return HttpResponse("SUCCESS")
+            traceback.print_exc()
+            return HttpResponse("zxwtql", status=500)
 
 # 志愿团体或志愿中心查看活动反馈
 @transaction.atomic
@@ -739,6 +757,9 @@ def query_feedback(request):
                 res["time"] = membership.feedback_time
                 res["author"] = volunteer.THUID
                 res["status"] = membership.already_feedback_read
+                res["already_feedback_read"] = "已读" if membership.already_feedback_read else "未读"
+                resList.append(res)
+        return JsonResponse({"success":True, "list":resList})
 
 
 # 志愿团体或志愿中心标记活动反馈为已读
