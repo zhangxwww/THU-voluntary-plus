@@ -5,12 +5,12 @@
              name="input"
              v-model="title"></input>
       <textarea maxlength="-1"
-                @input="textAreaInput"
+                @input="textAreaInput($event)"
                 placeholder="详细信息"></textarea>
     </view>
     <view style="margin-top: 20upx; margin-right: 20upx; float: right">
       <button class="cu-btn shadow bg-green"
-              @tap="join">
+              @tap="post">
         <text class="text-sm">提交反馈</text></button>
     </view>
   </view>
@@ -22,8 +22,8 @@ export default {
   data () {
     return {
       id: -1,
-      title = '',
-      detail = ''
+      title: '',
+      detail: ''
     }
   },
   computed: {
@@ -33,9 +33,15 @@ export default {
     this.id = param.id
   },
   methods: {
+    post () {
+      this.feedback(this.id, this.title, this.detail)
+    },
     feedback (id, title, detail) {
+      console.log(id)
+      console.log(title)
+      console.log(detail)
       uni.request({
-        url: '',
+        url: 'https://thuvplus.iterator-traits.com/api/feedback/post',
         method: 'POST',
         header: {
           'Content-Type': 'application/json',
@@ -48,6 +54,7 @@ export default {
         },
         success: res => {
           if (res.statusCode === 200) {
+            this.$store.commit('setFeedback', true)
             uni.navigateBack({})
           } else {
             console.log(res)
@@ -58,7 +65,7 @@ export default {
         }
       })
     },
-    textAreaInput () {
+    textAreaInput (e) {
       this.detail = e.detail.value
     }
   },

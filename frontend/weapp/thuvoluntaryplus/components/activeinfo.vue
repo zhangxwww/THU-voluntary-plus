@@ -103,17 +103,17 @@
           <text class="text-grey text-sm">{{ joinInstructionText }}</text>
         </view>
         <view class="action">
-          <button v-if="currentState()==='join'"
-                  @tap="signin"
-                  class="cu-btn sm shadow bg-blue margin-right">
-            <text class="cuIcon-location"></text>定位打卡</button>
-          <button v-if="currentState()==='checked'"
+          <button v-if="hasFeedbackFunc"
+                  class="cu-btn sm shadow bg-gray margin-right">
+            <text class="cuIcon-edit"></text>提交反馈</button>
+          <button v-else-if="hasCheckedFunc"
                   @tap="feedback"
                   class="cu-btn sm shadow bg-blue margin-right">
             <text class="cuIcon-edit"></text>提交反馈</button>
-          <button v-if="currentState()==='feedback'"
-                  class="cu-btn sm shadow bg-gray margin-right">
-            <text class="cuIcon-edit"></text>提交反馈</button>
+          <button v-else-if="hasJoinFunc"
+                  @tap="signin"
+                  class="cu-btn sm shadow bg-blue margin-right">
+            <text class="cuIcon-location"></text>定位打卡</button>
           <button class="cu-btn sm shadow"
                   :class="hasJoinFunc?'bg-gray':'bg-green'"
                   @tap="join">
@@ -160,6 +160,9 @@ export default {
       //hasJoin: false
     }
   },
+  created () {
+    this.$store.commit('setFeedback', true)
+  },
   computed: {
     ...mapState(['sessionid', 'hasSendFeedback']),
     statusClass: function () {
@@ -198,6 +201,12 @@ export default {
       } else if (this.hasFeedback) {
         return 'feedback'
       }
+    },
+    hasCheckedFunc: function () {
+      return this.hasCheckedIn && !this.hasFeedback
+    },
+    hasFeedbackFunc: function () {
+      return this.hasFeedback
     }
   },
 
@@ -310,8 +319,9 @@ export default {
       })
     },
     feedback () {
+      console.log(this.itemprop.id)
       uni.navigateTo({
-        url: 'pages/index/feedback/feedback?id=' + this.itemprop.id,
+        url: '../../../pages/index/feedback/feedback?id=' + this.itemprop.id,
         success: () => {
           if (this.hasSendFeedback) {
             this.hasFeedback = true
