@@ -56,7 +56,7 @@
                           size="mini"
                           type="success"
                           text="标记为已读"
-                          @click="handleCheck(scope.row)">
+                          @click.native="handleCheck(scope.row)">
           </hidable-button>
         </template>
       </el-table-column>

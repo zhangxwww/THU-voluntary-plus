@@ -3,7 +3,9 @@
     <view class="cu-form-group margin-top">
       <input placeholder="标题"
              name="input"
-             v-model="title"></input>
+             v-model="title"></input></view>
+    <view class="cu-form-group margin-top">
+
       <textarea maxlength="-1"
                 @input="textAreaInput($event)"
                 placeholder="详细信息"></textarea>
