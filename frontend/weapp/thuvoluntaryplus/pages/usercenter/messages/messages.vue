@@ -1,22 +1,19 @@
 <template>
   <view class="cu-list menu-avatar sm-border card-menu margin-top">
-    <view
-      v-for="(msg, index) in messagelist"
-      :key="msg.id"
-      :index="index"
-      class="cu-item cur"
-      :class="modalName == 'move-box-' + index ? 'move-cur' : ''"
-      @touchstart="ListTouchStart"
-      @touchmove="ListTouchMove"
-      @touchend="ListTouchEnd"
-      :data-target="'move-box-' + index"
-      @tap="ViewMessage(msg, $event)"
-    >
-      <view
-        class="cu-avatar radius lg"
-        :style="{ 'background-image': 'url(' + msg.avatar + ')' }"
-      >
-        <view v-if="!msg.read" class="cu-tag badge"></view>
+    <view v-for="(msg, index) in messagelist"
+          :key="msg.id"
+          :index="index"
+          class="cu-item cur"
+          :class="modalName == 'move-box-' + index ? 'move-cur' : ''"
+          @touchstart="ListTouchStart"
+          @touchmove="ListTouchMove"
+          @touchend="ListTouchEnd"
+          :data-target="'move-box-' + index"
+          @tap="ViewMessage(msg, $event)">
+      <view class="cu-avatar radius lg"
+            :style="{ 'background-image': 'url(' + msg.avatar + ')' }">
+        <view v-if="!msg.read"
+              class="cu-tag badge"></view>
       </view>
       <view class="content">
         <view>
@@ -28,10 +25,13 @@
       </view>
       <view class="action">
         <view class="text-grey text-xs">{{ msg.time }}</view>
-        <view v-if="!msg.read" class="cu-tag round bg-red sm">未读</view>
-        <view v-if="msg.read" class="cu-tag round bg-green sm">已读</view>
+        <view v-if="!msg.read"
+              class="cu-tag round bg-red sm">未读</view>
+        <view v-if="msg.read"
+              class="cu-tag round bg-green sm">已读</view>
       </view>
-      <view class="move" @tap.native.stop="DeleteMessage(msg.id)">
+      <view class="move"
+            @tap.native.stop="DeleteMessage(msg.id)">
         <view class="bg-red">删除</view>
       </view>
     </view>
@@ -42,7 +42,7 @@
 import { mapState, mapMutations } from 'vuex'
 
 export default {
-  data() {
+  data () {
     return {
       listTouchStart: 0,
       listTouchDirection: null,
@@ -52,18 +52,18 @@ export default {
   },
   computed: {
     ...mapState(['curmsg', 'sessionid']),
-    messagelist: function() {
+    messagelist: function () {
       return this.rawlist
     }
   },
-  onload() {
+  onload () {
     uni.setNavigationBarTitle({
       title: '消息中心'
     })
   },
   methods: {
     ...mapMutations(['setCurmsg']),
-    UpdateList: function() {
+    UpdateList: function () {
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/messages/list',
         method: 'POST',
@@ -97,7 +97,7 @@ export default {
         }
       })
     },
-    ViewMessage: function(msg, e) {
+    ViewMessage: function (msg, e) {
       this.setCurmsg(msg)
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/messages/read',
@@ -124,7 +124,7 @@ export default {
         }
       })
     },
-    DeleteMessage: function(id) {
+    DeleteMessage: function (id) {
       console.log(id)
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/messages/delete',
@@ -149,18 +149,18 @@ export default {
       })
     },
     // ListTouch触摸开始
-    ListTouchStart: function(e) {
+    ListTouchStart: function (e) {
       this.listTouchStart = e.touches[0].pageX
     },
 
     // ListTouch计算方向
-    ListTouchMove: function(e) {
+    ListTouchMove: function (e) {
       this.listTouchDirection =
         e.touches[0].pageX - this.listTouchStart > 0 ? 'right' : 'left'
     },
 
     // ListTouch计算滚动
-    ListTouchEnd: function(e) {
+    ListTouchEnd: function (e) {
       if (this.listTouchDirection == 'left') {
         this.modalName = e.currentTarget.dataset.target
       } else {
@@ -169,13 +169,13 @@ export default {
       this.listTouchDirection = null
     }
   },
-  beforeMount() {
+  beforeMount () {
     uni.setNavigationBarTitle({
       title: '消息中心'
     })
     this.UpdateList()
   },
-  onShow() {
+  onShow () {
     this.UpdateList()
   }
 }

@@ -1,41 +1,40 @@
 <template>
   <div class="login-container bg-purple">
-    <el-form
-      :model="signupForm"
-      :rules="loginRules"
-      class="login-form"
-      auto-complete="on"
-      label-position="left"
-    >
+    <el-form :model="signupForm"
+             :rules="loginRules"
+             class="login-form"
+             auto-complete="on"
+             label-position="left">
       <div class="title-container">
         <h3 class="title">注册</h3>
       </div>
 
       <el-form-item prop="username">
-        <el-input placeholder="用户名" v-model="signupForm.username">
-          <i slot="prefix" class="el-input__icon el-icon-user"></i>
+        <el-input placeholder="用户名"
+                  v-model="signupForm.username">
+          <i slot="prefix"
+             class="el-input__icon el-icon-user"></i>
         </el-input>
       </el-form-item>
 
       <el-form-item prop="password">
-        <el-input
-          placeholder="密码"
-          v-model="signupForm.password"
-          show-password
-        >
-          <i slot="prefix" class="el-input__icon el-icon-lock"></i>
+        <el-input placeholder="密码"
+                  v-model="signupForm.password"
+                  show-password>
+          <i slot="prefix"
+             class="el-input__icon el-icon-lock"></i>
         </el-input>
       </el-form-item>
       <el-form-item prop="invitationcode">
-        <el-input placeholder="邀请码" v-model="signupForm.invitationcode">
-          <i slot="prefix" class="el-input__icon el-icon-warning-outline"></i>
+        <el-input placeholder="邀请码"
+                  v-model="signupForm.invitationcode">
+          <i slot="prefix"
+             class="el-input__icon el-icon-warning-outline"></i>
         </el-input>
       </el-form-item>
-      <el-button
-        :loading="loading"
-        type="primary"
-        @click.native.prevent="handleSignup"
-        >注册
+      <el-button :loading="loading"
+                 type="primary"
+                 @click.native.prevent="handleSignup">注册
       </el-button>
     </el-form>
   </div>
@@ -46,7 +45,7 @@ import { signupGroup } from '../script/index'
 
 export default {
   name: 'Signup',
-  data: function() {
+  data: function () {
     return {
       signupForm: {
         username: '',
@@ -79,7 +78,7 @@ export default {
     }
   },
   methods: {
-    handleSignup() {
+    handleSignup () {
       signupGroup(
         this.signupForm,
         () => {

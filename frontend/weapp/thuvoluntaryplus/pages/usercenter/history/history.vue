@@ -24,30 +24,14 @@ export default {
   data () {
     return {
       list: [
-        {
-          id: 0,
-          location: '北京',
-          name: '十一期间参观志愿者',
-          workingTime: 5
-        },
-        {
-          id: 1,
-          location: '河北',
-          name: '廊坊志愿小学支教',
-          workingTime: 1.5
-        },
-        {
-          id: 3,
-          location: '河北',
-          name: '廊坊志愿小学支教',
-          workingTime: 99
-        },
-        {
-          id: 4,
-          location: '河北',
-          name: '廊坊志愿小学支教',
-          workingTime: 8.1
-        }
+        /*
+      {
+        id: 0,
+        location: '北京',
+        name: '十一期间参观志愿者',
+        workingTime: 5
+      },
+      */
       ]
     }
   },

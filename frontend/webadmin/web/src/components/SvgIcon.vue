@@ -1,6 +1,8 @@
 <template>
-  <svg :class="svgClass" aria-hidden="true" v-on="$listeners">
-    <use :href="iconName"/>
+  <svg :class="svgClass"
+       aria-hidden="true"
+       v-on="$listeners">
+    <use :href="iconName" />
   </svg>
 </template>
 
@@ -18,10 +20,10 @@ export default {
     }
   },
   computed: {
-    iconName: function() {
+    iconName: function () {
       return `#icon-${this.iconClass}`
     },
-    svgClass: function() {
+    svgClass: function () {
       if (this.className) {
         return 'svg-icon ' + this.className
       } else {
@@ -44,7 +46,7 @@ export default {
 
 .svg-external-icon {
   background-color: currentColor;
-  mask-size: cover!important;
+  mask-size: cover !important;
   display: inline-block;
 }
 </style>

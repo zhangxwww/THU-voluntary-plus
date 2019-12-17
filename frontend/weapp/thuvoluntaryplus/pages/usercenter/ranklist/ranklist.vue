@@ -1,6 +1,8 @@
 <template>
   <view class="cu-list menu card-menu margin-top line-mauve">
-    <view class="cu-item noneBottom" :key="item.id" v-for="item in ranklist">
+    <view class="cu-item noneBottom"
+          :key="item.id"
+          v-for="item in ranklist">
       <view class="content grid justify-around">
         <view class="margin-right">
           <rank-list-medal :rank="item.rank"></rank-list-medal>
@@ -26,55 +28,33 @@ export default {
   },
   computed: {
     ...mapState(['sessionid']),
-    ranklist() {
+    ranklist () {
       return this.list
     }
   },
-  data() {
+  data () {
     return {
       last_update: 0,
       list: [
-        {
-          id: 0,
-          rank: 1,
-          name: '汪大头',
-          totalTime: 1000
-        },
-        {
-          id: 1,
-          rank: 2,
-          name: '汪二头',
-          totalTime: 233
-        },
-        {
-          id: 2,
-          rank: 3,
-          name: '汪三头',
-          totalTime: 222
-        },
-        {
-          id: 3,
-          rank: 4,
-          name: '汪四头',
-          totalTime: 99
-        },
-        {
-          id: 4,
-          rank: 5,
-          name: '汪小头',
-          totalTime: 1
-        }
+        /*
+      {
+        id: 0,
+        rank: 1,
+        name: '汪大头',
+        totalTime: 1000
+      },
+      */
       ]
     }
   },
-  beforeMount() {
+  beforeMount () {
     uni.setNavigationBarTitle({
       title: '志愿排行'
     })
     this.getRankList()
   },
   methods: {
-    getRankList() {
+    getRankList () {
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/volunteerhours/rank',
         method: 'GET',
