@@ -22,7 +22,7 @@ import requests
 
 FAIL_INFO_KEY = "failinfo"
 
-ranking_last_update_time = datetime.datetime.utcnow() # 排行榜上次更新的时间
+ranking_last_update_time = datetime.datetime.utcnow()+datetime.timedelta(hours=8) # 排行榜上次更新的时间
 ranking_top_100_list = []
 
 BAIDU_MAP_AK = "H5LGjLHfy731eaPCZAUKfAnZH6eiql9M"
@@ -33,7 +33,6 @@ ACTIVITY_STATUS_CONST_ALREADY_ENDED = "已结束"
 ACTIVITY_STATUS_IN_PROGRESS = "进行中"
 
 # 发布活动
-@transaction.atomic
 def post_activity(request): # name, place, date, time, tag, description, amount
     #print(request.COOKIES)
     print("!!!!!!",checkUserType(request))
@@ -43,11 +42,17 @@ def post_activity(request): # name, place, date, time, tag, description, amount
         location = json.loads(request.body)["location"]
         totalNum = json.loads(request.body)["totalNum"]
         startDate = json.loads(request.body)["startdate"]
-        startTime = json.loads(request.body)["starttime"]
+        startTime = json.loads(request.body)["starttime"].split('T')[1][:5]
         endDate = json.loads(request.body)["enddate"]
-        endTime = json.loads(request.body)["endtime"]
-        startDateTime = startDate.split('T')[0] + " " + startTime.split('T')[1][:5]
-        endDateTime = endDate.split('T')[0] + " " + endTime.split('T')[1][:5]
+        endTime = json.loads(request.body)["endtime"].split('T')[1][:5]
+        startDateTime = str(datetime.datetime(int(startDate.split('T')[0].split('-')[0]), int(startDate.split('T')[0].split('-')[1]), int(startDate.split('T')[0].split('-')[2]), \
+            int(startDate.split('T')[1][:5].split(':')[0]), int(startDate.split('T')[1][:5].split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[0] 
+        startDateTime += " "
+        startDateTime += ":".join(str(datetime.datetime(1900, 1, 1, int(startTime.split(':')[0]), int(startTime.split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[1].split(":")[:-1])
+        endDateTime = str(datetime.datetime(int(endDate.split('T')[0].split('-')[0]), int(endDate.split('T')[0].split('-')[1]), int(endDate.split('T')[0].split('-')[2]), \
+            int(endDate.split('T')[1][:5].split(':')[0]), int(endDate.split('T')[1][:5].split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[0]
+        endDateTime += " "
+        endDateTime += ":".join(str(datetime.datetime(1900, 1, 1, int(endTime.split(':')[0]), int(endTime.split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[1].split(":")[:-1])
         tag = json.loads(request.body)["tag"]
         description = json.loads(request.body)["desc"]
 
@@ -71,7 +76,7 @@ def edit_activity(request): # name, place, date, time, tag, description, amount
     # print(checkUserType(request))
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         activity_id = json.loads(request.body)["id"]
-        activity = showactivity_models.Activity.objects.get(id = activity_id)
+        activity = showactivity_models.Activity.objects.select_for_update().get(id = activity_id)
         if activity.ActivityOrganizer != request.user:
             return HttpResponse("Not your activity!", status=401)
 
@@ -79,11 +84,19 @@ def edit_activity(request): # name, place, date, time, tag, description, amount
         activity.AcitivityCity = json.loads(request.body)["city"]
         activity.ActivityLocation = json.loads(request.body)["location"]
         startDate = json.loads(request.body)["startdate"]
-        startTime = json.loads(request.body)["starttime"]
+        startTime = json.loads(request.body)["starttime"].split('T')[1][:5]
         endDate = json.loads(request.body)["enddate"]
-        endTime = json.loads(request.body)["endtime"]
-        activity.ActivityStartDate = startDate.split('T')[0] + " " + startTime.split('T')[1][:5]
-        activity.ActivityEndDate = endDate.split('T')[0] + " " + endTime.split('T')[1][:5]
+        endTime = json.loads(request.body)["endtime"].split('T')[1][:5]
+        startDateTime = str(datetime.datetime(int(startDate.split('T')[0].split('-')[0]), int(startDate.split('T')[0].split('-')[1]), int(startDate.split('T')[0].split('-')[2]), \
+            int(startDate.split('T')[1][:5].split(':')[0]), int(startDate.split('T')[1][:5].split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[0] 
+        startDateTime += " "
+        startDateTime += ":".join(str(datetime.datetime(1900, 1, 1, int(startTime.split(':')[0]), int(startTime.split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[1].split(":")[:-1])
+        endDateTime = str(datetime.datetime(int(endDate.split('T')[0].split('-')[0]), int(endDate.split('T')[0].split('-')[1]), int(endDate.split('T')[0].split('-')[2]), \
+            int(endDate.split('T')[1][:5].split(':')[0]), int(endDate.split('T')[1][:5].split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[0]
+        endDateTime += " "
+        endDateTime += ":".join(str(datetime.datetime(1900, 1, 1, int(endTime.split(':')[0]), int(endTime.split(':')[1])) + datetime.timedelta(hours=8)).split(" ")[1].split(":")[:-1])
+        activity.ActivityStartDate = startDateTime
+        activity.ActivityEndDate = endDateTime
         activity.Tag = json.loads(request.body)["tag"]
         activity.ActivityIntro = json.loads(request.body)["desc"]
 
@@ -94,7 +107,7 @@ def edit_activity(request): # name, place, date, time, tag, description, amount
         return HttpResponse("NOT AUTHENTICATED", status=401)
 
 #显示活动列表
-@transaction.atomic
+
 def catalog_grid(request):
     #is_login = request.session.get('is_login', None)
     #if is_login:
@@ -107,7 +120,7 @@ def catalog_grid(request):
     if usertype == PERMISSION_CONST['UNAUTHENTICATED']:
         return HttpResponse("You need to login or bind wxID to THUID!", status = 401)
 
-    if usertype == PERMISSION_CONST['VOLUNTEER']:
+    if usertype in [PERMISSION_CONST['VOLUNTEER'], PERMISSION_CONST['TEACHER']]:
         rtn_list = showactivity_models.Activity.objects.select_for_update().all()
     else:
         rtn_list = showactivity_models.Activity.objects.select_for_update().filter(ActivityOrganizer = request.user)
@@ -134,7 +147,7 @@ def catalog_grid(request):
         rtn["totalAmount"] = rtn_list[i].ActivityTotalAmount
         rtn["remainAmount"] = rtn_list[i].ActivityRemain
         rtn["desc"] = rtn_list[i].ActivityIntro
-        currentTime = datetime.datetime.utcnow()
+        currentTime = datetime.datetime.utcnow()+datetime.timedelta(hours=8)
         endDate = rtn["enddate"]
         endTime = rtn["endtime"]
         rtn["finished"] = compareTime(currentTime.year, currentTime.month, currentTime.day, currentTime.hour, \
@@ -142,7 +155,8 @@ def catalog_grid(request):
             int(endTime.split(":")[0]), int(endTime.split(":")[1]))
         rtn["status"] = getActivityStatus(rtn_list[i])
         try:
-            rtn["organizer"] = rtn_list[i].ActivityOrganizer.username
+
+            rtn["organizer"] = UserIdentity.objects.select_for_update().get(user = rtn_list[i].ActivityOrganizer).groupname
         except:
             rtn["organizer"] = "Unable to get"
         #pic_tmp = showactivity_models.ActivityPic.objects.select_for_update().filter(ActivityNumber=ActivityID)
@@ -154,7 +168,7 @@ def catalog_grid(request):
     return JsonResponse({"ActivityList": result}, safe=False)
 
 # 查看活动详细信息
-@transaction.atomic
+
 def activity_detail(request):
     if checkUserType(request) == PERMISSION_CONST['UNAUTHENTICATED']:
         return HttpResponse("You need to login or bind wxID to THUID!", status = 401)
@@ -200,7 +214,7 @@ def activity_detail(request):
             rtn["registered"] = True
             rtn["already_feedback_provided"] = membership.already_feedback_provided
             try:
-                checkin.objects.get(membership = membership)
+                checkin.objects.select_for_update().get(membership = membership)
                 rtn["checked"] = True
             except:
                 traceback.print_exc()
@@ -224,7 +238,7 @@ def activity_detail(request):
                 }
                 '''
                 try:
-                    checkin.objects.get(membership = m)
+                    checkin.objects.select_for_update().get(membership = m)
                     info["already_checked"] = True
                 except:
                     info["already_checked"] = False
@@ -252,7 +266,7 @@ def activity_detail(request):
         return HttpResponse("INVALID ACTIVITY ID", status=404)
 
 # 返回已经打卡的志愿者名单
-@transaction.atomic
+
 def get_unallocated_participants(request):
     usertype = checkUserType(request)
     if usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
@@ -277,7 +291,7 @@ def get_unallocated_participants(request):
                 "checked": False
             }
             try:
-                checkin_record = checkin.objects.get(membership=info) # 只返回有打卡记录的志愿者
+                checkin_record = checkin.objects.select_for_update().get(membership=info) # 只返回有打卡记录的志愿者
                 record["checked"] = True
                 record["checkin_record"]={
                     "latitude": checkin_record.latitude,
@@ -311,7 +325,7 @@ def compareTime(year1, month1, day1, hour1, minute1, year2, month2, day2, hour2,
 
 # 获取活动状态（未开始/进行中/已结束）
 def getActivityStatus(activity:Activity):
-    utcnow = datetime.datetime.utcnow().replace(tzinfo=utc)
+    utcnow = (datetime.datetime.utcnow()+datetime.timedelta(hours=8)).replace(tzinfo=utc)
     year = utcnow.year
     month = utcnow.month
     day = utcnow.day
@@ -336,7 +350,7 @@ def getActivityStatus(activity:Activity):
     else:
         return ACTIVITY_STATUS_IN_PROGRESS
 
-@transaction.atomic
+
 # 签到
 def checkinApi(request):
     if checkUserType(request) != PERMISSION_CONST['VOLUNTEER']:
@@ -357,7 +371,7 @@ def checkinApi(request):
     if compareTimeResult != ACTIVITY_STATUS_IN_PROGRESS:
         return JsonResponse({"success": False, FAIL_INFO_KEY: compareTimeResult})
     try:
-        date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        date = (datetime.datetime.utcnow()+datetime.timedelta(hours=8)).replace(tzinfo=utc)
         utcnow = "{}-{}-{} {}:{}".format(date.year, date.month, date.day, date.hour, date.minute)
         membership = Membership.objects.select_for_update().get(volunteer=volunteer, activity=activity, state=ENROLL_STATE_CONST['ACCEPTED'])
         latitude = jsonBody["latitude"]
@@ -379,7 +393,7 @@ def checkinApi(request):
         traceback.print_exc()
         return JsonResponse({"success": False, FAIL_INFO_KEY: "You have not been accepted by the activity organizer"})
 
-@transaction.atomic
+
 def search(request):
     if checkUserType(request) == PERMISSION_CONST['UNAUTHENTICATED']:
         return HttpResponse("You need to login or bind wxID to THUID!", status = 401)
@@ -424,7 +438,7 @@ def search(request):
     return JsonResponse(rtn_list)
 
 # 获取消息列表
-@transaction.atomic
+
 def message_catalog_grid(request):
     
     # user = User.objects.select_for_update().get(pk = request.session.get('THUID'))
@@ -481,7 +495,7 @@ def read_message(request):
     return JsonResponse({"message_detail":rtn})
 '''
 # 将消息标记为已读
-@transaction.atomic
+
 def mark_read(request):
     if checkUserType(request) == PERMISSION_CONST["VOLUNTEER"]:
         THUID = checkSessionValid(request)[1]
@@ -496,7 +510,7 @@ def mark_read(request):
         return HttpResponse("Only volunteer can read the message", status = 401)
 
 # 删除一条消息
-@transaction.atomic
+
 def delete_message(request):
     usertype = checkUserType(request)
     if usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
@@ -518,7 +532,7 @@ def delete_message(request):
         return HttpResponse("Failed to delete message", status = 401)
 
 # 报名活动
-@transaction.atomic
+
 def register_activity(request):
     FAIL_INFO_KEY = "failinfo"
     if checkUserType(request) != PERMISSION_CONST['VOLUNTEER']:
@@ -544,7 +558,7 @@ def register_activity(request):
     
 
 # 取消报名
-@transaction.atomic
+
 def cancel_registration(request):
     if checkUserType(request) != PERMISSION_CONST['VOLUNTEER']:
         return JsonResponse({"success": False, FAIL_INFO_KEY: "Only logged-in volunteer can register activities!"})
@@ -570,7 +584,7 @@ def cancel_registration(request):
     return JsonResponse({"success": True})
 
 # 发布消息
-@transaction.atomic
+
 def post_message(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         print(json.loads(request.body))
@@ -578,7 +592,7 @@ def post_message(request):
         activity = showactivity_models.Activity.objects.select_for_update().get(id=activity_id)
         title = json.loads(request.body)["title"]
         content = json.loads(request.body)["content"]
-        date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        date = (datetime.datetime.utcnow()+datetime.timedelta(hours=8)).replace(tzinfo=utc)
         date = "{}-{}-{}".format(date.year, date.month, date.day)
         message = Message(MessageTitle = title, MessageDetailContent = content,ActivityNumber = activity, PostTime = date)
         message.save()
@@ -593,7 +607,7 @@ def post_message(request):
         return HttpResponse("You have no access", status = 401)
 
 # 编辑消息
-@transaction.atomic
+
 def edit_message(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         message_id = json.loads(request.body)["id"]
@@ -603,7 +617,7 @@ def edit_message(request):
             return HttpResponse("Not your message!", status=401)
         message.MessageTitle = json.loads(request.body)["title"]
         message.MessageDetailContent = json.loads(request.body)["content"]
-        date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        date = (datetime.datetime.utcnow()+datetime.timedelta(hours=8)).replace(tzinfo=utc)
         date = "{}-{}-{}".format(date.year, date.month, date.day)
         message.PostTime = date
         message.save()
@@ -612,7 +626,7 @@ def edit_message(request):
         return HttpResponse("Not authenticated!", status=401)    
 
 # 获取用户参加活动的历史
-@transaction.atomic
+
 def get_volunteer_history(request):
     usertype = checkUserType(request)
     if usertype == PERMISSION_CONST['VOLUNTEER']:
@@ -650,13 +664,13 @@ def get_volunteer_history(request):
         return HttpResponse("NOT A VOLUNTEER!", status=401)
 
 # 获取排行榜
-@transaction.atomic
+
 def get_ranking(request):
     global ranking_last_update_time, ranking_top_100_list
     usertype = checkUserType(request)
     if usertype == PERMISSION_CONST["UNAUTHENTICATED"]:
         return HttpResponse("UNAUTHENTICATED", status=401)
-    outdated =  (datetime.datetime.utcnow()-ranking_last_update_time).total_seconds() > (1*10) # 每5min更新一次排行榜
+    outdated =  (datetime.datetime.utcnow()+datetime.timedelta(hours=8)-ranking_last_update_time).total_seconds() > (5*60) # 每5min更新一次排行榜
     if outdated or (len(ranking_top_100_list) == 0):
         new_top_100_list = []
         order = 1
@@ -674,11 +688,11 @@ def get_ranking(request):
             order += 1
             new_top_100_list.append(info)
         ranking_top_100_list = new_top_100_list
-        ranking_last_update_time = datetime.datetime.utcnow()
+        ranking_last_update_time = datetime.datetime.utcnow()+datetime.timedelta(hours=8)
     return JsonResponse({"list":ranking_top_100_list, "last_update_time":str(ranking_last_update_time)}, safe=False)
 
 # 分配志愿工时（志愿中心/志愿团体）
-@transaction.atomic
+
 def allocate_volunteerhours(request):
     # raiseNotImplementedError("Not implemented!")
     if checkUserType(request) in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
@@ -691,7 +705,7 @@ def allocate_volunteerhours(request):
             student_id = obj["student_id"]
             student = VOLUNTEER.objects.select_for_update().get(pk = student_id)  # 不确定传过来的是id还是THUID，先这样写吧orz 
             try:
-                membership = Membership.objects.get(volunteer=student, activity=activity, state=ENROLL_STATE_CONST["ACCEPTED"], alreadyAssignedVolunteerHour=False)
+                membership = Membership.objects.select_for_update().get(volunteer=student, activity=activity, state=ENROLL_STATE_CONST["ACCEPTED"], alreadyAssignedVolunteerHour=False)
                 time = obj["time"]
                 totalTime = student.VOLUNTEER_TIME + time
                 student.VOLUNTEER_TIME = totalTime
@@ -706,7 +720,7 @@ def allocate_volunteerhours(request):
         return HttpResponse("Not authenticated!", status=401)    
         
 # 发布反馈
-@transaction.atomic
+
 def post_feedback(request):
     usertype = checkUserType(request)
     if usertype != PERMISSION_CONST["VOLUNTEER"]:
@@ -714,12 +728,12 @@ def post_feedback(request):
     else:
         try:
             THUID = checkSessionValid(request)[1]
-            volunteer = VOLUNTEER.objects.get(THUID=THUID)
+            volunteer = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
             activity_id = json.loads(request.body)["id"]
-            activity = Activity.objects.get(id=activity_id)
+            activity = Activity.objects.select_for_update().get(id=activity_id)
             try:
-                membership = Membership.objects.get(activity=activity, volunteer=volunteer)
-                checkin.objects.get(membership=membership)
+                membership = Membership.objects.select_for_update().get(activity=activity, volunteer=volunteer)
+                checkin.objects.select_for_update().get(membership=membership)
             except:
                 traceback.print_exc()
                 return JsonResponse({"success":False, FAIL_INFO_KEY:"You've not checked in!"}, status=400) # 签到之后才可以进行反馈
@@ -728,7 +742,7 @@ def post_feedback(request):
             else:
                 membership.feedback = json.dumps({"title":json.loads(request.body)["title"], "detail":json.loads(request.body)["detail"]})
                 membership.already_feedback_provided = True
-                membership.feedback_time = str(datetime.datetime.utcnow().replace(tzinfo=utc)).split('.')[0]
+                membership.feedback_time = str((datetime.datetime.utcnow()+datetime.timedelta(hours=8)).replace(tzinfo=utc)).split('.')[0]
                 membership.save()
                 return HttpResponse("SUCCESS")
         except:
@@ -736,18 +750,18 @@ def post_feedback(request):
             return HttpResponse("zxwtql", status=500)
 
 # 志愿团体或志愿中心查看活动反馈
-@transaction.atomic
+
 def query_feedback(request):
     usertype = checkUserType(request)
     if not (usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]):
         return HttpResponse("NOT TEACHER OR ORGANIZATION!", status=401)
     else:
         activity_id = json.loads(request.body)["id"]
-        activity = Activity.objects.get(id=activity_id)
+        activity = Activity.objects.select_for_update().get(id=activity_id)
         if activity.ActivityOrganizer != request.user:
             return JsonResponse({"success":False, FAIL_INFO_KEY:"Not your activity!"}, status=401)
         resList = []
-        for membership in Membership.objects.filter(activity=activity):
+        for membership in Membership.objects.select_for_update().filter(activity=activity):
             if membership.already_feedback_provided:
                 volunteer = membership.volunteer
                 res = {}
@@ -769,7 +783,7 @@ def read_feedback(request):
         return HttpResponse("NOT TEACHER OR ORGANIZATION!", status=401)
     else:
         feedback_id = json.loads(request.body)["id"]
-        record = Membership.objects.get(id=feedback_id)
+        record = Membership.objects.select_for_update().get(id=feedback_id)
         if record.activity.ActivityOrganizer != request.user:
             return JsonResponse({"success":False, FAIL_INFO_KEY:"Not your activity!"}, status=401)
         record.already_feedback_read = True
@@ -778,12 +792,12 @@ def read_feedback(request):
 
 
 # 志愿团体或志愿中心删除活动
-@transaction.atomic
+
 def delete_activity(request):
     usertype = checkUserType(request)
     if usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
         activity_id = json.loads(request.body)["id"]
-        activity = Activity.objects.get(id=activity_id)
+        activity = Activity.objects.select_for_update().get(id=activity_id)
         if activity.ActivityOrganizer != request.user:
             return HttpResponse("Not your activity!", status=401)
         activity.delete()
@@ -796,12 +810,12 @@ def getVolunteerCheckinRecord(request):
     usertype = checkUserType(request)
     if usertype == PERMISSION_CONST['VOLUNTEER']:
         THUID = checkSessionValid(request)[1]
-        volunteer = VOLUNTEER.objects.get(THUID=THUID)
+        volunteer = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
         activity_id = json.loads(request.body)["id"]
-        activity = Activity.objects.get(id=activity_id)
+        activity = Activity.objects.select_for_update().get(id=activity_id)
         record = Membership(activity=activity, volunteer=volunteer)
         try:
-            checkin.objects.get(membership=record)
+            checkin.objects.select_for_update().get(membership=record)
             return JsonResponse({"checked": True})
         except:
             return JsonResponse({"checked": False})
@@ -813,10 +827,35 @@ def getVolunteerFeedbackRecord(request):
     usertype = checkUserType(request)
     if usertype == PERMISSION_CONST['VOLUNTEER']:
         THUID = checkSessionValid(request)[1]
-        volunteer = VOLUNTEER.objects.get(THUID=THUID)
+        volunteer = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
         activity_id = json.loads(request.body)["id"]
-        activity = Activity.objects.get(id=activity_id)
+        activity = Activity.objects.select_for_update().get(id=activity_id)
         record = Membership(activity=activity, volunteer=volunteer)
         return JsonResponse({"finished": record.already_feedback_provided})
     else:
         return HttpResponse("Not a volunteer", status = 401)
+
+# 查看某个活动的签到记录(参观清华可能会用到这个接口)
+def getActivityCheckinRecord(request):
+    usertype = checkUserType(request)
+    if usertype in [PERMISSION_CONST['TEACHER'], PERMISSION_CONST['ORGANIZATION']]:
+        activity_id = Activity.objects.select_for_update().get
+        resList = []
+        activity = Activity.objects.select_for_update().get(id=activity_id)
+        if activity.ActivityOrganizer != request.user:
+            return HttpResponse("Not your activity!", status = 401)
+        volunteers = activity.members
+        for volunteer in volunteers.select_for_update().all():
+            try:
+                checkin_record = checkin.objects.select_for_update().get(membership = Membership.object.select_for_update().get(volunteer=volunteer, activity=activity))
+                res = {}
+                res["THUID"] = volunteer.THUID
+                res["NAME"] = volunteer.NAME
+                res["ADDRESS"] = checkin_record.address
+                res["CHECKIN_TIME"] = checkin_record.checkinTime
+                resList.append(res)
+            except:
+                pass
+        return JsonResponse({"list": resList}, safe=False)
+    else:
+        return HttpResponse("NOT A TEACHER OR ORGANIZATION!", status = 401)
