@@ -44,7 +44,6 @@ export default {
   },
   computed: {
     buttontext: function () {
-      window.console.log(this.hover);
       if (this.hover) {
         return this.text
       } else {

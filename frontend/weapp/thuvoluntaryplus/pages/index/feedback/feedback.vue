@@ -3,7 +3,9 @@
     <view class="cu-form-group margin-top">
       <input placeholder="标题"
              name="input"
-             v-model="title"></input></view>
+             v-model="title">
+      </input>
+    </view>
     <view class="cu-form-group margin-top">
 
       <textarea maxlength="-1"
@@ -39,9 +41,6 @@ export default {
       this.feedback(this.id, this.title, this.detail)
     },
     feedback (id, title, detail) {
-      console.log(id)
-      console.log(title)
-      console.log(detail)
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/feedback/post',
         method: 'POST',

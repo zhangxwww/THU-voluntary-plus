@@ -1,43 +1,39 @@
 <template>
   <div class="container">
-    <el-card
-      style="margin-bottom: 20px"
-      v-for="person in getPerson"
-      :key="person.id"
-      shadow="hover"
-    >
+    <el-card style="margin-bottom: 20px"
+             v-for="person in getPerson"
+             :key="person.id"
+             shadow="hover">
       <div slot="header">
         <el-row style="padding-right: 0px">
-          <el-col :span="4"
-            ><el-badge
-              :value="person.checked ? '已打卡' : '未打卡'"
-              :type="person.checked ? 'success' : 'danger'"
-              ><el-tag>{{ person.name }}</el-tag></el-badge
-            ></el-col
-          ><el-col :span="14" v-if="person.checked"
-            ><el-tag
-              style="margin-left: 20px"
-              type="info"
-              class="el-icon-location"
-              >{{ person.checkpos }}</el-tag
-            ></el-col
-          >
+          <el-col :span="4">
+            <el-badge :value="person.checked ? '已打卡' : '未打卡'"
+                      :type="person.checked ? 'success' : 'danger'">
+              <el-tag>{{ person.name }}</el-tag>
+            </el-badge>
+          </el-col>
+          <el-col :span="14"
+                  v-if="person.checked">
+            <el-tag style="margin-left: 20px"
+                    type="info"
+                    class="el-icon-location">{{ person.checkpos }}</el-tag>
+          </el-col>
 
-          <el-col :span="6" style="float: right">
-            <el-button
-              type="primary"
-              size="small"
-              @click="submitForm($event)"
-              :id="person.id"
-              >确认</el-button
-            >
-            <el-button size="small" @click="resetForm($event)" :id="person.id"
-              >重置</el-button
-            >
-          </el-col></el-row
-        >
+          <el-col :span="6"
+                  style="float: right">
+            <el-button type="primary"
+                       size="small"
+                       @click="submitForm($event)"
+                       :id="person.id">确认</el-button>
+            <el-button size="small"
+                       @click="resetForm($event)"
+                       :id="person.id">重置</el-button>
+          </el-col>
+        </el-row>
       </div>
-      <el-slider style="width:95%" v-model="person.time" show-input></el-slider>
+      <el-slider style="width:95%"
+                 v-model="person.time"
+                 show-input></el-slider>
     </el-card>
   </div>
 </template>
@@ -48,61 +44,36 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'Allocation',
-  data() {
+  data () {
     return {
       persons: [
-        {
-          id: 0,
-          name: '张大头',
-          avatar:
-            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          department: '魔药学院',
-          checked: true,
-          checkpos: '桃李地下'
-        },
-        {
-          id: 1,
-          name: '金大头',
-          avatar:
-            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          department: '魔药学院',
-          checked: false,
-          checkpos: ''
-        },
-        {
-          id: 2,
-          name: '邵大头',
-          avatar:
-            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          department: '魔药学院',
-          checked: true,
-          checkpos: '紫荆'
-        },
-        {
-          id: 3,
-          name: '汪大头',
-          avatar:
-            'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-          department: '魔药学院',
-          checked: true,
-          checkpos: '哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈'
-        }
+        /*
+      {
+        id: 0,
+        name: '张大头',
+        avatar:
+          'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+        department: '魔药学院',
+        checked: true,
+        checkpos: '桃李地下'
+      },
+      */
       ]
     }
   },
   computed: {
     ...mapState(['modifyActivityId']),
 
-    getPerson() {
+    getPerson () {
       return this.persons
     }
   },
-  created() {
+  created () {
     this.updateList()
   },
 
   methods: {
-    submitForm(e) {
+    submitForm (e) {
       let t = e.target
       if (t.localName === 'span') {
         t = t.parentElement
@@ -119,21 +90,20 @@ export default {
         person.id,
         person.time,
         () => {
-          alert('success')
+          //alert('success')
           this.persons.splice(this.persons.indexOf(person), 1)
         },
         () => {
-          alert('fail')
+          alert('分配失败，请稍后重试')
         }
       )
     },
 
-    resetForm(e) {
+    resetForm (e) {
       let t = e.target
       if (t.localName === 'span') {
         t = t.parentElement
       }
-      window.console.log(t)
       for (let p of this.persons) {
         if (p.id + '' === t.id) {
           p.time = 0
@@ -142,7 +112,7 @@ export default {
       }
     },
 
-    updateList() {
+    updateList () {
       getParticipant(
         this.modifyActivityId,
         list => {
@@ -161,7 +131,7 @@ export default {
           }
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     }
