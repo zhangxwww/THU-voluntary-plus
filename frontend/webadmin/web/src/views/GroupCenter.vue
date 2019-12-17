@@ -151,7 +151,6 @@ export default {
           this.descriptions.phone = data.phone
           this.descriptions.email = data.email
           this.descriptions.about = data.about
-          window.console.log(this.descriptions)
         },
         () => {
           //alert('fail')

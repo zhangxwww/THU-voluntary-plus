@@ -125,7 +125,6 @@ export default {
       })
     },
     DeleteMessage: function (id) {
-      console.log(id)
       uni.request({
         url: 'https://thuvplus.iterator-traits.com/api/messages/delete',
         method: 'POST',

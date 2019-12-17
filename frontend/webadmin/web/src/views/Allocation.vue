@@ -104,7 +104,6 @@ export default {
       if (t.localName === 'span') {
         t = t.parentElement
       }
-      window.console.log(t)
       for (let p of this.persons) {
         if (p.id + '' === t.id) {
           p.time = 0

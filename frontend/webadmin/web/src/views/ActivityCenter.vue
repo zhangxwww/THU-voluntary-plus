@@ -378,7 +378,6 @@ export default {
     },
     getList: function () {
       this.list.splice(0, this.list.length, ...this.rawlist.slice((this.page - 1) * this.pagesize, this.page * this.pagesize))
-      window.console.log(this.list)
     },
     handleSizeChange (val) {
       this.pagesize = val
