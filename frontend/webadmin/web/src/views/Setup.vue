@@ -123,10 +123,10 @@ export default {
         setupGroup(
           this.descriptions,
           () => {
-            alert('success')
+            this.$router.push('/dashboard/activity')
           },
           () => {
-            alert('fail')
+            alert('提交失败，请稍候重试')
           }
         )
       }

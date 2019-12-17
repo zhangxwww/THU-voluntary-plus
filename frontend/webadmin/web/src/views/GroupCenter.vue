@@ -136,7 +136,7 @@ export default {
         this.isEdit = false
         this.updateDescriptions()
       }, () => {
-        alert('fail')
+        alert('修改失败，请稍候重试')
       })
     },
     handleCancel: function () {
@@ -154,7 +154,7 @@ export default {
           window.console.log(this.descriptions)
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     },
@@ -173,7 +173,7 @@ export default {
           }
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     }

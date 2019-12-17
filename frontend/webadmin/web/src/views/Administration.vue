@@ -178,7 +178,7 @@ export default {
           this.getList()
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     },
@@ -209,10 +209,10 @@ export default {
       generateVerificationCode(
         code => {
           this.verificationCode = code
-          alert('success')
+          //alert('success')
         },
         () => {
-          alert('fail')
+          alert('请求失败，请稍候重试')
         }
       )
     }

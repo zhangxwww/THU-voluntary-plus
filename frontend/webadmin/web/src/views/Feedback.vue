@@ -132,7 +132,7 @@ export default {
           this.getList()
         }
       }, () => {
-        alert('fail')
+        //alert('fail')
       })
     },
     handleSizeChange: function (val) {
@@ -144,11 +144,10 @@ export default {
       this.getList()
     },
     handleCheck: function (row) {
-      alert('click')
       checkFeedback(row.id, () => {
         this.updateFeedback()
       }, () => {
-        alert('fail')
+        //alert('fail')
       })
     },
     filterStatus (value, row) {

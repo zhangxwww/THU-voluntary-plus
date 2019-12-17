@@ -71,11 +71,10 @@ export default {
       login(
         this.loginForm,
         () => {
-          alert('login!')
           this.$router.push('/dashboard/activity')
         },
         () => {
-          alert('fail')
+          alert('登录失败，请稍后重试')
         }
       )
     }

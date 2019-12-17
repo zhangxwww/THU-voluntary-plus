@@ -82,11 +82,10 @@ export default {
       signupGroup(
         this.signupForm,
         () => {
-          alert('success')
           this.$router.push('/group/setup')
         },
         () => {
-          alert('fail')
+          alert('注册失败，请稍后重试')
         }
       )
     }

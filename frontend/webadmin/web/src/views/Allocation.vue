@@ -90,11 +90,11 @@ export default {
         person.id,
         person.time,
         () => {
-          alert('success')
+          //alert('success')
           this.persons.splice(this.persons.indexOf(person), 1)
         },
         () => {
-          alert('fail')
+          alert('分配失败，请稍后重试')
         }
       )
     },
@@ -132,7 +132,7 @@ export default {
           }
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     }

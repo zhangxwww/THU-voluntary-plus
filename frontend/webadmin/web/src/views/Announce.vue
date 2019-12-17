@@ -194,7 +194,7 @@ export default {
       newAnnounce(
         form,
         () => {
-          alert('success')
+          //alert('success')
           this.isAdding = false
           this.hover = false
           this.update()
@@ -202,7 +202,7 @@ export default {
           this.form.content = ''
         },
         () => {
-          alert('fail')
+          alert('发布失败，请稍后重试')
         }
       )
     },
@@ -218,15 +218,15 @@ export default {
       this.editform.content = row.detail
     },
     handleDelete (index, row) {
-      alert(index, row)
+      //alert(index, row)
       deleteAnnounce(
         row.id,
         () => {
-          alert('success')
+          //alert('success')
           this.update()
         },
         () => {
-          alert('fail')
+          alert('删除失败，请稍后重试')
         }
       )
     },
@@ -251,7 +251,7 @@ export default {
           this.update()
         },
         () => {
-          alert('fail')
+          alert('编辑失败，请稍后重试')
         }
       )
     },
@@ -271,7 +271,7 @@ export default {
           }
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     }
