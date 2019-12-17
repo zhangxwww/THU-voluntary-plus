@@ -223,7 +223,7 @@ export default {
       rawlist: [],
       listLoading: false,
       search: '',
-      pagesize: 3,
+      pagesize: 10,
       list: [],
       inputVisible: false,
       inputValue: '',
