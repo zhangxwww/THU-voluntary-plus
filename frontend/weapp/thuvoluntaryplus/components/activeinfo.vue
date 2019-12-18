@@ -121,6 +121,19 @@
         </view>
       </view>
     </view>
+    <view class="cu-modal" :class="modalName=='Modal'?'show':''">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{ modaltitle }}</view>
+          <view class="action" @tap="hideModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding-xl">
+          {{ modalcontent }}
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -157,6 +170,9 @@ export default {
   data () {
     return {
       created: false,
+      modaltitle: '',
+      modalcontent: '',
+      Modal: false
       //hasJoin: false
     }
   },
@@ -229,11 +245,20 @@ export default {
                 this.hasJoin = false
                 this.hasCheckedIn = false
                 this.hasFeedback = false
+                this.modaltitle = "取消成功！"
+                this.modalcontent = "您已取消加入此活动"
+                this.Modal = true
               } else {
                 console.log(res.data.failinfo)
+                this.modaltitle = "取消失败！"
+                this.modalcontent = res.data.failinfo
+                this.Modal = true
               }
             } else {
               console.log(res)
+              this.modaltitle = "取消失败！"
+              this.modalcontent = "未知错误"
+              this.Modal = true
             }
           },
           fail: (res) => {
@@ -255,15 +280,27 @@ export default {
             if (res.statusCode === 200) {
               if (res.data.success) {
                 this.hasJoin = true
+                this.modaltitle = "加入成功！"
+                this.modalcontent = "您已加入此活动"
+                this.Modal = true
               } else {
                 console.log(res.data.failinfo)
+                this.modaltitle = "加入失败！"
+                this.modalcontent = res.data.failinfo
+                this.Modal = true
               }
             } else {
               console.log(res)
+              this.modaltitle = "加入失败！"
+              this.modalcontent = "服务器错误"
+              this.Modal = true
             }
           },
           fail: (res) => {
             console.log(res)
+            this.modaltitle = "加入失败！"
+            this.modalcontent = "通信错误"
+            this.Modal = true
           }
         })
       }
@@ -297,24 +334,39 @@ export default {
                     } else {
                       console.log('sign up fail')
                       console.log(res.data.failinfo)
+                      this.modaltitle = "打卡失败！"
+                      this.modalcontent = "未知错误"
+                      this.Modal = true
                     }
                   } else {
                     console.log('fail')
+                    this.modaltitle = "打卡失败！"
+                    this.modalcontent = "服务器错误"
+                    this.Modal = true
                   }
                 },
                 fail: (res) => {
                   console.log('fail')
+                  this.modaltitle = "打卡失败！"
+                  this.modalcontent = "通信错误"
+                  this.Modal = true
                 }
               })
             },
             fail: (res) => {
               console.log('fail to get location')
               console.log(res)
+              this.modaltitle = "打卡失败！"
+              this.modalcontent = "获取位置错误"
+              this.Modal = true
             }
           })
         },
         fail: (res) => {
           console.log(res)
+          this.modaltitle = "打卡失败！"
+          this.modalcontent = "用户认证错误"
+          this.Modal = true
         }
       })
     },
@@ -328,6 +380,9 @@ export default {
           }
         }
       })
+    },
+    hideModal() {
+      this.Modal = false
     }
   }
 }
