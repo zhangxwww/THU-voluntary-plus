@@ -47,7 +47,8 @@ export default {
       return (this.curpage === 'userCenter')
     },
     avatarUrl: function () {
-      return 'url(' + this.personalinfo.avatarurl + ')'
+      //return 'url(' + this.personalinfo.avatarurl + ')'
+      return 'url(https://overwatch.nosdn.127.net/1/assets/img/pages/heroes/list/roadhog.png)'
     },
   },
   onLoad () {

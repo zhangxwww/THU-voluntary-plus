@@ -11,6 +11,7 @@
 
       <el-form-item prop="username">
         <el-input placeholder="用户名"
+                  @keyup.enter.native="handleLogin"
                   v-model="signupForm.username">
           <i slot="prefix"
              class="el-input__icon el-icon-user"></i>
@@ -19,6 +20,7 @@
 
       <el-form-item prop="password">
         <el-input placeholder="密码"
+                  @keyup.enter.native="handleLogin"
                   v-model="signupForm.password"
                   show-password>
           <i slot="prefix"
@@ -27,6 +29,7 @@
       </el-form-item>
       <el-form-item prop="invitationcode">
         <el-input placeholder="邀请码"
+                  @keyup.enter.native="handleLogin"
                   v-model="signupForm.invitationcode">
           <i slot="prefix"
              class="el-input__icon el-icon-warning-outline"></i>

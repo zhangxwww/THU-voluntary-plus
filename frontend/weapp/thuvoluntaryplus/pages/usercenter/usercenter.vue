@@ -50,12 +50,12 @@ export default {
         description: '志愿排行',
         icon: 'cuIcon-sort',
         menuarrow: true
-      }, {
+      },/* {
         id: 4,
         description: '注销用户',
         icon: 'cuIcon-deletefill',
         menuarrow: false
-      }
+      }*/
       ]
     }
   },
