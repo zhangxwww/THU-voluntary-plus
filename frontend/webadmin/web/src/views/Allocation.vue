@@ -90,11 +90,14 @@ export default {
         person.id,
         person.time,
         () => {
-          //alert('success')
+          this.$message({
+            message: '分配成功',
+            type: 'success'
+          });
           this.persons.splice(this.persons.indexOf(person), 1)
         },
         () => {
-          alert('分配失败，请稍后重试')
+          this.$message.error('分配失败，请稍后重试')
         }
       )
     },
@@ -131,7 +134,7 @@ export default {
           }
         },
         () => {
-          //alert('fail')
+          this.$message.error('更新列表失败')
         }
       )
     }

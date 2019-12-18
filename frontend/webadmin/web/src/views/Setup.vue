@@ -126,7 +126,7 @@ export default {
             this.$router.push('/dashboard/activity')
           },
           () => {
-            alert('提交失败，请稍候重试')
+            this.$message.error('提交失败，请稍候重试')
           }
         )
       }

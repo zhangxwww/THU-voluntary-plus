@@ -85,7 +85,7 @@ export default {
           this.$router.push('/group/setup')
         },
         () => {
-          alert('注册失败，请稍后重试')
+          this.$message.error('注册失败，请稍后重试')
         }
       )
     }

@@ -194,7 +194,10 @@ export default {
       newAnnounce(
         form,
         () => {
-          //alert('success')
+          this.$message({
+            message: '发布成功',
+            type: 'success'
+          });
           this.isAdding = false
           this.hover = false
           this.update()
@@ -202,7 +205,7 @@ export default {
           this.form.content = ''
         },
         () => {
-          alert('发布失败，请稍后重试')
+          this.$message.error('发布失败，请稍后重试')
         }
       )
     },
@@ -222,11 +225,14 @@ export default {
       deleteAnnounce(
         row.id,
         () => {
-          //alert('success')
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          });
           this.update()
         },
         () => {
-          alert('删除失败，请稍后重试')
+          this.$message.error('删除失败，请稍后重试')
         }
       )
     },
@@ -251,7 +257,7 @@ export default {
           this.update()
         },
         () => {
-          alert('编辑失败，请稍后重试')
+          this.$message.error('编辑失败，请稍后重试')
         }
       )
     },
@@ -271,7 +277,7 @@ export default {
           }
         },
         () => {
-          //alert('fail')
+          this.$message.error('获取列表失败')
         }
       )
     }
