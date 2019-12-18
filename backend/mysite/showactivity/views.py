@@ -32,6 +32,15 @@ ACTIVITY_STATUS_CONST_NOT_STARTED = "未开始"
 ACTIVITY_STATUS_CONST_ALREADY_ENDED = "已结束"
 ACTIVITY_STATUS_IN_PROGRESS = "进行中"
 
+def sortListByTime(elem):
+    if "starttime" in elem.keys():
+        delta = datetime.datetime(int(elem["startdate"].split("-")[0]), int(elem["startdate"].split("-")[1]), \
+            int(elem["startdate"].split("-")[2]), int(elem["starttime"].split(":")[0]), \
+            int(elem["starttime"].split(":")[1])) - datetime.datetime(1900,1,1,0,0)
+        seconds = delta.total_seconds()
+        return seconds
+    return 0
+
 # 发布活动
 def post_activity(request): # name, place, date, time, tag, description, amount
     #print(request.COOKIES)
@@ -165,6 +174,7 @@ def catalog_grid(request):
         result.append(rtn)
     #rtn_dic = dict(map(lambda x, y: [x, y], rtn_pic, rtn_listt))
     #return render(request, "showactivity/catalog_grid.html", locals())
+    result.sort(reverse=True, key=sortListByTime)
     return JsonResponse({"ActivityList": result}, safe=False)
 
 # 查看活动详细信息
