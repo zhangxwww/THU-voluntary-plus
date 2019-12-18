@@ -121,16 +121,16 @@
         </view>
       </view>
     </view>
-    <view class="cu-modal" :class="modalName=='Modal'?'show':''">
+    <view class="cu-modal" :class="modalName=='getModal'?'show':''">
       <view class="cu-dialog">
         <view class="cu-bar bg-white justify-end">
-          <view class="content">{{ modaltitle }}</view>
+          <view class="content">{{ getModalTitle }}</view>
           <view class="action" @tap="hideModal">
             <text class="cuIcon-close text-red"></text>
           </view>
         </view>
         <view class="padding-xl">
-          {{ modalcontent }}
+          {{ getModalContent }}
         </view>
       </view>
     </view>
@@ -181,6 +181,15 @@ export default {
   },
   computed: {
     ...mapState(['sessionid', 'hasSendFeedback']),
+    getModal() {
+      return this.Modal
+    },
+    getModalContent() {
+      return this.modalcontent
+    },
+    getModalTitle() {
+      return this.modaltitle
+    },
     statusClass: function () {
       if (this.status === '进行中') {
         return "cuIcon-hot bg-mauve text-sm"
