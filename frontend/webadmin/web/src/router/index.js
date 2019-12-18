@@ -70,7 +70,7 @@ const routes = [{
             title: '管理中心'
         },
         children: [{
-            path: '/administration',
+            path: 'administration',
             name: 'Administration',
             component: Administration,
             meta: {
