@@ -104,7 +104,10 @@ export default {
               location: data.location,
               detail: data.desc,
               participantList: [],
-              hasJoin: data.registered
+              hasJoin: data.registered,
+              hasCheckedIn: data.checked,
+              hasFeedback: data.already_feedback_provided,
+              status: data.status
             }
             for (let part of data.participants) {
               this.activitydata.participantList.push({

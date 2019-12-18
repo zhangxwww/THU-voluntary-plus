@@ -34,7 +34,7 @@
                           class="user-dropdown">
           <el-dropdown-item>
             <span style="display:block;"
-                  @click="logout">登出</span>
+                  @click="handlelogout">登出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -43,6 +43,8 @@
 </template>
 
 <script>
+import { logout } from '../script/index'
+
 export default {
   data () {
     return {
@@ -56,7 +58,15 @@ export default {
       return 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
     },
   },
-  methods: {}
+  methods: {
+    handlelogout () {
+      logout(() => {
+        this.$router.push('/login')
+      }, () => {
+
+      })
+    }
+  }
 }
 </script>
 

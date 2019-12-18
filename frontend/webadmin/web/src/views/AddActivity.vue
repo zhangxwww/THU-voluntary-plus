@@ -191,15 +191,18 @@ export default {
             this.ruleForm,
             () => {
               this.resetForm()
-              alert('发布成功!')
+              this.$message({
+                message: '发布成功',
+                type: 'success'
+              });
               this.$router.push('/dashboard/activity')
             },
             () => {
-              alert('发布失败')
+              this.$message.error('发布失败')
             }
           )
         } else {
-          alert('发布失败!!')
+          this.$message.error('发布失败')
           return false
         }
       })

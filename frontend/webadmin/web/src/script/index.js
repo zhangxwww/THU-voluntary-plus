@@ -10,8 +10,9 @@ export function getActivity(success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -34,8 +35,9 @@ export function addNewActivity(form, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(function (e) {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -48,8 +50,9 @@ export function editActivity(id, form, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -63,8 +66,9 @@ export function deleteActivity(id, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -79,8 +83,23 @@ export function login(form, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(function (e) {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
+        fail()
+    })
+}
+
+export function logout(success, fail) {
+    axios.get('/api/logout').then(res => {
+        if (res.status === 200) {
+            success()
+        } else {
+            fail()
+        }
+        // eslint-disable-next-line no-unused-vars
+    }).catch(e => {
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -96,8 +115,9 @@ export function newAnnounce(announce, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -113,8 +133,9 @@ export function editAnnounce(announce, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -129,8 +150,9 @@ export function getAnnounceList(id, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -144,8 +166,9 @@ export function deleteAnnounce(id_, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -160,8 +183,9 @@ export function getParticipant(id_, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -179,8 +203,9 @@ export function allocateTime(aid, pid, time, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -194,8 +219,9 @@ export function generateVerificationCode(success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -211,8 +237,9 @@ export function signupGroup(form, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -224,8 +251,9 @@ export function setupGroup(form, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail(e)
     })
 }
@@ -238,8 +266,9 @@ export function getCheckingGroupList(success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -254,8 +283,9 @@ export function checkGroupSetup(gid, check, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -268,8 +298,9 @@ export function getGroupInfo(success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -285,8 +316,9 @@ export function editGroupInfo(form, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -299,8 +331,9 @@ export function getGroupTimeline(success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -315,8 +348,9 @@ export function getFeedback(id, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
@@ -330,8 +364,9 @@ export function checkFeedback(id, success, fail) {
         } else {
             fail()
         }
+        // eslint-disable-next-line no-unused-vars
     }).catch(e => {
-        alert(e)
+        // eslint-disable-next-line no-unused-vars
         fail()
     })
 }
