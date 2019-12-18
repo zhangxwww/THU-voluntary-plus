@@ -132,7 +132,7 @@ export default {
           this.getList()
         }
       }, () => {
-        //alert('fail')
+        this.$message.error('获取列表失败')
       })
     },
     handleSizeChange: function (val) {
@@ -147,7 +147,7 @@ export default {
       checkFeedback(row.id, () => {
         this.updateFeedback()
       }, () => {
-        //alert('fail')
+        this.$message.error('列表更新失败')
       })
     },
     filterStatus (value, row) {

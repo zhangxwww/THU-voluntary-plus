@@ -329,10 +329,13 @@ export default {
   methods: {
     handleDelete (index, row) {
       deleteActivity(row.id, () => {
-        //alert('success')
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        });
         this.updateActivities()
       }, () => {
-        alert('删除失败，请稍后重试')
+        this.$message.error('删除失败，请稍后再试')
       })
     },
     updateActivities () {
@@ -354,8 +357,7 @@ export default {
           }
         },
         () => {
-          alert('Fail to get activity list')
-          //this.list = this.rawlist.slice(0, this.pagesize)
+          this.$message.error('获取列表失败，请稍后再试')
         }
       )
     },
@@ -393,7 +395,7 @@ export default {
         this.updateActivities()
         this.clearEditForm()
       }, () => {
-        alert('修改失败，请稍后重试')
+        this.$message.error('错了哦，这是一条错误消息');
       })
     },
     cancelEdit () {
