@@ -62,33 +62,23 @@ export default {
   data () {
     return {
       activitydata: {
-        location: '北京紫荆餐厅地下',
-        title: '集体编程开发活动',
-        time: '2019.10.1-2019.10.4',
-        organizer: "张大头",
-        tag: "集体开发",
-        city: "北京",
-        detail: "周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。周二下午在逃离餐厅地下进行集体敲代码。",
+        location: '',
+        title: '',
+        time: '',
+        organizer: "",
+        tag: "",
+        city: "",
+        detail: "",
         participantList: [
-          {
-            id: 0,
-            username: "汪元标",
-            gender: 'male',
-            studentID: "2016010022",
-            avatarUrl: 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-          }, {
-            id: 1,
-            gender: 'male',
-            username: '张欣炜',
-            studentID: "2016010023",
-            avatarUrl: 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-          }, {
-            id: 2,
-            gender: 'female',
-            username: '邵璟之',
-            studentID: "2016010023",
-            avatarUrl: 'url(https://ossweb-img.qq.com/images/lol/web201310/skin/big10001.jpg)'
-          }
+          /*
+        {
+          id: 0,
+          username: "",
+          gender: '',
+          studentID: "",
+          avatarUrl: ''
+        },
+        */
         ]
       }
     };

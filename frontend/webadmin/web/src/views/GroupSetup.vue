@@ -1,15 +1,14 @@
 <template>
-    <div>
+  <div>
 
-    </div>
+  </div>
 </template>
 
 <script>
-    export default {
-        name: "GroupSetup"
-    }
+export default {
+  name: "GroupSetup"
+}
 </script>
 
 <style scoped>
-
 </style>

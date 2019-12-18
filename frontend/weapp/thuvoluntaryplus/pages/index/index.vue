@@ -28,7 +28,7 @@ export default {
   data () {
     return {
       currentUser: {
-        name: '汪大头'
+        name: ''
       },
       activitydetail: null,
     }
@@ -36,7 +36,6 @@ export default {
   computed: {
     ...mapState(['curpage', 'title', 'sessionid']),
     needSearch: function () {
-      //console.log(this.curpage === 'index')
       return (this.curpage === 'index')
     },
   },

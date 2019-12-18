@@ -53,6 +53,7 @@ urlpatterns = [
     path(r'api/activities/participants', showactivity_views.get_unallocated_participants),
     path(r'api/activities/allocate', showactivity_views.allocate_volunteerhours),
     path(r'api/activities/delete', showactivity_views.delete_activity),
+    path(r'api/activities/checkinRecord', showactivity_views.getActivityCheckinRecord),
 
     path(r'api/feedback/post', showactivity_views.post_feedback),
     path(r'api/feedback/query', showactivity_views.query_feedback),

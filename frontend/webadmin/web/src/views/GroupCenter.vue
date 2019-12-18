@@ -99,52 +99,31 @@ export default {
     return {
       isEdit: false,
       descriptions: {
-        name: '霍格沃茨微志愿',
-        setuptime: '2019-2-10',
+        name: '',
+        setuptime: '',
         members: [
-          {
-            id: 0,
-            name: '张大头',
-            subject: '黑魔法防御术'
-          },
-          {
-            id: 1,
-            name: '汪大头',
-            subject: '魔草药学'
-          },
-          {
-            id: 2,
-            name: '金大头',
-            subject: '神奇动物驯养学'
-          }
+          /*
+        {
+          id: 0,
+          name: '张大头',
+          subject: '黑魔法防御术'
+        },
+        */
         ],
-        phone: '11178901234',
-        email: 'hogwarts@vol.thu.edu',
-        about:
-          '霍格沃茨微志愿团体成立于清华3/4站台，由四位热心的团员组成，他们勤奋工作，为清华大学霍格沃茨学院的志愿事业献出一份力'
+        phone: '',
+        email: '',
+        about: ''
       },
       timelines: [
-        {
-          id: 0,
-          title: '北京地区交通引导',
-          settler: '张大头',
-          timestamp: '2019/12/10',
-          finished: false
-        },
-        {
-          id: 0,
-          title: '十一期间导游',
-          settler: '张大头',
-          timestamp: '2019/10/1',
-          finished: true
-        },
-        {
-          id: 0,
-          title: '十一期间导游',
-          settler: '张大头',
-          timestamp: '2019/10/1',
-          finished: true
-        }
+        /*
+      {
+        id: 0,
+        title: '北京地区交通引导',
+        settler: '张大头',
+        timestamp: '2019/12/10',
+        finished: false
+      },
+      */
       ]
     }
   },
@@ -157,7 +136,7 @@ export default {
         this.isEdit = false
         this.updateDescriptions()
       }, () => {
-        alert('fail')
+        alert('修改失败，请稍候重试')
       })
     },
     handleCancel: function () {
@@ -172,10 +151,9 @@ export default {
           this.descriptions.phone = data.phone
           this.descriptions.email = data.email
           this.descriptions.about = data.about
-          window.console.log(this.descriptions)
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     },
@@ -194,7 +172,7 @@ export default {
           }
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     }

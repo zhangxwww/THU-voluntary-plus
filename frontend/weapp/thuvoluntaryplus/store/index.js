@@ -57,7 +57,6 @@ const store = new Vuex.Store({
     },
     modifyInfo (state, obj) {
       state.personalinfo[obj.key] = obj.value
-      console.log(state.personalinfo)
     },
     setCurrentModified (state, obj) {
       state.currentModified = obj

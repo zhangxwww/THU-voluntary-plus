@@ -311,7 +311,6 @@ export default {
         success: () => {
           uni.getLocation({
             success: (res) => {
-              console.log('GPS')
               console.log(res)
               uni.request({
                 url: 'https://thuvplus.iterator-traits.com/api/activities/checkin',
@@ -330,9 +329,7 @@ export default {
                   if (res.statusCode === 200) {
                     if (res.data.success) {
                       this.hasCheckedIn = true
-                      console.log('sign up!')
                     } else {
-                      console.log('sign up fail')
                       console.log(res.data.failinfo)
                       this.modaltitle = "打卡失败！"
                       this.modalcontent = "未知错误"
@@ -354,7 +351,6 @@ export default {
               })
             },
             fail: (res) => {
-              console.log('fail to get location')
               console.log(res)
               this.modaltitle = "打卡失败！"
               this.modalcontent = "获取位置错误"
@@ -371,7 +367,6 @@ export default {
       })
     },
     feedback () {
-      console.log(this.itemprop.id)
       uni.navigateTo({
         url: '../../../pages/index/feedback/feedback?id=' + this.itemprop.id,
         success: () => {

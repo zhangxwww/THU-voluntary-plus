@@ -6,8 +6,7 @@
                  style="margin-bottom: 30px">生成邀请码
       </el-button>
       <el-input v-model="verificationCode"
-                class="verificationinput"
-                disabled></el-input>
+                class="verificationinput"></el-input>
     </el-row>
     <el-table v-loading="listLoading"
               :data="
@@ -93,6 +92,7 @@
           </el-input>
           <span style="display:none">{{ scope.$index }}</span>
         </template>
+        <!--
         <template slot-scope="scope">
           <el-button size="mini"
                      type="success"
@@ -107,6 +107,7 @@
                      @click="handleDelete(scope.$index, scope.row)">删除
           </el-button>
         </template>
+        -->
       </el-table-column>
     </el-table>
     <div class="pagination">
@@ -177,7 +178,7 @@ export default {
           this.getList()
         },
         () => {
-          alert('fail')
+          //alert('fail')
         }
       )
     },
@@ -208,10 +209,10 @@ export default {
       generateVerificationCode(
         code => {
           this.verificationCode = code
-          alert('success')
+          //alert('success')
         },
         () => {
-          alert('fail')
+          alert('请求失败，请稍候重试')
         }
       )
     }

@@ -83,7 +83,6 @@ export default {
     },
     bindprop: function () {
       if (this.bind) {
-          console.log('bind!')
         return {
           menuarrow: false,
           infokey: '您已成功绑定清华账号！',
@@ -109,7 +108,6 @@ export default {
     onTapInfo: function (itemprop) {
       if (itemprop.menuarrow) {
         this.setCurrentModified(itemprop)
-        console.log(this.currentModified)
         uni.navigateTo({
           url: '/pages/usercenter/account/modify/modify'
         })
@@ -150,19 +148,16 @@ export default {
                 if (res.statusCode === 200) {
                   that.$store.commit('setBind', true)
                   let info = {
-                      nickname: res.data.NICKNAME,
-                      name: res.data.NAME,
-                      subject: res.data.DEPARTMENT,
-                      studentId: res.data.THUID,
-                      phone: res.data.PHONE,
-                      signature: res.data.SIGNATURE
+                    nickname: res.data.NICKNAME,
+                    name: res.data.NAME,
+                    subject: res.data.DEPARTMENT,
+                    studentId: res.data.THUID,
+                    phone: res.data.PHONE,
+                    signature: res.data.SIGNATURE
                   }
                   that.$store.commit('setPersonalInfo', info)
                 }
               },
-              complete: (res) => {
-                console.log(res.statusCode)
-              }
             })
           }
         }

@@ -12,8 +12,7 @@ import Administration from "@/views/Administration"
 
 Vue.use(VueRouter)
 
-const routes = [
-    {
+const routes = [{
         path: '/login',
         name: 'login',
         component: Login,
@@ -70,16 +69,14 @@ const routes = [
         meta: {
             title: '管理中心'
         },
-        children: [
-            {
-                path: '/administration',
-                name: 'Administration',
-                component: Administration,
-                meta: {
-                    title: '管理中心'
-                }
+        children: [{
+            path: '/administration',
+            name: 'Administration',
+            component: Administration,
+            meta: {
+                title: '管理中心'
             }
-        ]
+        }]
     },
     {
         path: '/group',
@@ -89,8 +86,7 @@ const routes = [
         meta: {
             title: '团体中心'
         },
-        children: [
-            {
+        children: [{
                 path: 'groupcenter',
                 name: 'GroupCenter',
                 component: GroupCenter,

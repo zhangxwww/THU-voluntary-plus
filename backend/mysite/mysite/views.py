@@ -16,6 +16,8 @@ import traceback
 import random
 import string
 
+from django.db import transaction
+
 from showactivity.models import *
 # import mysite.models as mysite_models
 
@@ -74,10 +76,10 @@ def checkUserType(request):
         if request.user.is_authenticated: # 先检查是否为老师或公益团体账号
             print("authenticated")
             print(request.user.username)
-            print("?????",UserIdentity.objects.get(user=request.user).isTeacher)
-            if UserIdentity.objects.get(user=request.user).isTeacher == 1:
+            print("?????",UserIdentity.objects.select_for_update().get(user=request.user).isTeacher)
+            if UserIdentity.objects.select_for_update().get(user=request.user).isTeacher == 1:
                 return PERMISSION_CONST['TEACHER']
-            elif UserIdentity.objects.get(user=request.user).isTeacher == 2:
+            elif UserIdentity.objects.select_for_update().get(user=request.user).isTeacher == 2:
                 return PERMISSION_CONST['ORGANIZATION']
             else:
                 return PERMISSION_CONST['UNREGISTERED']
@@ -112,7 +114,7 @@ def checkSessionValid(request):
         if utcnow<expiry_date:
             if "MicroMessenger" in client_type:
                 try:
-                    record = WX_OPENID_TO_THUID.objects.get(OPENID = s[OPENID_CONST])
+                    record = WX_OPENID_TO_THUID.objects.select_for_update().get(OPENID = s[OPENID_CONST])
                     THUID = record.THUID
                     # return JsonResponse({"THUID":THUID})
                     return True, THUID # 已登录，已绑定
@@ -146,7 +148,7 @@ def getStudentID(request):
         try:
             sessionid = request.META["HTTP_SET_COOKIE"].split("=")[1]
             OPENID = SessionStore(session_key=sessionid)[OPENID_CONST]
-            record = WX_OPENID_TO_THUID.objects.get(OPENID = OPENID)
+            record = WX_OPENID_TO_THUID.objects.select_for_update().get(OPENID = OPENID)
             THUID = record.THUID
             return THUID
         except:
@@ -179,13 +181,13 @@ def loginApi(request):
                 request.session[LOGGED_IN_CONST] = True
                 THUID = None
                 try:
-                    THUID = WX_OPENID_TO_THUID.objects.get(OPENID = res["openid"]).THUID
+                    THUID = WX_OPENID_TO_THUID.objects.select_for_update().get(OPENID = res["openid"]).THUID
                 except:
                     THUID = None
                 print(THUID)
                 # 检查有没有绑定
                 if THUID is not None:
-                    volunteer = VOLUNTEER.objects.get(THUID=THUID)
+                    volunteer = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
                     jsonData = {
                         "THUID":volunteer.THUID,
                         "NAME": volunteer.NAME,
@@ -214,7 +216,7 @@ def loginApi(request):
         request.session[THUID_CONST] = THUID
         # 更新VOLUNTEER表
         try:
-            VOLUNTEER.objects.get(THUID=THUID)
+            VOLUNTEER.objects.select_for_update().get(THUID=THUID)
         except:
             volunteer = VOLUNTEER(THUID = THUID, NAME = r["xm"], DEPARTMENT=r["dw"], EMAIL=r["email"], NICKNAME = r["xm"])
             volunteer.save()
@@ -255,7 +257,7 @@ def bindApi(request):
         OPENID = s.get('OPENID')
         alreadyBinded = True # 若已经绑定，可以重新绑定
         try:
-            wxuser = WX_OPENID_TO_THUID.objects.get(OPENID=OPENID)
+            wxuser = WX_OPENID_TO_THUID.objects.select_for_update().get(OPENID=OPENID)
         except:
             alreadyBinded = False
         TOKEN = json.loads(request.body)[WX_TOKEN_HEADER]
@@ -277,7 +279,7 @@ def bindApi(request):
             wxuser.save()
         # 更新VOLUNTEER表
         try:
-            volunteer = VOLUNTEER.objects.get(THUID=THUID)
+            volunteer = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
         except:
             volunteer = VOLUNTEER(THUID = THUID, NAME = thuuser["name"], DEPARTMENT=thuuser["department"], EMAIL=thuuser["mail"], NICKNAME = thuuser["name"])
             volunteer.save()
@@ -310,7 +312,7 @@ def volunteerChangeInfo(request):
     MODIFIABLE_PROPS = ["NICKNAME","SIGNATURE","PHONE","EMAIL"]
     try:
         print("xixixi")
-        info = VOLUNTEER.objects.get(THUID=THUID)
+        info = VOLUNTEER.objects.select_for_update().get(THUID=THUID)
         body = json.loads(request.body)
         print("hhh")
         print(body)
@@ -339,9 +341,9 @@ def createUser(request):
     # identity = json.loads(request.body)["identity"] # identity = 0 or 1
     identity = 0
     try:
-        VerificationCode.objects.get(VerificationCode=code)
+        VerificationCode.objects.select_for_update().get(VerificationCode=code)
         try:
-            user = User.objects.create_user(username = login_name, password = pwd)
+            user = User.objects.select_for_update().create_user(username = login_name, password = pwd)
             user.save()
             UserIdentity(isTeacher = identity,user=user).save()
             #userIdentity = UserIdentity(isTeacher = 0,)
@@ -367,9 +369,9 @@ def createGroup(request):
     #subjects = json.dumps(json.loads(request.body)["subjects"])
 
     try:
-        #user = User.objects.get(username = name)
+        #user = User.objects.select_for_update().get(username = name)
         user = request.user
-        user_identity = UserIdentity.objects.get(user=user)
+        user_identity = UserIdentity.objects.select_for_update().get(user=user)
         user_identity.isTeacher = 2
         user_identity.setuptime = time
         user_identity.groupname = groupname
@@ -387,7 +389,7 @@ def createGroup(request):
 # 修改团队信息
 def editGroup(request):
     if checkUserType(request) == PERMISSION_CONST['ORGANIZATION']:
-        group = UserIdentity.objects.get(user = request.user)
+        group = UserIdentity.objects.select_for_update().get(user = request.user)
         group.phone = json.loads(request.body)["phone"]
         group.email = json.loads(request.body)["email"]
         group.about = json.loads(request.body)["about"]
@@ -428,9 +430,9 @@ def generateVerificationCode(request):
 def selectfromGroup(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
         rtn_list = []
-        for group in UserIdentity.objects.filter(status = 1):
+        for group in UserIdentity.objects.select_for_update().filter(status = 1):
             rtn = {}
-            # group = UserIdentity.objects.get(id = groupid)
+            # group = UserIdentity.objects.select_for_update().get(id = groupid)
             rtn["groupname"] = group.groupname              #团队名
             setuptime = group.setuptime
             if 'T' in setuptime:
@@ -456,7 +458,7 @@ def selectGroup(request):
         groupid = json.loads(request.body)["id"]
 
         rtn = {}
-        group = UserIdentity.objects.get(id = groupid)
+        group = UserIdentity.objects.select_for_update().get(id = groupid)
         rtn["groupname"] = group.groupname              #团队名
         rtn["setuptime"] = group.setuptime
         rtn["phone"] = group.phone
@@ -475,7 +477,7 @@ def auditGroup(request):
         groupid = json.loads(request.body)["id"]
         result = json.loads(request.body)["result"] #审核结果,-1表示不通过,1表示通过
          
-        group = UserIdentity.objects.get(id = groupid)
+        group = UserIdentity.objects.select_for_update().get(id = groupid)
         group.update(status = result)
         group.save()
         return HttpResponse("Audit group successful", status = 200)
@@ -489,7 +491,7 @@ def check_volunteerhours(request):
     THUID = checkSessionValid(request)[1]
     if THUID is None:
         return JsonResponse({"success": False, FAIL_INFO_KEY: "Fail to get THUID!"})
-    user = VOLUNTEER.objects.get(pk = THUID)
+    user = VOLUNTEER.objects.select_for_update().get(pk = THUID)
     hours = user.VOLUNTEER_TIME
 
     return JsonResponse({"hours": hours})
@@ -504,7 +506,7 @@ def getGroupInfo(request):
         return HttpResponse("NOT ORGANIZATION", status=401)
     else:
         user = request.user
-        info = UserIdentity.objects.get(user=user)
+        info = UserIdentity.objects.select_for_update().get(user=user)
         res = {}
         setuptime = info.setuptime
         if 'T' in setuptime:

@@ -194,8 +194,8 @@
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange"
                      :current-page="1"
-                     :page-sizes="[3, 5, 10]"
-                     :page-size="3"
+                     :page-sizes="[10, 20, 30]"
+                     :page-size="10"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="total">
       </el-pagination>
@@ -223,7 +223,7 @@ export default {
       rawlist: [],
       listLoading: false,
       search: '',
-      pagesize: 3,
+      pagesize: 10,
       list: [],
       inputVisible: false,
       inputValue: '',
@@ -328,12 +328,11 @@ export default {
 
   methods: {
     handleDelete (index, row) {
-      alert(index, row)
       deleteActivity(row.id, () => {
-        alert('success')
+        //alert('success')
         this.updateActivities()
       }, () => {
-        alert('fail')
+        alert('删除失败，请稍后重试')
       })
     },
     updateActivities () {
@@ -370,7 +369,7 @@ export default {
       this.editForm.desc = row.desc
     },
     handleDetail (index, row) {
-      alert(row.id)
+      //alert(row.id)
       this.$store.commit('setModifyAcitvityId', row.id)
       this.$router.push('/dashboard/config/')
     },
@@ -379,7 +378,6 @@ export default {
     },
     getList: function () {
       this.list.splice(0, this.list.length, ...this.rawlist.slice((this.page - 1) * this.pagesize, this.page * this.pagesize))
-      window.console.log(this.list)
     },
     handleSizeChange (val) {
       this.pagesize = val
@@ -395,7 +393,7 @@ export default {
         this.updateActivities()
         this.clearEditForm()
       }, () => {
-        alert('fail')
+        alert('修改失败，请稍后重试')
       })
     },
     cancelEdit () {

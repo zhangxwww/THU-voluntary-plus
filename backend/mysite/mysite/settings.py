@@ -103,6 +103,7 @@ DATABASES = {
         'OPTIONS': {
             'init_command': 'ALTER DATABASE THUVPlus CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci'
         },
+        'ATOMIC_REQUESTS': True
     }
 }
 
