@@ -13,14 +13,14 @@
                class="el-menu-demo right-menu-item"
                mode="horizontal"
                active-text-color="#5c307d">
-        <el-menu-item index="1">
-          <router-link to="/">活动中心</router-link>
+        <el-menu-item @click.native="navTo(1)" index="1">
+          活动中心
         </el-menu-item>
-        <el-menu-item index="2">
-          <router-link to="/">管理面板</router-link>
+        <el-menu-item @click.native="navTo(2)" index="2">
+          管理面板
         </el-menu-item>
-        <el-menu-item index="3">
-          <router-link to="/group">团体信息</router-link>
+        <el-menu-item @click.native="navTo(3)" index="3">
+          团体信息
         </el-menu-item>
       </el-menu>
       <el-dropdown class="avatar-container"
@@ -56,7 +56,15 @@ export default {
       return 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif'
     },
   },
-  methods: {}
+  methods: {
+    navTo: function (index) {
+      let url = '/index'
+      if (index === 1) url = '/dashboard'
+      if (index === 2) url = '/admin'
+      if (index === 3) url = '/group'
+      this.$router.push(url)
+    }
+  }
 }
 </script>
 
