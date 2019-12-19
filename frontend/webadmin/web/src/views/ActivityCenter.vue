@@ -315,7 +315,7 @@ export default {
   },
   computed: {
     total: function () {
-      return this.list.length
+      return this.rawlist.length
     },
     updateList: function () {
       this.getList()
@@ -394,6 +394,10 @@ export default {
         this.editVisible = false
         this.updateActivities()
         this.clearEditForm()
+        this.$message({
+          message: '编辑成功',
+          type: 'success'
+        });
       }, () => {
         this.$message.error('错了哦，这是一条错误消息');
       })

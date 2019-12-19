@@ -1,5 +1,5 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth import  authenticate
 from django.contrib.auth.models import User
 from .settings import TICKET_AUTHENTICATION, WX_TOKEN_HEADER, WX_OPENID_HEADER, WX_CODE_HEADER, WX_HTTP_API, \
@@ -343,7 +343,7 @@ def createUser(request):
     try:
         VerificationCode.objects.select_for_update().get(VerificationCode=code)
         try:
-            user = User.objects.select_for_update().create_user(username = login_name, password = pwd)
+            user = User.objects.create_user(username = login_name, password = pwd)
             user.save()
             UserIdentity(isTeacher = identity,user=user).save()
             #userIdentity = UserIdentity(isTeacher = 0,)
@@ -430,7 +430,7 @@ def generateVerificationCode(request):
 def selectfromGroup(request):
     if checkUserType(request) in [PERMISSION_CONST['TEACHER']]:
         rtn_list = []
-        for group in UserIdentity.objects.select_for_update().filter(status = 1):
+        for group in UserIdentity.objects.select_for_update().filter(isTeacher=2, status = 1):
             rtn = {}
             # group = UserIdentity.objects.select_for_update().get(id = groupid)
             rtn["groupname"] = group.groupname              #团队名
@@ -451,6 +451,12 @@ def selectfromGroup(request):
         return JsonResponse({"groups":rtn_list})
     else:
         return HttpResponse("You have no access", status = 401)
+
+# 网页端登出
+def managerLogoutApi(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return HttpResponse("LOGOUT SUCCESS")
 
 #志愿中心选择待审核的志愿团体账号
 def selectGroup(request):

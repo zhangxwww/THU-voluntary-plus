@@ -13,13 +13,16 @@
                class="el-menu-demo right-menu-item"
                mode="horizontal"
                active-text-color="#5c307d">
-        <el-menu-item @click.native="navTo(1)" index="1">
+        <el-menu-item @click.native="navTo(1)"
+                      index="1">
           活动中心
         </el-menu-item>
-        <el-menu-item @click.native="navTo(2)" index="2">
+        <el-menu-item @click.native="navTo(2)"
+                      index="2">
           管理面板
         </el-menu-item>
-        <el-menu-item @click.native="navTo(3)" index="3">
+        <el-menu-item @click.native="navTo(3)"
+                      index="3">
           团体信息
         </el-menu-item>
       </el-menu>
@@ -34,7 +37,7 @@
                           class="user-dropdown">
           <el-dropdown-item>
             <span style="display:block;"
-                  @click="logout">登出</span>
+                  @click="handlelogout">登出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -43,6 +46,8 @@
 </template>
 
 <script>
+import { logout } from '../script/index'
+
 export default {
   data () {
     return {
@@ -57,6 +62,13 @@ export default {
     },
   },
   methods: {
+    handlelogout () {
+      logout(() => {
+        this.$router.push('/login')
+      }, () => {
+
+      })
+    },
     navTo: function (index) {
       let url = '/index'
       if (index === 1) url = '/dashboard'

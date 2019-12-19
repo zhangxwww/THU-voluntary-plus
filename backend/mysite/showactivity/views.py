@@ -600,6 +600,8 @@ def post_message(request):
         print(json.loads(request.body))
         activity_id = json.loads(request.body)["activity_id"]
         activity = showactivity_models.Activity.objects.select_for_update().get(id=activity_id)
+        if activity.ActivityOrganizer != request.user:
+            return HttpResponse("Not your activity", status=401)
         title = json.loads(request.body)["title"]
         content = json.loads(request.body)["content"]
         date = (datetime.datetime.utcnow()+datetime.timedelta(hours=8)).replace(tzinfo=utc)

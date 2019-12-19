@@ -11,6 +11,7 @@
 
       <el-form-item prop="username">
         <el-input placeholder="用户名"
+                  @keyup.enter.native="handleLogin"
                   v-model="loginForm.username">
           <i slot="prefix"
              class="el-input__icon el-icon-user"></i>
@@ -20,6 +21,7 @@
       <el-form-item prop="password">
         <el-input placeholder="密码"
                   v-model="loginForm.password"
+                  @keyup.enter.native="handleLogin"
                   show-password>
           <i slot="prefix"
              class="el-input__icon el-icon-lock"></i>
@@ -74,7 +76,7 @@ export default {
           this.$router.push('/dashboard/activity')
         },
         () => {
-          alert('登录失败，请稍后重试')
+          this.$message.error('登录失败，请稍后重试')
         }
       )
     }

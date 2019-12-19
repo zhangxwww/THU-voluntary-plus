@@ -212,7 +212,7 @@ export default {
           //alert('success')
         },
         () => {
-          alert('请求失败，请稍候重试')
+          this.$message.error('请求失败，请稍候重试')
         }
       )
     }
