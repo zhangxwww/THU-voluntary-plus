@@ -98,7 +98,7 @@ DATABASES = {
         'NAME': 'THUVPlus',
         'USER': 'root',
         'PASSWORD': '123',
-        'HOST': '127.0.0.1',  # mysql服务所在的主机ip
+        'HOST': 'db',  # mysql服务所在的主机ip
         'PORT': '3306',  # mysql服务端口
         'OPTIONS': {
             'init_command': 'ALTER DATABASE THUVPlus CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci'
