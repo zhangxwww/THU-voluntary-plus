@@ -71,9 +71,18 @@ export default {
     },
     navTo: function (index) {
       let url = '/index'
-      if (index === 1) url = '/dashboard'
-      if (index === 2) url = '/admin'
-      if (index === 3) url = '/group'
+      if (index === 1) {
+        url = '/dashboard'
+        this.activeIndex = '1'
+      }
+      if (index === 2) {
+        url = '/admin'
+        this.activeIndex = '2'
+      }
+      if (index === 3) {
+        url = '/group'
+        this.activeIndex = '3'
+      }
       this.$router.push(url)
     }
   }
