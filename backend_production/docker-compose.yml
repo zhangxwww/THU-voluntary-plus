@@ -3,25 +3,19 @@ version: '3'
 services:
   web:
     build: .
-    command: >
-      bash -c
-      volumes:
+    volumes:
       - .:/code
       - static-volume:/code/static
-    expose:
-      - "8000"
     depends_on:
       - db
     networks:
       - db_network
       - web_network
-    command: "./wait-for-it.sh db:3306 -- bash -c \"pwd && ls && cd mysite && ls && python3 manage.py makemigrations && python3 manage.py makemigrations mysite && python3 manage.py makemigrations showactivity && python3 manage.py migrate && uwsgi --socket 0.0.0.0:8000 --wsgi-file mysite/wsgi.py\""
+    command: "./wait-for-it.sh db:3306 -- bash -c \"pwd && ls && cd mysite && ls && python3 manage.py makemigrations && python3 manage.py makemigrations mysite && python3 manage.py makemigrations showactivity && python3 manage.py migrate && nohup uwsgi --socket 0.0.0.0:8000 --wsgi-file mysite/wsgi.py\""
   db:
     image: mysql/mysql-server:5.7.27
     volumes:
      - "./mysql:/var/lib/mysql"
-    ports:
-     - "3306:3306"
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: '123'
