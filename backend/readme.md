@@ -38,7 +38,7 @@ sudo service nginx start
 <font color=#0099ff>启动uwsgi时不要使用sudo或root身份操作，否则可能会引发502 Bad Gateway的错误</font>
 ```
 cd /home/ubuntu/jxq_tmp/THU-voluntary-plus/backend/mysite
-uwsgi --socket 127.0.0.1:8001 --wsgi-file mysite/wsgi.py
+nohup uwsgi --socket 127.0.0.1:8001 --wsgi-file mysite/wsgi.py --workers 4 &
 ```
 
 ---

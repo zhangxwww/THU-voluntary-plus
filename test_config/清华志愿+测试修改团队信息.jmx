@@ -52,7 +52,7 @@
         <CookieManager guiclass="CookiePanel" testclass="CookieManager" testname="HTTP Cookie管理器" enabled="true">
           <collectionProp name="CookieManager.cookies">
             <elementProp name="sessionid" elementType="Cookie" testname="sessionid">
-              <stringProp name="Cookie.value">ir57a2vwo6a4r6rlpomum597pons8vwy</stringProp>
+              <stringProp name="Cookie.value">iwgj0d18i3i1xsilzmv2528gi6ln9l0t</stringProp>
               <stringProp name="Cookie.domain">thuvplus.iterator-traits.com</stringProp>
               <stringProp name="Cookie.path">/</stringProp>
               <boolProp name="Cookie.secure">false</boolProp>
@@ -65,13 +65,13 @@
           <boolProp name="CookieManager.controlledByThreadGroup">false</boolProp>
         </CookieManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="发布消息接口" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="团队编辑" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;activity_id&quot;:9699,&quot;title&quot;:&quot;吃饭&quot;,&quot;content&quot;:&quot;来吃饭&quot;}</stringProp>
+                <stringProp name="Argument.value">{&quot;phone&quot;:&quot;ww&quot;,&quot;email&quot;:&quot;wwwww&quot;,&quot;about&quot;:&quot;wwww&quot;}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -80,7 +80,7 @@
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding">utf-8</stringProp>
-          <stringProp name="HTTPSampler.path">/api/messages/post</stringProp>
+          <stringProp name="HTTPSampler.path">api/group/edit</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
